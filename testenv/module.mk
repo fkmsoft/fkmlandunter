@@ -7,7 +7,7 @@ OBJS += $(TESTENVOBJS) $(RETOBJS)
 $(DIR)/testenv: $(TESTENVOBJS)
 	$(CC) $(CFLAGS) -o $@ $^
 
-$(DIR)/server: server/server
+$(DIR)/server: server/old/server
 	rm -f $@
 	ln -s ../$< $(DIR)
 
