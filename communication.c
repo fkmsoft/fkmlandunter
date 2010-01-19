@@ -75,9 +75,11 @@ void print_deck(player *p)
     int i;
     printf("Your current weathercards are: ");
     for (i = 0; i < 12; i++) {
-        printf("%d", p->current_deck.weathercards[i]);
-        if (i < 11)
-            printf(", ");
+        if (p->current_deck.weathercards[i] > 0) {
+            printf("%d", p->current_deck.weathercards[i]);
+            if (i < 11)
+                printf(", ");
+        }
     }
     printf("\n");
     prompt(p);
@@ -101,7 +103,7 @@ int get_weather(player *p)
         printf("Please enter your chosen \"watercard\": ");
         c = getint();
         for (i = 0; i < 12; i++) {
-            if (c == p->current_deck.weathercards[i])
+            if (c > 0 && c == p->current_deck.weathercards[i])
                 indeck = true;
         }
     }
@@ -148,4 +150,3 @@ int getint()
 
     return n;
 }
-

@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 		/* remove chosen card from deck */
 		int d = 0;
 		for (; players[p].current_deck.weathercards[d] != w_card; d++)
-		    ;
+		    ; // sehr nais!
 		players[p].current_deck.weathercards[d] = 0;
 
 		//XXX AB HIER NICHTS MEHR VERÄNDERT
@@ -135,6 +135,7 @@ int main(int argc, char **argv)
 }
 
 /*
+ * Für später zum Töten:
 Spieleranzahl S von Kommandozeile auswerten, sonst 3;
 S Decks erstellen;
 S Spieler mit Punktzahl 0 erstellen;
