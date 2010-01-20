@@ -16,11 +16,11 @@ int *shuffle(int num)
 
     srand(time(NULL));
 
-    for (i = 0; i < num; i++) {
+    for (i = 1; i <= num; i++) {
 	    do {
             r = rand()%num;
         } while (arr[r] != 0);
-        arr[r] = i+1;
+        arr[r] = i;
     }
 
     return arr;
