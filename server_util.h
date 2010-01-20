@@ -13,3 +13,4 @@ deck *create_decks(int num);
 int *shuffle(int num);
 
 #endif
+/* vim: set sw=4 ts=4 fdm=syntax: */

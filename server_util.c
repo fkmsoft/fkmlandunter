@@ -74,3 +74,4 @@ void print_deck(deck *d)
   printf("\nLifebelts: %d\n", d->lifebelts);
 }
 */
+/* vim: set sw=4 ts=4 fdm=syntax: */

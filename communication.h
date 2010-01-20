@@ -50,3 +50,4 @@ void show_points(int *points, player *p);
 int getint();
 
 #endif
+/* vim: set sw=4 ts=4 fdm=syntax: */

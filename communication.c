@@ -150,3 +150,4 @@ int getint()
 
     return n;
 }
+/* vim: set sw=4 ts=4 fdm=syntax: */
