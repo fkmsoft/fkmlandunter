@@ -12,12 +12,16 @@
 /* returns int array with num numbers between 1 and num */
 int *shuffle(int num)
 {
-    int i, *arr = malloc(sizeof(int)*num);
+    int i, r, *arr = malloc(sizeof(int)*num);
 
     srand(time(NULL));
 
-    for (i = 0; i < num; i++)
-	arr[i] = (rand() % num) + 1;
+    for (i = 0; i < num; i++) {
+	    do {
+            r = rand()%num+1;
+        } while (arr[r] != 0);
+        arr[r] = i;
+    }
 
     return arr;
 }
