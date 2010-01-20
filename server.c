@@ -14,16 +14,11 @@
 #include "communication.h"
 #include "server_util.h"
 
-struct pass {
-	int turn_num;
-	int water[24]; // rueckt weiter je bei erhoehung von turn_num
-};
-
 int main(int argc, char **argv)
 {
     int playernum, i, j, p;
     player *players;
-    struct pass waterdeck;
+	int water[24]; // rueckt weiter je bei erhoehung von turn_num
 
     argc < 2 ? playernum = 3 : (playernum = atoi(argv[1]));
     players = create_players(playernum);
@@ -33,9 +28,8 @@ int main(int argc, char **argv)
     for (i = 0; i < playernum; i++) {
 	int *buf = shuffle(12);
 	for (j = 0; j < 12; j++)
-	    waterdeck.water[j] = buf[j];
+	    water[j] = buf[j];
 	free(buf);
-	waterdeck.turn_num = 0;
 
 	int alive = playernum;
 
@@ -43,10 +37,10 @@ int main(int argc, char **argv)
 	for (j = 0; j < 12 && alive > 2; j++) {
 	    /* w_min & w_max are the current watercards */
 	    int w_min, w_max;
-	    w_min = (waterdeck.water[j] < waterdeck.water[j+1] ?
-		      waterdeck.water[j] : waterdeck.water[j+1]);
-	    w_max = (waterdeck.water[j] > waterdeck.water[j+1] ?
-		      waterdeck.water[j] : waterdeck.water[j+1]);
+	    w_min = (water[j] < water[j+1] ?
+		      water[j] : water[j+1]);
+	    w_max = (water[j] > water[j+1] ?
+		      water[j] : water[j+1]);
 
 	    /* This loop does the in- and output for every player */
 	    int max=0, sec=0, sec_p=-1, max_p=-1;
