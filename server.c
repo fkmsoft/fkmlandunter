@@ -165,3 +165,4 @@ for i = 0 to S
 Platzierung ermitteln;
 Spielern Platzierung mitteilen;	// Kommunikation
 */
+/* vim: set fdm=syntax: */
