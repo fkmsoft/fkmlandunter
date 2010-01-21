@@ -50,11 +50,17 @@ void run_server(int port)
     bind(sock, (struct sockaddr *) &s_addr, sizeof(s_addr));
     listen(sock, 5);
 
-    int client;
+    int client, count = 0;
     puts("Init done, waiting for a client...");
-    client = accept(sock, 0, 0);
+    while(1) {
+        client = accept(sock, 0, 0);
 
-    write(client, "Welcome to the ride on my disco stick\n", 39);
+        write(client, "Welcome to the ride on my disco stick\n", 39);
+        close(client);
+        printf("ride No %d finished\n", ++count);
+        if (!(count % 10))
+            puts("Please replace the disco stick NOW!");
+    }
 }
 
 /* vim: set sw=4 ts=4 fdm=syntax: */
