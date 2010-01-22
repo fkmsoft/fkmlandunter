@@ -30,7 +30,7 @@
 
 #include "util.h"
 
-void run_server(int port)
+void init_server(unsigned int port)
 {
     int sock;
 
@@ -48,15 +48,20 @@ void run_server(int port)
     s_addr.sin_port = htons(port);
 
     bind(sock, (struct sockaddr *) &s_addr, sizeof(s_addr));
-    listen(sock, 5);
+    listen(sock, 1); // only 1 connect() at a time
 
     int client, count = 0;
     puts("Init done, waiting for a client...");
     while(1) {
         client = accept(sock, 0, 0);
 
-        write(client, "Welcome to the ride on my disco stick\n", 39);
-        close(client);
+    FILE *clientstream;
+    clientstream = fdopen(client, "a");
+    fputs("Welcome to the ride on my disco stick\n", clientstream);
+    fprintf(clientstream, "%d people had their ride before"
+            "you on this server.\n", count);
+    fgetc(clientstream);
+    fclose(clientstream);
         printf("ride No %d finished\n", ++count);
         if (!(count % 10))
             puts("Please replace the disco stick NOW!");
