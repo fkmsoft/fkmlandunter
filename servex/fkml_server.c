@@ -23,6 +23,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/types.h> // socket()
 #include <sys/socket.h> // socket()
 #include <string.h> // memset()
@@ -30,15 +31,15 @@
 
 #include "util.h"
 
-void init_server(unsigned int port)
+fkml_server *init_server(unsigned int port)
 {
-    int sock;
+    fkml_server *server = malloc(sizeof(fkml_server));
 
     if (port < 1024)
         printf("Please choose a port > 1024 instead of %d\n",
                 port);
 
-    sock = socket(AF_INET, SOCK_STREAM, 0);
+    server->socket = socket(AF_INET, SOCK_STREAM, 0);
 
     struct sockaddr_in s_addr;
     memset(&s_addr, 0, sizeof(s_addr));
@@ -47,25 +48,27 @@ void init_server(unsigned int port)
     s_addr.sin_addr.s_addr = INADDR_ANY;
     s_addr.sin_port = htons(port);
 
-    bind(sock, (struct sockaddr *) &s_addr, sizeof(s_addr));
-    listen(sock, 1); // only 1 connect() at a time
+    bind(server.socket, (struct sockaddr *) &s_addr, sizeof(s_addr));
+    listen(server->socket, MAX_PLAYERS); // only 1 connect() at a time
 
     int client, count = 0;
-    puts("Init done, waiting for a client...");
+    puts("Init done, waiting for clients...");
     while(1) {
-        client = accept(sock, 0, 0);
+        client = accept(server->socket, 0, 0);
 
-    FILE *clientstream;
-    clientstream = fdopen(client, "a");
-    fputs("Welcome to the ride on my disco stick\n", clientstream);
-    fprintf(clientstream, "%d people had their ride before"
+        FILE *clientstream;
+        clientstream = fdopen(client, "a");
+        fputs("Welcome to the ride on my disco stick\n", clientstream);
+        fprintf(clientstream, "%d people had their ride before"
             "you on this server.\n", count);
-    fgetc(clientstream);
-    fclose(clientstream);
+        fgetc(clientstream);
+        fclose(clientstream);
         printf("ride No %d finished\n", ++count);
         if (!(count % 10))
             puts("Please replace the disco stick NOW!");
     }
+
+    return server;
 }
 
 /* vim: set sw=4 ts=4 fdm=syntax: */
