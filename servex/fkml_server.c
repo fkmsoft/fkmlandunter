@@ -29,8 +29,6 @@
 #include <string.h> // memset()
 #include <netinet/in.h> // struct sockaddr_in
 
-#include "util.h"
-
 fkml_server *init_server(unsigned int port)
 {
     fkml_server *server = malloc(sizeof(fkml_server));
