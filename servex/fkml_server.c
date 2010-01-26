@@ -24,13 +24,23 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h> // socket()
-#include <sys/socket.h> // socket()
-#include <string.h> // memset()
-#include <netinet/in.h> // struct sockaddr_in
+/* for socket(): */
+#include <sys/types.h>
+#include <sys/socket.h>
+/* for memset(): */
+#include <string.h>
+/* for struct sockaddr_in: */
+#include <netinet/in.h>
+/* for close(): */
+#include <unistd.h>
 
-fkml_server *init_server(unsigned int port)
+#include "fkml_server.h"
+
+fkml_server *init_server(unsigned int port, unsigned int players)
 {
+    if (players > MAX_PLAYERS)
+        players = MAX_PLAYERS;
+
     fkml_server *server = malloc(sizeof(fkml_server));
 
     if (port < 1024)
@@ -46,27 +56,42 @@ fkml_server *init_server(unsigned int port)
     s_addr.sin_addr.s_addr = INADDR_ANY;
     s_addr.sin_port = htons(port);
 
-    bind(server.socket, (struct sockaddr *) &s_addr, sizeof(s_addr));
-    listen(server->socket, MAX_PLAYERS); // only 1 connect() at a time
+    bind(server->socket, (struct sockaddr *) &s_addr, sizeof(s_addr));
+    listen(server->socket, players); /* only 1 connect() at a time */
 
-    int client, count = 0;
+    int i, client, count = 0;
     puts("Init done, waiting for clients...");
-    while(1) {
+    for (i = 0; i < players; i++) {
         client = accept(server->socket, 0, 0);
 
         FILE *clientstream;
-        clientstream = fdopen(client, "a");
-        fputs("Welcome to the ride on my disco stick\n", clientstream);
-        fprintf(clientstream, "%d people had their ride before"
-            "you on this server.\n", count);
-        fgetc(clientstream);
-        fclose(clientstream);
-        printf("ride No %d finished\n", ++count);
-        if (!(count % 10))
-            puts("Please replace the disco stick NOW!");
+        if(!(clientstream = (FILE *)fdopen(client, "a+")))
+            perror("Error opening stream");
+
+        fputs("Welcome to the fkml server\n", clientstream);
+        fprintf(clientstream, "%d players have already connected"
+            " to this server.\n", count);
+        /* fgetc(clientstream); */
+        /* fclose(clientstream); */
+        printf("client No %d connected\n", ++count);
+        server->clientfds[i] = client;
+        server->clients[i] = clientstream;
     }
 
     return server;
+}
+
+void fkml_shutdown(fkml_server *s)
+{
+    int i;
+    FILE *p;
+
+    for (i = 0, p = s->clients[0]; i < MAX_PLAYERS && p; fclose(p++))
+        ;
+
+    close(s->socket);
+
+    free(s);
 }
 
 /* vim: set sw=4 ts=4 fdm=syntax: */
