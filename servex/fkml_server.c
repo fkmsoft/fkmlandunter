@@ -22,6 +22,8 @@
  * -----------------------------
  */
 
+/* for fdopen() from stdio */
+#define _XOPEN_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 /* for socket(): */
@@ -84,10 +86,11 @@ fkml_server *init_server(unsigned int port, unsigned int players)
 void fkml_shutdown(fkml_server *s)
 {
     int i;
-    FILE *p;
+    /*FILE *p;
 
-    for (i = 0, p = s->clients[0]; i < MAX_PLAYERS && p; fclose(p++))
-        ;
+    p = s->clients[0];*/
+    for (i = 0/*, p = s->clients[0]*/; i < MAX_PLAYERS && s->clients[i]; i++)
+            fclose(s->clients[i]);
 
     close(s->socket);
 
