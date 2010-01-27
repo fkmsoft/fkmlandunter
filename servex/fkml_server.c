@@ -40,7 +40,7 @@
 
 fkml_server *init_server(unsigned int port, unsigned int players)
 {
-    if (players > MAX_PLAYERS)
+    if (players > MAX_PLAYERS || players < 0)
         players = MAX_PLAYERS;
 
     fkml_server *server = malloc(sizeof(fkml_server));
@@ -59,9 +59,10 @@ fkml_server *init_server(unsigned int port, unsigned int players)
     s_addr.sin_port = htons(port);
 
     bind(server->socket, (struct sockaddr *) &s_addr, sizeof(s_addr));
-    listen(server->socket, players); /* only 1 connect() at a time */
+    listen(server->socket, players);
 
     int i, client, count = 0;
+    /*
     puts("Init done, waiting for clients...");
     for (i = 0; i < players; i++) {
         client = accept(server->socket, 0, 0);
@@ -73,12 +74,12 @@ fkml_server *init_server(unsigned int port, unsigned int players)
         fputs("Welcome to the fkml server\n", clientstream);
         fprintf(clientstream, "%d players have already connected"
             " to this server.\n", count);
-        /* fgetc(clientstream); */
-        /* fclose(clientstream); */
         printf("client No %d connected\n", ++count);
         server->clientfds[i] = client;
         server->clients[i] = clientstream;
     }
+    */
+    puts("Server initialized, returning control");
 
     return server;
 }
