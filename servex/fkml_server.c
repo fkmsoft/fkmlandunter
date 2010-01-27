@@ -61,8 +61,8 @@ fkml_server *init_server(unsigned int port, unsigned int players)
     bind(server->socket, (struct sockaddr *) &s_addr, sizeof(s_addr));
     listen(server->socket, players);
 
-    int i, client, count = 0;
     /*
+    int i, client, count = 0;
     puts("Init done, waiting for clients...");
     for (i = 0; i < players; i++) {
         client = accept(server->socket, 0, 0);

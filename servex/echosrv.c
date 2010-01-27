@@ -5,6 +5,10 @@
  * (c) 2010, fkmsft
  */
 
+#define _POSIX_SOURCE
+
+#include <sys/socket.h>
+#include <sys/types.h>
 #include <stdbool.h>
 #include <string.h>
 #include <stdio.h>
@@ -17,6 +21,7 @@
 #define STDINFD (0)
 
 #define QUITCMD ("quit")
+#define PROMPT ("fkml-0.1$ ")
 
 /* for POLLRDHUP: */
 /*#define _GNU_SOURCE*/
@@ -34,8 +39,9 @@ int main()
     pollfds[1].fd = s->socket;
     pollfds[1].events = POLLIN;
 
-    printf("EOF is %d\n", EOF);
-    /* fflush(stdout); */
+    /* printf("EOF is %d\n", EOF); */
+    fputs(PROMPT, stdout);
+    fflush(stdout);
 
     while(run) {
         /* puts("Trying poll"); */
@@ -46,11 +52,18 @@ int main()
         if (pollfds[0].revents == POLLIN) /* input avail from bofh */ {
             if (fgets(buf, BUFLEN-1, stdin)) {
                 buf[strlen(buf)-1] = '\0';
-                if (strcmp(QUITCMD, buf) == 0)
+                if (strcmp(QUITCMD, buf) == 0) {
                    run = false;
+                   /* break; */
+                }
                 else
                     printf("Invalid command %s, use \"%s\" to quit\n",
                             buf, QUITCMD);
+
+                if (run) {
+                    fputs(PROMPT, stdout);
+                    fflush(stdout);
+                }
             } else {
                 perror("read from stdin failed");
                 run = false;
@@ -58,31 +71,35 @@ int main()
         }
 
         if (pollfds[1].revents == POLLIN) { /* new client connecting */
-          s->clientfds[connected] = accept(s->socket, 0, 0);
-          s->clients[connected] = fdopen(s->clientfds[connected], "a+");
-          fputs("Welcome to the fkml server\n", s->clients[connected]);
-          fputs("Waiting for input!\n", s->clients[connected]);
-          fflush(s->clients[connected]);
-          connected++;
+            s->clientfds[connected] = accept(s->socket, 0, 0);
+            s->clients[connected] = fdopen(s->clientfds[connected], "a+");
+            fputs("Welcome to the fkml server\n", s->clients[connected]);
+            fputs("Waiting for input!\n", s->clients[connected]);
+            fflush(s->clients[connected]);
+            connected++;
         }
 
         int i;
         for (i = 0; i < connected; i++) {
-          if (pollfds[i+2].revents == POLLIN)
-              printf("Reading from client %d\n", i);
-              if (fgets(buf, BUFLEN-1, s->clients[i+2])) {
-                  printf("Read \"%s\" from client %d, echoing\n", buf, i);
-                  if (!(fputs(buf, s->clients[i+2]))) {
-                      puts("Writing to client failed");
-                      run = false;
-                  }
-                  fflush(s->clients[0]);
-                  puts("Echo complete");
-              }
+            printf("Checking client %d\n", i);
+            if (pollfds[i+2].revents == POLLIN)
+                printf("Reading from client %d\n", i);
+                if (fgets(buf, BUFLEN-1, s->clients[i])) {
+                    printf("Read \"%s\" from client %d, echoing\n", buf, i);
+                    if (!(fputs(buf, s->clients[i]))) {
+                        puts("Writing to client failed");
+                        run = false;
+                    }
+                    fflush(s->clients[i]);
+                    puts("Echo complete");
+                }
         }
 
-        if(!run)
-            fputs("Terminating\n", s->clients[0]);
+        if(!run) {
+            for (i = 0; i < connected; i++)
+                fputs("Terminating\n", s->clients[i]);
+            puts("Shutting down server");
+        }
     }
 
     /*
