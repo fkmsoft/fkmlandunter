@@ -23,7 +23,7 @@
  */
 
 /* for fdopen() from stdio */
-#define _XOPEN_SOURCE
+#define _POSIX_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 /* for socket(): */
