@@ -45,7 +45,7 @@ int main()
 
     while(run) {
         puts("Beginning new poll cycle");
-        if (poll(p, 2+connected, -1 /* infinite t/o */) < 1) {
+        if (poll(p, 2+connected, -1000 /* infinite t/o */) < 1) {
             run = false;
             perror("Polling failed");
         } else {
@@ -59,10 +59,10 @@ int main()
             for (i = 0; i < connected; i++) {
                 if (pollfds[2+i].revents == POLLIN)
                     printf(" client %d", i);
-                else
-                    fputs(" fu", stdout);
+                /*else
+                    fputs(" fu", stdout);*/
             }
-            puts(".");
+            puts(" and nobody else.");
         }
 
         /* input avail from bofh */
@@ -89,11 +89,13 @@ int main()
 
         /* new client connecting */
         if (pollfds[1].revents == POLLIN) {
-            s->clientfds[connected] = accept(s->socket, 0, 0);
+            pollfds[connected + 2].fd = s->clientfds[connected] =
+                accept(s->socket, 0, 0);
             s->clients[connected] = fdopen(s->clientfds[connected], "a+");
             fputs("Welcome to the fkml server\n", s->clients[connected]);
             fputs("Waiting for input!\n", s->clients[connected]);
             fflush(s->clients[connected]);
+            pollfds[2 + connected].events = POLLIN;
             connected++;
         }
 
