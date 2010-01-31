@@ -44,12 +44,29 @@ int main()
     fflush(stdout);
 
     while(run) {
-        /* puts("Trying poll"); */
-        if (poll(p, 2, -1 /* infinite t/o */) < 1) {
+        puts("Beginning new poll cycle");
+        if (poll(p, 2+connected, -1 /* infinite t/o */) < 1) {
             run = false;
             perror("Polling failed");
+        } else {
+            /* Poll successful, print what we got: */
+            fputs("Poll found input from", stdout);
+            if (pollfds[0].revents == POLLIN)
+                fputs(" server terminal,", stdout);
+            if (pollfds[1].revents == POLLIN)
+                fputs(" server listening socket,", stdout);
+            int i;
+            for (i = 0; i < connected; i++) {
+                if (pollfds[2+i].revents == POLLIN)
+                    printf(" client %d", i);
+                else
+                    fputs(" fu", stdout);
+            }
+            puts(".");
         }
-        if (pollfds[0].revents == POLLIN) /* input avail from bofh */ {
+
+        /* input avail from bofh */
+        if (pollfds[0].revents == POLLIN) {
             if (fgets(buf, BUFLEN-1, stdin)) {
                 buf[strlen(buf)-1] = '\0';
                 if (strcmp(QUITCMD, buf) == 0) {
@@ -70,7 +87,8 @@ int main()
             }
         }
 
-        if (pollfds[1].revents == POLLIN) { /* new client connecting */
+        /* new client connecting */
+        if (pollfds[1].revents == POLLIN) {
             s->clientfds[connected] = accept(s->socket, 0, 0);
             s->clients[connected] = fdopen(s->clientfds[connected], "a+");
             fputs("Welcome to the fkml server\n", s->clients[connected]);
@@ -80,9 +98,10 @@ int main()
         }
 
         int i;
+        /* input from existing client */
         for (i = 0; i < connected; i++) {
             printf("Checking client %d\n", i);
-            if (pollfds[i+2].revents == POLLIN)
+            if (pollfds[i+2].revents == POLLIN) {
                 printf("Reading from client %d\n", i);
                 if (fgets(buf, BUFLEN-1, s->clients[i])) {
                     printf("Read \"%s\" from client %d, echoing\n", buf, i);
@@ -93,8 +112,10 @@ int main()
                     fflush(s->clients[i]);
                     puts("Echo complete");
                 }
+            }
         }
 
+        /* Shutdown request or error occured */
         if(!run) {
             for (i = 0; i < connected; i++)
                 fputs("Terminating\n", s->clients[i]);
@@ -102,15 +123,9 @@ int main()
         }
     }
 
-    /*
-    while (fgets(buf, BUFLEN-1, s->clients[0])) {
-        printf("Read %s from client\n", buf);
-        if (!(fputs(buf, s->clients[0])))
-            puts("Writing to client failed");
-    }
-    */
-
     fkml_shutdown(s);
 
     return 0;
 }
+
+/* vim: set sw=4 ts=4 fdm=syntax: */
