@@ -23,80 +23,103 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h> //inet_addr
 
-int sock_num; //not good...
+#define BUFFERSIZ   100
 
-int main()
+int main(int argc, char *argv[])
 {
-    /* User Input */
-    int port, i;
-    int ip[4];
-    printf("Port: "); port = getint();
-    printf("IP: "); memset(ip, 0, sizeof(ip)); 
-    for (i = 0; i < 4; i++)
-	ip[i] = getint();
+    int sock_num; //good?
+    int port;
+    char *ip;
+    if (argc != 3) {
+	printf("Usage: %s PORT IP\n", argv[0]);
+	printf("Example: %s 1337 127.0.0.1\n", argv[0]);
+	return -1;
+    } else {
+	port = 0;
+	++argv;
+	while (isdigit(**(argv)))
+	    port = 10 * port + *(*argv)++ - '0';
+	ip = *(++argv);
+    }
 
-    if (initialize(port, ip) < 0) {
-	printf("etwas schreckliches ist passiert\n");
+    printf("Chosen Port = %d\n", port);
+    printf("Chosen IP   = %s\n", ip);;
+   
+    if ((sock_num = initialize(port, ip)) < 0) {
+	printf("Connection failed\n");
 	return -1;
     } else
-	printf("Connected");
+	printf("Connection successful\n");
 
-    /* read banner */
+    /* STRARTING GAME */
+    /* some variables... */
+    printf("\nSTARTING FKMGAME (AARRRRRR):\n");
     int bytes;
-    char buffer[BUFSIZ+1];
+    const char nick[] = "FlOREZ";
+    char buffer[BUFFERSIZ];
+
+    char *command;
+    command = (char*)calloc(strlen("LOGIN ") + strlen(nick) + 1, sizeof(char));
+    strcpy(command, "LOGIN ");
+    strcat(command, nick);
+
+    /* read the ******* banner dude! */
+    if (bytes = read(sock_num, buffer, sizeof(buffer)) > 0)
+	printf("Successfully recieved banner:\n%s", buffer);
+    else
+	printf("Error recieving server's banner\n");
+    printf("Read %d bytes\n", bytes);
     
-    while ((bytes = read(sock_num, buffer, 30)) > 0)
-    printf("%d\n", bytes);
-    printf("%s\n", buffer);
-//	write(sock_num, buffer, bytes);
+    if (bytes = write(sock_num, command, sizeof(*command)) > 0)
+	printf("Successfully transmitted \"%s\"\n", command);
+    else
+	printf("Error transmitting \"%s\"\n", command);
+    printf("Wrote %d bytes\n", bytes);
+    
+    /* XXX entweder echosrv antwortet nicht oder der folgende code ist kot */
+    if (bytes = read(sock_num, buffer, sizeof(buffer)) > 0)
+	printf("Successfully recieved answer:\n%s", buffer);
+    else
+	printf("Error recieving server's answer\n");
+    printf("Read %d bytes\n", bytes);
 
     close(sock_num);
     return 0;
 }
 
-int initialize(int port, int *ip)
+int initialize(int port, char *ip)
 {
     /* check if input is valid */
-    int i;
-    if (port < 0 || port > 65535)
-	return -1;
-    for (i = 0; i < 4; i++)
-	if (ip[i] < 0 || ip[i] > 255)
-	    return -2;
+    if (port < 0 || port > 65535) {
+	perror("Error port is not valid");
+	return -1;;
 
+    }
+    
     /* initialize connection */
     int sock_num;
     struct sockaddr_in address;
     memset(&address, 0, sizeof(address));
     address.sin_family = AF_INET;
     address.sin_port = htons(port);
-    address.sin_addr.s_addr = htonl((((((ip[0] << 8) | ip[1]) << 8) | ip[2]) << 8) | ip[3]);
+    address.sin_addr.s_addr = inet_addr(ip);
     
     if ((sock_num = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
-	perror("socket");
-	return -3;
+	perror("Error creating socket");
+	return -1;
     }
     if (connect(sock_num, (struct sockaddr *)&address, sizeof(address)) < 0) {
-	perror("connect");
+	perror("Error connecting to host");
 	close(sock_num);
-	return -4;
+	return -1;
     }
 
-    return 0;
-}
-
-/* reads from input till input is no int */
-int getint()
-{
-    int c, n = 0;
-
-    while (isdigit(c = getchar()))
-	n = 10 * n + (c - '0');
-
-    return n;
+    return sock_num;
 }

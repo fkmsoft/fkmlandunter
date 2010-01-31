@@ -64,18 +64,4 @@ deck *create_decks(int num)
     return deck_arr;
 }
 
-
-
-/*
-void print_deck(deck *d)
-{
-  int i;
-
-  puts("Weather Cards:");
-  for (i = 0; i < 12; i++)
-    printf("%d, ", d->weathercards[i]);
-
-  printf("\nLifebelts: %d\n", d->lifebelts);
-}
-*/
 /* vim: set sw=4 ts=4 fdm=syntax: */

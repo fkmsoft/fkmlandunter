@@ -3,10 +3,7 @@
 
 int main();
 
-/* initializes tcp connection */
+/* initializes tcp connection - returns socket */
 int initialize(int port, char *ip);
-
-/* */
-int getint();
 
 #endif
