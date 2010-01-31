@@ -26,6 +26,8 @@
 /* for POLLRDHUP: */
 /*#define _GNU_SOURCE*/
 
+void freak_all_clients(fkml_server *s, int num_clients, char *msg);
+
 int main()
 {
     fkml_server *s = init_server(PORT, MAX_PLAYERS);
@@ -44,11 +46,12 @@ int main()
     fflush(stdout);
 
     while(run) {
-        puts("Beginning new poll cycle");
-        if (poll(p, 2+connected, -1000 /* infinite t/o */) < 1) {
+        /* puts("Beginning new poll cycle"); */
+        if (poll(p, 2+connected, -1 /* infinite t/o */) < 1) {
             run = false;
             perror("Polling failed");
         } else {
+#if 0
             /* Poll successful, print what we got: */
             fputs("Poll found input from", stdout);
             if (pollfds[0].revents == POLLIN)
@@ -56,13 +59,11 @@ int main()
             if (pollfds[1].revents == POLLIN)
                 fputs(" server listening socket,", stdout);
             int i;
-            for (i = 0; i < connected; i++) {
+            for (i = 0; i < connected; i++)
                 if (pollfds[2+i].revents == POLLIN)
                     printf(" client %d", i);
-                /*else
-                    fputs(" fu", stdout);*/
-            }
             puts(" and nobody else.");
+#endif
         }
 
         /* input avail from bofh */
@@ -72,7 +73,8 @@ int main()
                 if (strcmp(QUITCMD, buf) == 0) {
                    run = false;
                    /* break; */
-                }
+                } else if (buf[0] == '*')
+                    freak_all_clients(s, connected, buf + 1);
                 else
                     printf("Invalid command %s, use \"%s\" to quit\n",
                             buf, QUITCMD);
@@ -102,17 +104,17 @@ int main()
         int i;
         /* input from existing client */
         for (i = 0; i < connected; i++) {
-            printf("Checking client %d\n", i);
+            /* printf("Checking client %d\n", i); */
             if (pollfds[i+2].revents == POLLIN) {
-                printf("Reading from client %d\n", i);
+                /* printf("Reading from client %d\n", i); */
                 if (fgets(buf, BUFLEN-1, s->clients[i])) {
-                    printf("Read \"%s\" from client %d, echoing\n", buf, i);
+                    /* printf("Read \"%s\" from client %d, echoing\n", buf, i); */
                     if (!(fputs(buf, s->clients[i]))) {
                         puts("Writing to client failed");
                         run = false;
                     }
                     fflush(s->clients[i]);
-                    puts("Echo complete");
+                    /* puts("Echo complete"); */
                 }
             }
         }
@@ -128,6 +130,16 @@ int main()
     fkml_shutdown(s);
 
     return 0;
+}
+
+void freak_all_clients(fkml_server *s, int num_clients, char *msg)
+{
+    int i;
+    for (i = 0; i < num_clients; i++) {
+        fputs(msg, s->clients[i]);
+        fputc('\n', s->clients[i]);
+        fflush(s->clients[i]);
+    }
 }
 
 /* vim: set sw=4 ts=4 fdm=syntax: */
