@@ -84,6 +84,22 @@ fkml_server *init_server(unsigned int port, unsigned int players)
     return server;
 }
 
+void fkml_rmclient(fkml_server *s, int i)
+{
+    if (i < 0)
+        return;
+
+    printf("Removing client %i\n", i);
+
+    int n;
+    for (n = i+1; n < MAX_PLAYERS && s->clients[n]; n++) {
+        fclose(s->clients[n-1]);
+        s->clients[n-1] = s->clients[n];
+        s->clientfds[n-1] = s->clientfds[n];
+    }
+    s->clients[n] = 0;
+}
+
 void fkml_shutdown(fkml_server *s)
 {
     int i;

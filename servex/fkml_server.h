@@ -16,6 +16,7 @@ typedef struct {
 } fkml_server;
 
 fkml_server *init_server(unsigned int port, unsigned int players);
+void fkml_rmclient(fkml_server *s, int i);
 void fkml_shutdown(fkml_server *s);
 
 #endif /* FKML_SERVER */

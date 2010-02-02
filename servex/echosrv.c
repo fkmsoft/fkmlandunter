@@ -6,6 +6,8 @@
  */
 
 #define _POSIX_SOURCE
+/* for POLLRDHUP: */
+#define _GNU_SOURCE
 
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -15,6 +17,7 @@
 #include <poll.h>
 
 #include "fkml_server.h"
+#include "queue.h"
 
 #define PORT (1337)
 #define BUFLEN (1024)
@@ -22,9 +25,6 @@
 
 #define QUITCMD ("quit")
 #define PROMPT ("fkml-0.1$ ")
-
-/* for POLLRDHUP: */
-/*#define _GNU_SOURCE*/
 
 void freak_all_clients(fkml_server *s, int num_clients, char *msg);
 
@@ -50,24 +50,10 @@ int main()
         if (poll(p, 2+connected, -1 /* infinite t/o */) < 1) {
             run = false;
             perror("Polling failed");
-        } else {
-#if 0
-            /* Poll successful, print what we got: */
-            fputs("Poll found input from", stdout);
-            if (pollfds[0].revents == POLLIN)
-                fputs(" server terminal,", stdout);
-            if (pollfds[1].revents == POLLIN)
-                fputs(" server listening socket,", stdout);
-            int i;
-            for (i = 0; i < connected; i++)
-                if (pollfds[2+i].revents == POLLIN)
-                    printf(" client %d", i);
-            puts(" and nobody else.");
-#endif
         }
 
         /* input avail from bofh */
-        if (pollfds[0].revents == POLLIN) {
+        if (pollfds[0].revents & POLLIN) {
             if (fgets(buf, BUFLEN-1, stdin)) {
                 buf[strlen(buf)-1] = '\0';
                 if (strcmp(QUITCMD, buf) == 0) {
@@ -75,6 +61,8 @@ int main()
                    /* break; */
                 } else if (buf[0] == '*')
                     freak_all_clients(s, connected, buf + 1);
+                else if (buf[0] == 'p')
+                    q_p();
                 else
                     printf("Invalid command %s, use \"%s\" to quit\n",
                             buf, QUITCMD);
@@ -90,14 +78,15 @@ int main()
         }
 
         /* new client connecting */
-        if (pollfds[1].revents == POLLIN) {
+        if (pollfds[1].revents & POLLIN) {
             pollfds[connected + 2].fd = s->clientfds[connected] =
                 accept(s->socket, 0, 0);
             s->clients[connected] = fdopen(s->clientfds[connected], "a+");
-            fputs("Welcome to the fkml server\n", s->clients[connected]);
-            fputs("Waiting for input!\n", s->clients[connected]);
-            fflush(s->clients[connected]);
-            pollfds[2 + connected].events = POLLIN;
+            cputs("Welcome to the fkml server\n", s->clientfds[connected],
+                    s->clients[connected]);
+            cputs("Waiting for input!\n", s->clientfds[connected],
+                    s->clients[connected]);
+            pollfds[2 + connected].events = POLLIN | POLLRDHUP;
             connected++;
         }
 
@@ -105,15 +94,24 @@ int main()
         /* input from existing client */
         for (i = 0; i < connected; i++) {
             /* printf("Checking client %d\n", i); */
-            if (pollfds[i+2].revents == POLLIN) {
+            if (pollfds[i+2].revents & POLLRDHUP) {
+                printf("Client %d disconnected\n", i);
+                fkml_rmclient(s, i);
+                int j;
+                for (j = i+3; j+2 < connected; j++)
+                    pollfds[j-1] = pollfds[j];
+                connected--;
+            } else if (pollfds[i+2].revents & POLLIN) {
                 /* printf("Reading from client %d\n", i); */
                 if (fgets(buf, BUFLEN-1, s->clients[i])) {
                     /* printf("Read \"%s\" from client %d, echoing\n", buf, i); */
-                    if (!(fputs(buf, s->clients[i]))) {
-                        puts("Writing to client failed");
-                        run = false;
-                    }
-                    fflush(s->clients[i]);
+                    if (!(cputs(buf, s->clientfds[i], s->clients[i]))) {
+                        /* puts("Writing to client failed"); */
+                        puts("Writing to client postponed");
+                        /* run = false; */
+                    } else
+                        puts("Message written");
+                    /* fflush(s->clients[i]); */
                     /* puts("Echo complete"); */
                 }
             }
@@ -122,7 +120,7 @@ int main()
         /* Shutdown request or error occured */
         if(!run) {
             for (i = 0; i < connected; i++)
-                fputs("Terminating\n", s->clients[i]);
+                cputs("Terminating\n", s->clientfds[i], s->clients[i]);
             puts("Shutting down server");
         }
     }
@@ -136,9 +134,8 @@ void freak_all_clients(fkml_server *s, int num_clients, char *msg)
 {
     int i;
     for (i = 0; i < num_clients; i++) {
-        fputs(msg, s->clients[i]);
-        fputc('\n', s->clients[i]);
-        fflush(s->clients[i]);
+        cputs(msg, s->clientfds[i], s->clients[i]);
+        cputs("\n", s->clientfds[i], s->clients[i]);
     }
 }
 
