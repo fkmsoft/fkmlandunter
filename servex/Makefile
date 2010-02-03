@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -g -Wall -ansi
 
 HEADERS = fkml_server.h queue.h
-MOBJS = main.o fkml_server.o
+MOBJS = main.o fkml_server.o queue.o
 EOBJS = echosrv.o fkml_server.o queue.o
 OBJS = $(MOBJS) $(EOBJS)
 TARGS = main echosrv
