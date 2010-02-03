@@ -39,6 +39,8 @@
 #include "fkml_server.h"
 #include "queue.h"
 
+#define MAXLEN (128)
+
 fkml_server *init_server(unsigned int port, unsigned int players)
 {
     if (players > MAX_PLAYERS || players < 0)
@@ -91,6 +93,14 @@ void fkml_rmclient(fkml_server *s, int i)
     }
     s->clients[n] = 0;
     s->connected--;
+}
+
+char *fkml_recv(fkml_server *s, int c)
+{
+    char *buf = malloc(sizeof(char)*MAXLEN);
+    fgets(buf, MAXLEN-1, s->clients[c]);
+
+    return buf;
 }
 
 int fkml_puts(fkml_server *s, int c, char *msg)

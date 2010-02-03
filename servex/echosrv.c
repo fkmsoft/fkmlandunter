@@ -12,6 +12,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <poll.h>
@@ -107,12 +108,14 @@ int main()
                     pollfds[j-1] = pollfds[j];
             } else if (pollfds[i+2].revents & POLLIN) {
                 /* printf("Reading from client %d\n", i); */
-                if (fgets(buf, BUFLEN-1, s->clients[i])) {
-                    /* printf("Read \"%s\" from client %d, echoing\n", buf, i); */
-                    if (!(fkml_puts(s, i, buf))) {
+                char *msg;
+                if ((msg = fkml_recv(s, i))) {
+                    /* printf("Read \"%s\" from client %d, echoing\n", msg, i); */
+                    if (!(fkml_puts(s, i, msg))) {
                         puts("Writing to client postponed");
                         /* run = false; */
                     }
+                    free(msg);
                 }
             }
         }

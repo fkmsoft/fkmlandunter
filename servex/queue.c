@@ -75,7 +75,7 @@ int cputs(char *s, int cfd, FILE *cstream)
         if (ptr->client == cstream) {
             chcount += fputs(ptr->msg, ptr->client);
             /* puts("Removing from queue"); */
-            if (!q_delelem(prev, ptr))
+            if (-1 == q_delelem(prev, ptr))
                 queue = NULL;
         }
     }

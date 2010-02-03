@@ -16,11 +16,6 @@ typedef struct {
     int clientfds[MAX_PLAYERS]; /* sockets of connected clients */
 } fkml_server;
 
-typedef struct {
-    int tc;
-    char **tv;
-} fkml_msg;
-
 /* Create a fkmlandunter for players players on port port */
 fkml_server *init_server(unsigned int port, unsigned int players);
 
@@ -31,7 +26,7 @@ void fkml_addclient(fkml_server *s, int fd);
 void fkml_rmclient(fkml_server *s, int c);
 
 /* Receive message from client c on server s */
-fkml_msg *fkml_recv(fkml_server *s, int c);
+char *fkml_recv(fkml_server *s, int c);
 
 /* Send message msg to client c on server s */
 int fkml_puts(fkml_server *s, int c, char *msg);
