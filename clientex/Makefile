@@ -1,10 +1,9 @@
 CC = gcc
 PFLAGS = -w -O
 DFLAGS = -Wall -g -DDEBUG
-HEADERS = fkml_client.h
 
-POBJS = fkml_client.o
-DOBJS = fkml_client.do
+POBJS = fkml_client.o socketlayer.o
+DOBJS = fkml_client.do socketlayer.do
 OBJS = $(DOBJS) $(POBJS)
 
 .SUFFIXES:

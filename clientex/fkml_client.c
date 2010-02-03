@@ -24,102 +24,81 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <ctype.h>
 #include <string.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h> //inet_addr
 
-#define BUFFERSIZ   100
+#include "fkml_client.h"
+
+#define BSIZE	(512)
+#define MAXNICK	(30)
+#define DEBUG	(true)
 
 int main(int argc, char *argv[])
 {
-    int sock_num; //good?
+    int sock_num;
     int port;
     char *ip;
     if (argc != 3) {
-	printf("Usage: %s PORT IP\n", argv[0]);
-	printf("Example: %s 1337 127.0.0.1\n", argv[0]);
-	return -1;
+	ip = "127.0.0.1";
+	port = 1337;
     } else {
-	port = 0;
+	ip = *(++argv);
 	++argv;
+	port = 0;
 	while (isdigit(**(argv)))
 	    port = 10 * port + *(*argv)++ - '0';
-	ip = *(++argv);
     }
 
-    printf("Chosen Port = %d\n", port);
-    printf("Chosen IP   = %s\n", ip);;
-   
-    if ((sock_num = initialize(port, ip)) < 0) {
-	printf("Connection failed\n");
-	return -1;
-    } else
-	printf("Connection successful\n");
+    printf("IP = %s, Port = %d. Trying to connect...\n", ip, port);
 
-    /* STRARTING GAME */
-    /* some variables... */
-    printf("\nSTARTING FKMGAME (AARRRRRR):\n");
-    int bytes;
-    const char nick[] = "FlOREZ";
-    char buffer[BUFFERSIZ];
+    sock_num = create_socket(PF_INET, SOCK_STREAM, 0);
+    if (sock_num < 0)
+	printf("Error creating socket\n");
 
-    char *command;
-    command = (char*)calloc(strlen("LOGIN ") + strlen(nick) + 1, sizeof(char));
-    strcpy(command, "LOGIN ");
-    strcat(command, nick);
+    connect_socket(&sock_num, ip, port);
 
-    /* read the ******* banner dude! */
-    if (bytes = read(sock_num, buffer, sizeof(buffer)) > 0)
-	printf("Successfully recieved banner:\n%s", buffer);
-    else
-	printf("Error recieving server's banner\n");
-    printf("Read %d bytes\n", bytes);
-    
-    if (bytes = write(sock_num, command, sizeof(*command)) > 0)
-	printf("Successfully transmitted \"%s\"\n", command);
-    else
-	printf("Error transmitting \"%s\"\n", command);
-    printf("Wrote %d bytes\n", bytes);
-    
-    /* XXX entweder echosrv antwortet nicht oder der folgende code ist kot */
-    if (bytes = read(sock_num, buffer, sizeof(buffer)) > 0)
-	printf("Successfully recieved answer:\n%s", buffer);
-    else
-	printf("Error recieving server's answer\n");
-    printf("Read %d bytes\n", bytes);
+    /* STARTING GAME */
+    char *nick;
+    char *cmd;
+    char buffer[BSIZE];
+    /* printing server's banner */
+    TCP_recv(&sock_num, buffer, sizeof(buffer));
+    printf("Server sent:\n%s", buffer);
 
-    close(sock_num);
+
+    /* try to login */
+    nick = malloc(MAXNICK * sizeof(char));
+    printf("Please enter your nickname: ");
+    scanf("%s", nick);
+    printf("Try to login with nick %s...\n", nick);
+    cmd = malloc(sizeof(char) * (strlen("LOGIN ") + strlen(nick) + 1));
+    strcat(strcpy(cmd, "LOGIN "), strcat(nick, "\n"));
+
+    TCP_send(&sock_num, cmd, strlen(cmd));
+    do {
+	TCP_recv(&sock_num, buffer, BSIZE);
+	if (strncmp(buffer, "MSGFROM ", 8) == 0)
+	    printf("%s", &buffer[8]); 
+	if (DEBUG)
+	    printf("DEBUG ON: SVR SENT: %s", buffer);
+    } while (strncmp(buffer, "ACK", 3) != 0);
+    printf("Nick acknowledged, proceeding game...\n");
+
+    /*
+    char input[] = "Hello little fkml sever!\n";
+    do {
+	printf("Sending: \n%s\n", input);
+	TCP_send(&sock_num, input, strlen(input));
+	TCP_recv(&sock_num, buffer, BSIZE);
+	printf("The server answered: \n%s", buffer);
+	//printf("Enter a new message for the server: ");
+    } while (scanf("\nEnter a new message for the server %s\n", input) > 0);
+    */
+
+    close_socket(&sock_num);
+    cleanup;
+
     return 0;
 }
 
-int initialize(int port, char *ip)
-{
-    /* check if input is valid */
-    if (port < 0 || port > 65535) {
-	perror("Error port is not valid");
-	return -1;;
-
-    }
-    
-    /* initialize connection */
-    int sock_num;
-    struct sockaddr_in address;
-    memset(&address, 0, sizeof(address));
-    address.sin_family = AF_INET;
-    address.sin_port = htons(port);
-    address.sin_addr.s_addr = inet_addr(ip);
-    
-    if ((sock_num = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
-	perror("Error creating socket");
-	return -1;
-    }
-    if (connect(sock_num, (struct sockaddr *)&address, sizeof(address)) < 0) {
-	perror("Error connecting to host");
-	close(sock_num);
-	return -1;
-    }
-
-    return sock_num;
-}

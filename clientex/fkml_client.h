@@ -1,9 +1,8 @@
-#ifndef FKML_CLIENT
-#define FKML_CLIENT
+#ifndef FKML_CLIENT_H
+#define FKML_CLIENT_H
 
-int main();
+#include "socketlayer.h"
 
-/* initializes tcp connection - returns socket */
-int initialize(int port, char *ip);
+int main(int argc, char *argv[]);
 
 #endif

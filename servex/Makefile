@@ -4,7 +4,7 @@ CFLAGS = -g -Wall -ansi
 HEADERS = fkml_server.h queue.h
 EOBJS = echosrv.o fkml_server.o queue.o
 OBJS = $(MOBJS) $(EOBJS)
-TARGS = main echosrv
+TARGS = echosrv
 
 all: $(TARGS)
 
