@@ -110,10 +110,19 @@ int main()
                 /* printf("Reading from client %d\n", i); */
                 char *msg;
                 if ((msg = fkml_recv(s, i))) {
+#if 0
                     /* printf("Read \"%s\" from client %d, echoing\n", msg, i); */
                     if (!(fkml_puts(s, i, msg))) {
                         puts("Writing to client postponed");
                         /* run = false; */
+                    }
+                    free(msg);
+#endif
+                    if (fkml_process(s, i, msg) == 3/*LOGOUT*/) {
+                        printf("Client %d logged out\n", i);
+                        int j;
+                        for (j = i+3; j+2 < s->connected; j++)
+                            pollfds[j-1] = pollfds[j];
                     }
                     free(msg);
                 }

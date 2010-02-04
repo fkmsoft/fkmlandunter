@@ -31,6 +31,12 @@ char *fkml_recv(fkml_server *s, int c);
 /* Send message msg to client c on server s */
 int fkml_puts(fkml_server *s, int c, char *msg);
 
+/* process message msg from client c on server s */
+int fkml_process(fkml_server *s, int c, char *msg);
+
+/* Handle command cmd with arguments args in server s */
+int fkml_handle_command(fkml_server *s, char *cmd, char *args);
+
 /* Print debug info about client c on server s */
 void fkml_printclients(fkml_server *);
 
