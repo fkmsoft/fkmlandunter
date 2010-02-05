@@ -27,12 +27,16 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <string.h>
+#include <sys/select.h> // select()
+#include <unistd.h>
 
 #include "fkml_client.h"
+#include "socketlayer.h"
 
-#define BSIZE	(512)
-#define MAXNICK	(30)
-#define DEBUG	(true)
+#define BUF_SIZE    (1024)
+#define MAXNICK	    (30)
+#define DEBUG	    (true)
+#define max(A,B)    ((A) > (B) ? (A) : (B))
 
 int main(int argc, char *argv[])
 {
@@ -58,10 +62,14 @@ int main(int argc, char *argv[])
 
     connect_socket(&sock_num, ip, port);
 
+
+
     /* STARTING GAME */
     char *nick;
     char *cmd;
-    char buffer[BSIZE];
+    char buffer[BUF_SIZE];
+    fd_set re;
+    
     /* printing server's banner */
     TCP_recv(&sock_num, buffer, sizeof(buffer));
     printf("Server sent:\n%s", buffer);
@@ -72,17 +80,32 @@ int main(int argc, char *argv[])
     printf("Please enter your nickname: ");
     scanf("%s", nick);
     printf("Try to login with nick %s...\n", nick);
-    cmd = malloc(sizeof(char) * (strlen("LOGIN ") + strlen(nick) + 1));
+    cmd = calloc(strlen("LOGIN ") + strlen(nick) + 1, sizeof(char));
     strcat(strcpy(cmd, "LOGIN "), strcat(nick, "\n"));
 
     TCP_send(&sock_num, cmd, strlen(cmd));
+
     do {
-	TCP_recv(&sock_num, buffer, BSIZE);
+	memset(buffer, '\0', BUF_SIZE);
+
+	FD_ZERO(&re);
+	FD_SET(0, &re);
+	FD_SET(sock_num, &re);
+
+	select(sock_num + 1, &re, NULL, NULL, NULL);
+
+	if (FD_ISSET(0, &re))
+	    read(0, buffer, BUF_SIZE);
+
+	if (FD_ISSET(sock_num, &re))
+	    read(sock_num, buffer, BUF_SIZE); 
+
+	//TCP_recv(&sock_num, buffer, BUF_SIZE);
 	if (strncmp(buffer, "MSGFROM ", 8) == 0)
 	    printf("%s", &buffer[8]); 
-	if (DEBUG)
-	    printf("DEBUG ON: SVR SENT: %s", buffer);
-    } while (strncmp(buffer, "ACK", 3) != 0);
+	if (DEBUG && strlen(buffer) > 0)
+	    printf("INPUT IS: %s", buffer);
+    } while (true);//strncmp(buffer, "ACK", 3) != 0);
     printf("Nick acknowledged, proceeding game...\n");
 
     /*
@@ -90,14 +113,12 @@ int main(int argc, char *argv[])
     do {
 	printf("Sending: \n%s\n", input);
 	TCP_send(&sock_num, input, strlen(input));
-	TCP_recv(&sock_num, buffer, BSIZE);
+	TCP_recv(&sock_num, buffer, BUF_SIZE);
 	printf("The server answered: \n%s", buffer);
 	//printf("Enter a new message for the server: ");
     } while (scanf("\nEnter a new message for the server %s\n", input) > 0);
     */
-
     close_socket(&sock_num);
-    cleanup;
 
     return 0;
 }
