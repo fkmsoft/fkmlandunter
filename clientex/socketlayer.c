@@ -1,5 +1,4 @@
 /* socketlayer.c – für Linux/UNIX */
-
 #include  "socketlayer.h"
 
 /* Funktion gibt aufgetretene Fehler aus und beendet die Anwendung */
@@ -15,8 +14,6 @@ int create_socket(int af, int type, int protocol)
     const int y = 1;
     /* Erzeuge das Socket */
     sock = socket(af, type, protocol);
-    if (sock < 0)
-        error_exit("Fehler beim Anlegen eines Socket");
     /* Mehr dazu siehe Anmerkung am Ende des Listings ... */
     setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &y, sizeof(int));
     return sock;
@@ -55,7 +52,8 @@ void accept_socket(int *socket, int *new_socket)
 }
 
 /* Baut die Verbindung zum Server auf */
-void connect_socket(int *sock, char *serv_addr, unsigned short port)
+/* returns (-1) if host unknown - returns (-2) if error connecting */
+int connect_socket(int *sock, char *serv_addr, unsigned short port)
 {
    struct sockaddr_in server;
    struct hostent *host_info;
@@ -68,14 +66,15 @@ void connect_socket(int *sock, char *serv_addr, unsigned short port)
        /* Wandle den Servernamen bspw. "localhost" in eine IP-Adresse um */
        host_info = gethostbyname(serv_addr);
        if (NULL == host_info)
-           error_exit("Unbekannter Server");
+           return (-1);
        memcpy((char *)&server.sin_addr, host_info->h_addr, host_info->h_length);
    }
    server.sin_family = AF_INET;
    server.sin_port = htons( port );
    /* Baue die Verbindung zum Server auf */
    if (connect(*sock, (struct sockaddr *)&server, sizeof( server)) < 0)
-      error_exit( "Kann keine Verbindung zum Server herstellen");
+      return (-2);
+   return 0;
 }
 
 /* Daten versenden via TCP */
@@ -85,13 +84,15 @@ void TCP_send(int *sock, char *data, size_t size) {
 }
 
 /* Daten empfangen via TCP */
-void TCP_recv(int *sock, char *data, size_t size) {
+/* returns (-1) if recieving failed */
+int TCP_recv(int *sock, char *data, size_t size) {
     int len;
     len = recv(*sock, data, size, 0);
     if(len > 0 || len != -1)
        data[len] = '\0';
     else
-       error_exit("Fehler bei recv()");
+	return (-1);
+    return 0;
 }
 
 /* Socket schließen */

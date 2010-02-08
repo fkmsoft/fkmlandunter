@@ -24,11 +24,11 @@ void listen_socket(int *sock);
 
 void accept_socket(int *new_socket, int *socket);
 
-void connect_socket(int *sock, char *serv_addr, unsigned short port);
+int connect_socket(int *sock, char *serv_addr, unsigned short port);
 
 void TCP_send(int *sock, char *data, size_t size);
 
-void TCP_recv(int *sock, char *data, size_t size);
+int TCP_recv(int *sock, char *data, size_t size);
 
 void close_socket(int *sock);
 
