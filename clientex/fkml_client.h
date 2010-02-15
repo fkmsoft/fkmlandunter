@@ -10,7 +10,7 @@
 #include <unistd.h>
 
 #include "fkml_client_util.h"
-#include "socketlayer.h"
+#include "communication.h"
 
 /* fkmsft
  *

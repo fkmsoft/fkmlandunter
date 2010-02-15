@@ -17,24 +17,45 @@ int main(int argc, char *argv[])
 	port = atoi(*++argv);
     }
 
+    /* creating interface */
+    initialise_windows();
+    getch();
+    char te[] = "TOOONIIII!";
+    int i;
+    for (i = 0; i < 20; i++) {
+	write_win(CHAT_BOX, "This is just a test!%s, no. %d\n", te, i);
+	getch();
+    }
+
+    destroy_windows();
+
     /* creating socket */
-    sock_num = create_sock();
+    //sock_num = create_sock();
 
     /* connect to server */
-    connect_server(sock_num, ip, port);
+    //connect_server(sock_num, ip, port);
 
     /* request nick */
-    char *nick = request_nick(); 
+    //char *nick = request_nick(); 
 
     /* print servers banner */
-    char *input = receive_from(sock_num);
-    printf("Server send:\n%s", input);
+    //char *input = receive_from(sock_num);
+    //print_gamewin("Server send: ");
+    //print_gamewin(input);
 
     /* try to login */
-    login_server(sock_num, nick);
+    //login_server(sock_num, nick);
+
+    
+    /* WIIIIINNNNNDOOOOOWWWWWSSSSS */
+    //write_win(2, "This is just a test my friend!");
+    //getchar();
+    
+    //destroy_windows();
 
 
     /* STARTING GAME */
+    /*
     do {
 	input = receive_from(select_input(0, sock_num));
 
@@ -46,7 +67,8 @@ int main(int argc, char *argv[])
 
     printf("Nick acknowledged, proceeding game...\n");
 
-    close_socket(&sock_num);
+    close_socket(sock_num);
+    */
     return 0;
 }
 
