@@ -1,8 +1,9 @@
 CC = gcc
-CFLAGS = -g -Wall -ansi
+CFLAGS = -g -Wall
+#CFLAGS = -g -Wall -ansi
 
 HEADERS = fkml_server.h queue.h
-EOBJS = echosrv.o fkml_server.o queue.o
+EOBJS = echosrv.o fkml_server.o queue.o ../communication.o
 OBJS = $(MOBJS) $(EOBJS)
 TARGS = echosrv
 

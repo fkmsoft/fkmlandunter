@@ -4,6 +4,7 @@
  * -----------------------------
  * -> LOGIN name
  * <- ACK nam
+ * -> START
  * <- START 3 nam1 nam2 nam3
  *
  * <- WEATHER 7 8
@@ -24,6 +25,8 @@
 
 /* for fdopen() from stdio */
 #define _POSIX_SOURCE
+
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 /* for socket(): */
@@ -36,6 +39,7 @@
 /* for close(): */
 #include <unistd.h>
 
+#include "../ncom.h"
 #include "fkml_server.h"
 #include "queue.h"
 
@@ -44,12 +48,12 @@
 enum SERVER_COMMANDS { ACK, START, WEATHER, DECK, FAIL, WLEVELS, POINTS,
     TERMINATE, MSGFROM };
 
-enum CLIENT_COMMAND { LOGIN, PLAY, MSG, LOGOUT, INVALID };
+enum CLIENT_COMMAND { LOGIN, START_C, PLAY, MSG, LOGOUT, INVALID };
 
 static char *server_command[] = { "ACK", "START", "WEATHER", "DECK", "FAIL",
     "WLEVELS", "POINTS", "TERMINATE", "MSGFROM" };
 
-static char *client_command[] = { "LOGIN", "PLAY", "MSG", "LOGOUT" };
+static char *client_command[] = { "LOGIN", "START", "PLAY", "MSG", "LOGOUT" };
 
 fkml_server *init_server(unsigned int port, unsigned int players)
 {
@@ -82,9 +86,21 @@ fkml_server *init_server(unsigned int port, unsigned int players)
 
 void fkml_addclient(fkml_server *s, int fd)
 {
-    s->clientfds[s->connected] = fd;
-    s->clients[s->connected] = fdopen(fd, "a+");
+    s->players[s->connected].fd = fd;
+    s->players[s->connected].fp = fdopen(fd, "a+");
     s->connected++;
+}
+
+void fkml_addplayer(fkml_server *s)
+{
+    int fd = accept(s->socket, 0, 0);
+    if (fd == -1) {
+        puts("Error waiting for client connection");
+        return;
+    } else {
+        printf("Adding player with fd %d\n", fd);
+        fkml_addclient(s, fd);
+    }
 }
 
 void fkml_rmclient(fkml_server *s, int i)
@@ -95,13 +111,12 @@ void fkml_rmclient(fkml_server *s, int i)
     /* printf("Removing client %i\n", i); */
 
     int n;
-    for (n = i+1; n < MAX_PLAYERS && s->clients[n-1]; n++) {
+    for (n = i+1; n < MAX_PLAYERS && s->players[n-1].fp; n++) {
         /* printf("Closing fd %d\n", s->clientfds[n-1]); */
-        fclose(s->clients[n-1]);
-        s->clients[n-1] = s->clients[n];
-        s->clientfds[n-1] = s->clientfds[n];
+        fclose(s->players[n-1].fp);
+        s->players[n-1] = s->players[n];
     }
-    s->clients[n] = 0;
+    s->players[n].fp = 0;
     s->connected--;
     printf("Client %d removed\n", i);
 }
@@ -109,42 +124,62 @@ void fkml_rmclient(fkml_server *s, int i)
 char *fkml_recv(fkml_server *s, int c)
 {
     char *buf = malloc(sizeof(char)*MAXLEN);
-    fgets(buf, MAXLEN-1, s->clients[c]);
+    fgets(buf, MAXLEN-1, s->players[c].fp);
 
     return buf;
 }
 
 int fkml_puts(fkml_server *s, int c, char *msg)
 {
-    return cputs(msg, s->clientfds[c], s->clients[c]);
+    return cputs(msg, s->players[c].fd, s->players[c].fp);
+}
+
+void fkml_printf(fkml_server *s, int c, char *fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+    vfprintf(s->players[c].fp, fmt, ap);
+    fflush(s->players[c].fp);
+    /*va_end(ap);*/
 }
 
 int fkml_process(fkml_server *s, int c, char *msg)
 {
     int cnum = INVALID;
-    msg[strlen(msg)-1] = 0;
+    msg[strlen(msg)-2] = 0; /* ignore \r\n */
     char *command = msg;
 
     if (command == strstr(command, client_command[LOGIN])) {
         cnum = LOGIN;
-        char *name = strstr(command, " ") + 1;
-        printf("Client %d is now known as %s\n", c, name);
-        fkml_puts(s, c, server_command[ACK]);
+        s->players[c].name = malloc(sizeof(char)*
+                strlen(strstr(command, " ") + 1));
+        s->players[c].name = strstr(command, " ") + 1;
+        printf("Client %d is now known as %s\n", c, s->players[c].name);
+        fkml_printf(s, c, "%s\n", server_command[ACK]);
+    } else if (command == strstr(command, client_command[START])) {
+        if (s->connected > 2) {
+            int i;
+            for (i = 0; i < s->connected; i++)
+                fkml_printf(s, i, "%s %d\n", server_command[START],
+                        s->connected);
+        } else
+            fkml_printf(s, c, "%s Not enough players\n",
+                    server_command[FAIL]);
     } else if (command == strstr(command, client_command[PLAY])) {
         cnum = PLAY;
         int card = atoi(strstr(command, " ") + 1);
         printf("Client %d played card %d\n", c, card);
         if (card > 0 && card < 60)
-            fkml_puts(s, c, server_command[ACK]);
+            fkml_printf(s, c, "%s\n", server_command[ACK]);
         else
-            fkml_puts(s, c, server_command[FAIL]);
+            fkml_printf(s, c, "%s\n", server_command[FAIL]);
     } else if (command == strstr(command, client_command[MSG])) {
         cnum = MSG;
         int i;
         for (i = 0; i < s->connected; i++)
             if (i!=c) {
-                fkml_puts(s, i, server_command[MSGFROM]);
-                fkml_puts(s, i, "7 hello world\n");
+                fkml_printf(s, i, "%s %s %s\n", server_command[MSGFROM],
+                        s->players[c].name, strstr(command, " ") + 1);
             }
     } else if (command == strstr(command, client_command[LOGOUT])) {
         cnum = LOGOUT;
@@ -153,13 +188,11 @@ int fkml_process(fkml_server *s, int c, char *msg)
         fkml_rmclient(s, c);
         int i;
         for (i = 0; i < s->connected; i++) {
-            fkml_puts(s, i, server_command[MSGFROM]);
-            fkml_puts(s, i, "c disconnect: bye\n");
+            fkml_printf(s, i, "%s server %s disconnected: %s\n", server_command[MSGFROM],
+                    s->players[c].name, strstr(command, " ") + 1);
         }
     } else
-        fkml_puts(s, c, server_command[FAIL]);
-
-    fkml_puts(s, c, "\n");
+        fkml_printf(s, c, "%s\n", server_command[FAIL]);
 
     return cnum;
 }
@@ -173,8 +206,7 @@ void fkml_printclients(fkml_server *s)
 {
     int i;
     for (i = 0; i < MAX_PLAYERS; i++) {
-        printf("Client %d: fd = %d, FILE* = %p\n", i, s->clientfds[i],
-                s->clients[i]);
+        /*print_player(&(s->players[i]));*/
     }
 }
 
@@ -185,7 +217,7 @@ void fkml_shutdown(fkml_server *s)
     for (i = 0; i < s->connected; i++) {
         fkml_puts(s, i, server_command[TERMINATE]);
         fkml_puts(s, i, "\n");
-        fclose(s->clients[i]);
+        fclose(s->players[i].fp);
     }
 
     close(s->socket);

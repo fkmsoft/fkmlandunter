@@ -6,9 +6,10 @@
 #ifndef SERVER_UTIL_H
 #define SERVER_UTIL_H
 
-#include "communication.h"
+/*#include "communication.h"*/
+#include "ncom.h"
 
-player *create_players(int num);
+void create_players(player *p_array, int num);
 deck *create_decks(int num);
 int *shuffle(int num);
 

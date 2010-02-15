@@ -27,10 +27,16 @@
 #define QUITCMD ("quit")
 #define PROMPT ("fkml-0.1$ ")
 
+int echo(void);
 void freak_all_clients(fkml_server *s, char *msg);
 void print_pollfds(struct pollfd *p);
 
 int main()
+{
+    return echo();
+}
+
+int echo()
 {
     fkml_server *s = init_server(PORT, MAX_PLAYERS);
     char buf[BUFLEN];

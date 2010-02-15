@@ -29,11 +29,32 @@ int main(int argc, char *argv[])
 
     destroy_windows();
 
-    /* creating socket */
-    //sock_num = create_sock();
+    char *command;
+    command = (char*)calloc(strlen("LOGIN ") + strlen(nick) + 2, sizeof(char));
+    strcpy(command, "LOGIN ");
+    strcat(command, nick);
+    strcat(command, "\n");
 
-    /* connect to server */
-    //connect_server(sock_num, ip, port);
+    /* read the ******* banner dude! */
+    if (bytes = read(sock_num, buffer, sizeof(buffer)) > 0)
+	printf("Successfully recieved banner:\n%s", buffer);
+    else
+	printf("Error recieving server's banner\n");
+    printf("Read %d bytes\n", bytes);
+    
+    //if (bytes = write(sock_num, command, sizeof(*command)) > 0)
+    if (bytes = write(sock_num, command, strlen(command)) > 0)
+	printf("Successfully transmitted \"%s\"\n", command);
+    else
+	printf("Error transmitting \"%s\"\n", command);
+    printf("Wrote %d bytes\n", bytes);
+    
+    /* XXX entweder echosrv antwortet nicht oder der folgende code ist kot */
+    if (bytes = read(sock_num, buffer, sizeof(buffer)) > 0)
+	printf("Successfully recieved answer:\n%s", buffer);
+    else
+	printf("Error recieving server's answer\n");
+    printf("Read %d bytes\n", bytes);
 
     /* request nick */
     //char *nick = request_nick(); 

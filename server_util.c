@@ -17,7 +17,7 @@ int *shuffle(int num)
     srand(time(NULL));
 
     for (i = 1; i <= num; i++) {
-	    do {
+        do {
             r = rand()%num;
         } while (arr[r] != 0);
         arr[r] = i;
@@ -27,21 +27,22 @@ int *shuffle(int num)
 }
 
 /* create + prepare num players for the game */
-player *create_players(int num)
+void create_players(player *p_array, int num)
 {
     int i;
-    player *p_array = malloc(sizeof(player) * num);
+    /* player *p_array = malloc(sizeof(player) * num);*/
     deck *decks = create_decks(num);
 
     for (i = 0; i < num; i++) {
-	p_array[i].name = malloc(10); // "PLAYER XX"
-	sprintf(p_array[i].name, "Player %d", i);
-	p_array[i].points = 0;
-	p_array[i].water_level = 0;
-	p_array[i].current_deck = decks[i];
-	p_array[i].dead = false;
+        p_array[i].name = malloc(10); /* "PLAYER XX" */
+        sprintf(p_array[i].name, "Player %d", i);
+        p_array[i].points = 0;
+        p_array[i].water_level = 0;
+        p_array[i].current_deck = decks[i];
+        p_array[i].dead = false;
+        /* p_array[i].fp = stdout; */
     }
-    return p_array;
+    /* return p_array; */
 }
 
 /* creates an amount of num decks */
@@ -52,14 +53,14 @@ deck *create_decks(int num)
     int i, j, c;
 
     for (i = 0; i < num; i++) {
-	for (j = 0; j < 12; j++) {
-	    c = deck_arr[i].weathercards[j] = cards[i*12 + j];
-	    if (c > 12 && c < 49)
-		deck_arr[i].lifebelts += 1;
-	    if (c > 24 && c < 37)
-		deck_arr[i].lifebelts += 2;
-	}	
-	deck_arr[i].lifebelts /= 2;
+    for (j = 0; j < 12; j++) {
+        c = deck_arr[i].weathercards[j] = cards[i*12 + j];
+        if (c > 12 && c < 49)
+        deck_arr[i].lifebelts += 1;
+        if (c > 24 && c < 37)
+        deck_arr[i].lifebelts += 2;
+    }    
+    deck_arr[i].lifebelts /= 2;
     }
     return deck_arr;
 }

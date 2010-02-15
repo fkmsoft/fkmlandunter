@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include "communication.h"
+#include "ncom.h"
 
 #define	prompt(P)	(printf("(%s)> ", P->name))
 
@@ -42,6 +43,18 @@ main(int argc, char *argv[])
 }
 #endif
 
+/* Hilfsmethode zum Einlesen einer Ganzzahl */
+static int getint()
+{
+    int c, n = 0;
+
+    while((c = getchar()) != '\n')
+        if(isdigit(c))
+            n = 10 * n + (c - '0');
+
+    return n;
+}
+
 /* nichts oder namen ausgeben */
 void show_names(int n, char **names, player *p)
 {
@@ -63,11 +76,13 @@ void anzahl_der_player(int num)
 
 void print_player(player *p)
 {
-  printf("Player \"%s\":\n"
-      "Points: %d\n", p->name, p->points);
+    printf("Player \"%s\":\n"
+        "points = %d, ", p->name, p->points);
+    printf("fd = %d, FILE* = %p\n", p->fd, p->fp);
 }
 
 /* 12 weathercards + lifebelt ausgeben */
+#if 0
 void print_deck(player *p)
 {
     prompt(p);
@@ -85,13 +100,16 @@ void print_deck(player *p)
     prompt(p);
     printf("Your amount of lifebelts is: %d\n", p->current_deck.lifebelts);
 }
+#endif
 
 /* Wasserstand a und b ausgeben */
+#if 0
 void show_waterlevel(int a, int b, player *p)
 {
     prompt(p);
     printf("The new \"watercards\" are %d and %d\n", a, b); 
 }
+#endif
 
 /* Liest die auszuspielende Wassergarte ein */
 int get_weather(player *p)
@@ -111,6 +129,7 @@ int get_weather(player *p)
 }
 
 /* Gibt alle Wasserstände aus */
+#if 0
 void show_waterlevels(int *levels, player *p)
 {
     int i;
@@ -123,9 +142,10 @@ void show_waterlevels(int *levels, player *p)
     }
     printf("\n");
 }
-	// S Wasserstande (mit namen) nach stdout
+#endif
 
 /* Gibt alle Punkte aus */
+#if 0
 void show_points(int *points, player *p)
 {
     int i;
@@ -138,16 +158,6 @@ void show_points(int *points, player *p)
     }
     printf("\n");
 }
+#endif
 
-/* Hilfsmethode zum Einlesen einer Ganzzahl */
-int getint()
-{
-    int c, n = 0;
-
-    while((c = getchar()) != '\n')
-        if(isdigit(c))
-            n = 10 * n + (c - '0');
-
-    return n;
-}
 /* vim: set sw=4 ts=4 fdm=syntax: */
