@@ -2,10 +2,10 @@ CC = gcc
 #CFLAGS = -g -Wall
 CFLAGS = -g -Wall -ansi
 
-HEADERS = fkml_server.h queue.h ncom.h
-EOBJS = echosrv.o fkml_server.o queue.o ncom.o
+HEADERS = fkml_server.h ncom.h
+EOBJS = echosrv.o fkml_server.o ncom.o
 TESTOBJS = server_util_test.o server_util.o
-SERVEROBJS = ncom.o server.o server_util.o fkml_server.o queue.o
+SERVEROBJS = ncom.o server.o server_util.o fkml_server.o
 OBJS = $(MOBJS) $(EOBJS) $(TESTOBJS) $(SERVEROBJS)
 TARGETS = echosrv server
 

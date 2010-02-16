@@ -18,7 +18,6 @@
 #include <poll.h>
 
 #include "fkml_server.h"
-#include "queue.h"
 
 #define PORT (1337)
 #define BUFLEN (1024)
@@ -69,7 +68,7 @@ int echo()
                 } else if (buf[0] == '*')
                     freak_all_clients(s, buf + 1);
                 else if (buf[0] == 'p')
-                    q_p();
+                    /*q_p()*/;/* dead */
                 else if (buf[0] == 'c') {
                     fkml_printclients(s);
                     print_pollfds(pollfds);

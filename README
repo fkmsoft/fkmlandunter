@@ -6,7 +6,8 @@ The fkmlandunter prtcl:
 <- START 3 nam1 nam2 nam3
 
 <- WEATHER 7 8
-<- DECK 3 1 2 56
+<- DECK 1 2 56
+<- RINGS 2 4 1
 -> PLAY 56
 <- ACK 56
 <- FAIL 56

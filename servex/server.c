@@ -3,29 +3,6 @@
  * Mainfunktion des Fkmlandunter
  * "Servers"
  *
- * fkmlandunter prtcl:
- * -----------------------------
- * -> LOGIN name
- * <- ACK nam
- * -> START
- * <- START 3 nam1 nam2 nam3
- *
- * <- WEATHER 7 8
- * <- DECK 1 2 56
- * <- RINGS 2 4 1
- * -> PLAY 56
- * <- ACK 56
- * <- FAIL 56
- * <- WLEVELS 7 8 0
- * <- POINTS 1 2 -1
- *
- * -> LOGOUT bye
- * <- TERMINATE fuck off
- *
- * -> MSG fu all los0rZ
- * <- MSGFROM name fu all los0rZ
- * -----------------------------
- *
  * (c) Fkmsoft, 2010
  */
 
