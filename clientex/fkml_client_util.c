@@ -1,7 +1,6 @@
 /* fkml_client_util.c - utility lib for fkml_client */
 #include "fkml_client_util.h"
 
-#define	MAXNICK	    (30)
 #define BUF_SIZE    (1024)
 #define max(A,B)    ((A) > (B) ? (A) : (B))
 
@@ -11,7 +10,7 @@ int create_sock()
     const int y = 1;
     sock = socket(PF_INET, SOCK_STREAM, 0);
     if (sock < 0)
-        error_exit("Error creating socket");
+        error_exit("Error creating socket", sock);
     setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &y, sizeof(int));
     return sock;
 }
@@ -40,39 +39,71 @@ int connect_socket(int *sock, char *serv_addr, unsigned short port)
 
 void connect_server(int socket, char *ip, int port)
 {
-    write_win(1, "IP = %s, Port = %d. Trying to connect...\n", ip, port);
+    write_win(GAME_BOX, "IP = %s, Port = %d. Trying to connect...", ip, port);
     int connect = connect_socket(&socket, ip, port);
+    if (connect ==  (0))
+	write_win(GAME_BOX, "Connecting succeed\n");
     if (connect == (-1))
-	error_exit("Host unknown");
+	error_exit("Host unknown", socket);
     if (connect == (-2))
-	error_exit("Can't connect to server"); 
+	error_exit("Can't connect to server", socket); 
 }
 
-char *request_nick()
-{
-    char *nick;
-    nick = malloc(MAXNICK * sizeof(char));
-    write_win(1, "Please enter your nickname: ");
-    //fgets(nick, MAXNICK, stdin);
-    nick = "Testeroni";
-    return nick;
-}
-
-void login_server(int socket, char *nick)
-{
-    char *cmd;
-    write_win(1, "Try to login with nick %s", nick);
-    cmd = calloc(strlen("LOGIN ") + strlen(nick) + 1, sizeof(char));
-    strcat(strcpy(cmd, "LOGIN "), strcat(nick, "\n"));
-    TCP_send(&socket, cmd, strlen(cmd));
-}
-
-char *receive_from(int fd)
+char *receive_from(FILE *fp)
 {
     char *buffer = calloc(BUF_SIZE, sizeof(char));
-    if (read(fd, buffer, BUF_SIZE) < 0)
-       error_exit("Fehler bei resv");
+    
+    fgets(buffer, BUF_SIZE, fp);
+
     return buffer;
+}
+
+char *receive_from2(int fd)
+{
+    char *buffer = calloc(BUF_SIZE, sizeof(char));
+
+    if (read(fd, buffer, BUF_SIZE) < 0)
+       error_exit("Error receiving from %d", fd);
+
+    return buffer;
+}
+
+void send_to(FILE *fp, char *fmt, ...)
+{
+    va_list args;
+
+    va_start(args, fmt);
+    vfprintf(fp, fmt, args);
+    fflush(fp);
+
+    va_end(args);
+}
+
+void send_to2(int fd, char *format, ...)
+{
+    va_list ap;
+    char *p, *sval;
+
+    va_start(ap, format);
+    for (p = format; *p; p++) {
+	if (*p != '%') {
+	    if (send(fd, p, sizeof(*p), 0) == -1)
+		error_exit("Error sending to %d", fd);
+	    continue;
+	}
+	switch (*++p) {
+	case 's':
+	    for (sval = va_arg(ap, char *); *sval; sval++)
+		if (send(fd, sval, sizeof(*sval), 0) == -1)
+		    error_exit("Error sending to %d", fd);
+	    break;
+	default:
+	    if (send(fd, p, sizeof(*p), 0) == -1)
+		error_exit("Error sending to %d", fd);
+	    break;
+	}
+    }	
+    va_end(ap);
 }
 
 int select_input(int inputA, int inputB)
@@ -93,20 +124,12 @@ int select_input(int inputA, int inputB)
     return (-1);
 }
 
-void close_socket(int sock)
+void error_exit(char *error_message, int socket)
 {
-    close(sock);
-}
-
-void error_exit(char *error_message)
-{
+    getch();
+    destroy_windows();
     fprintf(stderr, "%s: %s\n", error_message, strerror(errno));
+    close(socket);
     exit(EXIT_FAILURE);
 }
 
-//XXX UNBEDINGT ÄNDERN!!! schmuu aus alten zeiten...
-/* Daten versenden via TCP */
-void TCP_send(int *sock, char *data, size_t size) {
-   if(send(*sock, data, size, 0) == -1)
-      error_exit("Fehler bei send()");
-}

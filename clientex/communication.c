@@ -1,130 +1,230 @@
+/* communication.c
+ *
+ * Die Kommunikationsschnittstelle von
+ * Fkmlandunter
+ *
+ * (c) Fkmsoft, 2010
+ */
+
 #include "communication.h"
 
-#define	win_percent	(60)
 
-win_struct game_box;
-win_struct chat_box;
-
-void initialise_windows()
+player *create_player()
 {
-    initscr();
-    cbreak();
-    keypad(stdscr, TRUE);
-    //while((c=getch()) == KEY_DOWN || c==KEY_UP || c==KEY_LEFT || c==KEY_RIGHT)
+    /* creating deck */
+    deck *d = malloc(sizeof(deck));
+    int i;
+    for (i = 0; i < 12; i++)
+	d->weathercards[i] = 0;
+    d->lifebelts = 0;
 
-    int ymax, xmax, height;
-    getmaxyx(stdscr, ymax, xmax);
-    height = (win_percent / 100.0) * ymax;
+    /* creating player */
+    player *p = malloc(sizeof(player));
+    p->points = 0;
+    p->current_deck = d;
+    p->water_level = 0;
+    p->dead = false;
+    p->name = ""; 
 
-    refresh();
-    
-    /* creating game window */
-    game_box.output = newwin(height - 3, xmax, 0, 0);
-    game_box.input  = newwin(3, xmax, height - 3, 0);
-    game_box.title  = "game";
-    game_box.lines  = 0;
-    write_win(1, "");
-
-    /* creating chat window */
-    chat_box.output = newwin(ymax - height - 3, xmax, height, 0);
-    chat_box.input  = newwin(3, xmax, ymax - 3, 0);
-    chat_box.title  = "chat";
-    chat_box.lines  = 0;
-    write_win(2, "");
+    return p;
 }
 
-void destroy_windows()
+char *request_nick()
 {
-    delwin(game_box.output);
-    delwin(game_box.input);
-    delwin(chat_box.output);
-    delwin(chat_box.input);    
-    endwin();
+    char *nick;
+    nick = malloc(MAXNICK * sizeof(char));
+    write_win(GAME_BOX, "Please enter your nickname: \n");
+    read_win(GAME_BOX, nick, MAXNICK);
+    return nick;
 }
 
-// struct_no 1 = game_box; struct_no 2 = chat_box
-void write_win(int struct_no, char *format, ...)
+deck *parse_deck(char *s)
 {
-    win_struct *win_struct;
-    if (struct_no == GAME_BOX)
-	win_struct = &game_box;
-    if (struct_no == CHAT_BOX)
-	win_struct = &chat_box;
+    int i, n = 0;
 
-    va_list ap;
-    char *p, *sval;
-    int ival;
+    /* initioalisiere deck */
+    deck *d = malloc(sizeof(deck));
+    d->lifebelts = 0;
+    for (i = 0; i < 12; i++)
+	d->weathercards[i] = 0;
 
-    if (strlen(format) > 0) {
-	va_start(ap, format);
-	wmove(win_struct->output, win_struct->lines + 1, 1);
-	for (p = format; *p; p++) {
-	    scroll_win(win_struct);
-	    if (*p != '%') {
-		if (*p == '\n') {
-		    win_struct->lines++;
-		    /* set curser on new line */
-		    wmove(win_struct->output, win_struct->lines + 1, 1);
-		} else
-		    waddch(win_struct->output, *p);
-		continue;
-	    }
-	    switch (*++p) {
-	    case 'd':
-		ival = va_arg(ap, int);
-		wprintw(win_struct->output, "%d", ival);
-		break;
-	    case 's':
-		for (sval = va_arg(ap, char *); *sval; sval++)
-		    waddch(win_struct->output, *sval);
-		break;
-	    default:
-		waddch(win_struct->output, *sval);
-		win_struct->lines++;
-		break;
-	    }
-	}	
-	va_end(ap);
-    } else {
-	/* to initialise or the like */
-	box(win_struct->output, 0, 0);
-	mvwprintw(win_struct->output, 0, 1, " %s output: ", win_struct->title);
+    /* setze s auf die erste Zahl (lifebelts) und lese diese ein */
+    while (!isdigit(*s))
+	s++;
+    while (isdigit(*s))
+	n = 10 * n + (*s++ - '0');
+    d->lifebelts = n;
+
+    return d;
+}
+
+void print_deck(player *p)
+{
+    int i;
+    write_win(GAME_BOX, "Your current weathercards are:\n");
+    for (i = 0; i < 12; i++) {
+        //if (p->current_deck->weathercards[i] > 0) {
+            write_win(GAME_BOX, "%d", p->current_deck->weathercards[i]);
+            if (i < 11)
+                write_win(GAME_BOX, ", ");
+        //}
     }
-
-    /* input box zeichnen + löschen */
-    wmove(win_struct->input, 1, 0);
-    winsertln(win_struct->input);
-    box(win_struct->input, 0, 0);
-    mvwprintw(win_struct->input, 0, 1, " %s input: ", win_struct->title);
-
-    /* curser in input setzen */
-    wmove(win_struct->input, 1, 1);
-
-    wrefresh(win_struct->output);
-    wrefresh(win_struct->input);
+    write_win(GAME_BOX, "\n");
+    write_win(GAME_BOX, "Your amount of lifebelts is: %d\n", p->current_deck->lifebelts);
 }
 
-/* scrolls if necessary (last line written) */
-void scroll_win(win_struct *w_struct)
+/* Hilfsmethode zum Einlesen einer Ganzzahl */
+static int getint()
 {
-    int y, x, ymax, xmax;
-    getmaxyx(w_struct->output, ymax, xmax);
-    getyx(w_struct->output, y, x);
+    int c, n = 0;
 
-    if (w_struct->lines >= ymax - 2) {
-	/* delete last line (box bottom) */
-	wmove(w_struct->output, ymax - 1, 0);
-	wdeleteln(w_struct->output);
+    while((c = getchar()) != '\n')
+        if(isdigit(c))
+            n = 10 * n + (c - '0');
 
-	/* scroll and reprint box */
-	scrollok(w_struct->output, TRUE);
-	wscrl(w_struct->output, 1);
-	box(w_struct->output, 0, 0);
-	mvwprintw(w_struct->output, 0, 1, " %s output: ", w_struct->title);
-
-	/* set curser on new line */
-	wmove(w_struct->output, w_struct->lines, 1);
-
-	w_struct->lines--;
-    }
+    return n;
 }
+
+#if 0
+/* test */
+main(int argc, char *argv[])
+{
+    char *testnames[] = { "Hans", "Peter" };
+
+    deck testdeck;
+    int i;
+    for (i = 1; i <= 12; i++)
+        testdeck.weathercards[i-1] = i*2;
+    testdeck.lifebelts = 25;
+
+    player testplayer;
+    testplayer.name = "Paul";
+    testplayer.current_deck = testdeck;
+
+    int testlevels[] = { 5, -1 };
+    int testpoints[] = { 99, 0 };
+
+    show_names(2, testnames, &testplayer);
+    give_deck(&testplayer);
+    show_waterlevel(1, 12, &testplayer);
+    //printf("%d\n", get_weather(&testplayer));
+    show_waterlevels(testlevels, &testplayer);
+    show_points(testpoints, &testplayer);
+}
+#endif
+
+
+
+/* nichts oder namen ausgeben */
+#if 0
+void show_names(int n, char **names, player *p)
+{
+    prompt(p);
+    _n = n; //XXX crap!
+    while (n-- > 0) {
+        printf("%s", *names++);
+        if (n >= 1)
+            printf(", ");
+    }
+    printf("\n");
+}
+#endif
+
+/* BESCHISSENDSTE FUNKTION ÜBERHAUPT! WEGEN CRAP DESIGN NOTWENDIG */
+#if 0
+void anzahl_der_player(int num)
+{
+    _n = num;
+}
+#endif
+
+#if 0
+void print_player(player *p)
+{
+    printf("Player \"%s\":\n"
+        "points = %d, ", p->name, p->points);
+}
+#endif
+
+/* 12 weathercards + lifebelt ausgeben */
+#if 0
+void print_deck(player *p)
+{
+    prompt(p);
+
+    int i;
+    printf("Your current weathercards are: ");
+    for (i = 0; i < 12; i++) {
+        if (p->current_deck.weathercards[i] > 0) {
+            printf("%d", p->current_deck.weathercards[i]);
+            if (i < 11)
+                printf(", ");
+        }
+    }
+    printf("\n");
+    prompt(p);
+    printf("Your amount of lifebelts is: %d\n", p->current_deck.lifebelts);
+}
+#endif
+
+/* Wasserstand a und b ausgeben */
+#if 0
+void show_waterlevel(int a, int b, player *p)
+{
+    prompt(p);
+    printf("The new \"watercards\" are %d and %d\n", a, b); 
+}
+#endif
+
+/* Liest die auszuspielende Wassergarte ein */
+#if 0
+int get_weather(player *p)
+{
+    bool indeck = false;
+    int i, c;
+    while (!indeck) {
+        prompt(p);
+        printf("Please enter your chosen \"watercard\": ");
+        c = getint();
+        for (i = 0; i < 12; i++) {
+            if (c > 0 && c == p->current_deck.weathercards[i])
+                indeck = true;
+        }
+    }
+    return c;
+}
+#endif
+
+/* Gibt alle Wasserstände aus */
+#if 0
+void show_waterlevels(int *levels, player *p)
+{
+    int i;
+    prompt(p);
+    printf("The \"waterlevels\" are: ");
+    for (i = 0; i < _n; i++) { //XXX crap!
+        printf("%d", levels[i]);
+        if (i < _n - 1)
+            printf(", ");
+    }
+    printf("\n");
+}
+#endif
+
+/* Gibt alle Punkte aus */
+#if 0
+void show_points(int *points, player *p)
+{
+    int i;
+    prompt(p);
+    printf("The score is: ");
+    for (i = 0; i < _n; i++) { //XXX crap!
+        printf("%d", points[i]);
+        if (i < _n - 1)
+            printf(", ");
+    }
+    printf("\n");
+}
+#endif
+
+/* vim: set sw=4 ts=4 fdm=syntax: */

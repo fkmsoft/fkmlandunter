@@ -18,7 +18,7 @@
 #include <unistd.h>
 
 /* manual */
-#include "communication.h"
+#include "interface.h"
 
 int create_sock();
 
@@ -28,16 +28,16 @@ void connect_server(int socket, char *ip, int port);
 
 char *request_nick();
 
-void login_server(int socket, char *nick);
+char *receive_from(FILE *fp);
 
-char *receive_from(int fd);
+char *receive_from2(int fd);
+
+void send_to(FILE *fp, char *fmt, ...);
+
+void send_to2(int fd, char *format, ...);
 
 int select_input(int inputA, int inputB);
 
-void close_socket(int sock);
-
-void error_exit(char *error_message);
-
-void TCP_send(int *sock, char *data, size_t size); //XXX <--- schnetzeln!
+void error_exit(char *error_message, int socket);
 
 #endif

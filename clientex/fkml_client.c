@@ -2,11 +2,11 @@
 #include "fkml_client.h"
 
 #define BUF_SIZE    (1024)
-#define DEBUG	    (true)
 
 int main(int argc, char *argv[])
 {
     int sock_num;
+    FILE *fpsock;
     int port;
     char *ip;
     if (argc != 3) {
@@ -17,79 +17,65 @@ int main(int argc, char *argv[])
 	port = atoi(*++argv);
     }
 
+    char *input;
+    player *p = create_player();
+
     /* creating interface */
     initialise_windows();
-    getch();
-    char te[] = "TOOONIIII!";
-    int i;
-    for (i = 0; i < 20; i++) {
-	write_win(CHAT_BOX, "This is just a test!%s, no. %d\n", te, i);
-	getch();
-    }
+    write_win(CHAT_BOX, "Chat is disabled...\n");
 
-    destroy_windows();
-
-    char *command;
-    command = (char*)calloc(strlen("LOGIN ") + strlen(nick) + 2, sizeof(char));
-    strcpy(command, "LOGIN ");
-    strcat(command, nick);
-    strcat(command, "\n");
-
-    /* read the ******* banner dude! */
-    if (bytes = read(sock_num, buffer, sizeof(buffer)) > 0)
-	printf("Successfully recieved banner:\n%s", buffer);
-    else
-	printf("Error recieving server's banner\n");
-    printf("Read %d bytes\n", bytes);
-    
-    //if (bytes = write(sock_num, command, sizeof(*command)) > 0)
-    if (bytes = write(sock_num, command, strlen(command)) > 0)
-	printf("Successfully transmitted \"%s\"\n", command);
-    else
-	printf("Error transmitting \"%s\"\n", command);
-    printf("Wrote %d bytes\n", bytes);
-    
-    /* XXX entweder echosrv antwortet nicht oder der folgende code ist kot */
-    if (bytes = read(sock_num, buffer, sizeof(buffer)) > 0)
-	printf("Successfully recieved answer:\n%s", buffer);
-    else
-	printf("Error recieving server's answer\n");
-    printf("Read %d bytes\n", bytes);
-
-    /* request nick */
-    //char *nick = request_nick(); 
-
-    /* print servers banner */
-    //char *input = receive_from(sock_num);
-    //print_gamewin("Server send: ");
-    //print_gamewin(input);
-
-    /* try to login */
-    //login_server(sock_num, nick);
-
-    
-    /* WIIIIINNNNNDOOOOOWWWWWSSSSS */
-    //write_win(2, "This is just a test my friend!");
-    //getchar();
-    
-    //destroy_windows();
-
+    /* creating socket */
+    sock_num = create_sock();
+    fpsock = fdopen(sock_num, "a+");
 
     /* STARTING GAME */
-    /*
+    /* login */
     do {
-	input = receive_from(select_input(0, sock_num));
+	p->name = request_nick();
+	connect_server(sock_num, ip, port);
+	//sock_num = create_sock();
+	//connect_server(sock_num, ip, port);
 
-	if (strncmp(input, "MSGFROM ", 8) == 0)
-	    printf("%s", &input[8]); 
-	if (DEBUG && strlen(input) > 0)
-	    printf("INPUT IS: %s", input);
-    } while (true); //strncmp(buffer, "ACK", 3) != 0);
+	/* printing server's banner
+	input = receive_from(fpsock);
+	write_win(GAME_BOX, "Server sent: %s\n", input); */
 
-    printf("Nick acknowledged, proceeding game...\n");
+	write_win(GAME_BOX, "Try to login with nick %s...", p->name);
+	send_to(fpsock, "LOGIN %s\n", p->name);
 
-    close_socket(sock_num);
+	input = receive_from(fpsock);
+    } while (strncmp(input, "ACK", 3) != 0);
+    write_win(GAME_BOX, "Login succeed =)!\n");
+    
+    /* start */
+    do {
+	input = receive_from(fpsock);
+    } while (strncmp(input, "START ", 6) != 0);
+    write_win(GAME_BOX, "Game is starting now =)!\n");
+    /* ORDENTLICHE START NACHRICHT EINBAUEN -.- */
+    /* Syntax = START PLAYERANZ NAME1 NAME2 NAME3 */
+
+    /* deck */
+    do {
+	input = receive_from(fpsock);
+    } while (strncmp(input, "DECK ", 5) != 0);
+    p->current_deck = parse_deck(input);
+    print_deck(p);
+
+    /*
+    if (strncmp(input, "MSGFROM ", 8) == 0)
+	write_win(GAME_BOX, "%s", &input[8]); 
+    if (DEBUG && strlen(input) > 0)
+	write_win(GAME_BOX, "INPUT IS: %s", input);
     */
+
+
+    getch();
+
+
+    destroy_windows();
+    close(sock_num);
+
     return 0;
 }
 
