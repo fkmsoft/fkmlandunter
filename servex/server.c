@@ -12,27 +12,22 @@
 #include <time.h>
 
 #include "ncom.h"
-/*#include "communication.h"*/
 #include "server_util.h"
-#include "servex/fkml_server.h"
+#include "fkml_server.h"
 
 #define PNUM (3)
 #define PORT (1337)
 
 int main(int argc, char **argv)
 {
-    int /*playernum,*/ i, j, p;
-    /* player *players; */
+    int i, j, p;
     fkml_server *s = init_server(PORT, PNUM);
-    /* int water[24]; */
 
-    /*argc < 2 ? s->connected = 3 : (s->connected = atoi(argv[1]));*/
     printf("%d connected\n", s->connected);
     create_players(s->players, PNUM);
 
     for (i = 0; i < PNUM; i++)
         fkml_addplayer(s);
-    /* anzahl_der_player(playernum); */
 
     /* This loop lasts one round */
     for (i = 0; i < s->connected; i++) {
@@ -42,6 +37,8 @@ int main(int argc, char **argv)
         free(buf);
 
         int alive = s->connected;
+        for (p = 0; p < s->connected; p++)
+            show_startmsg(s, p);
 
         /* This loop lasts one move */    
         for (j = 0; j < 12 && alive > 2; j++) {
@@ -56,18 +53,14 @@ int main(int argc, char **argv)
             int max=0, sec=0, sec_p=-1, max_p=-1;
             for (p = 0; p < s->connected; p++) {
                 print_deck(s, p);
-                /* show_waterlevel(w_min, w_max, &players[p]); */
                 show_weather(w_min, w_max, s, p);
         
-                /* int w_card = get_weather(&s->players[p]); */
                 int w_card = read_weather(s, p);
                 /* remove chosen card from deck */
                 int d = 0;
                 for (; s->players[p].current_deck.weathercards[d] != w_card; d++)
                     ; /* sehr nais! */
                 s->players[p].current_deck.weathercards[d] = 0;
-        
-                /*XXX AB HIER NICHTS MEHR VERÄNDERT*/
         
                 if (w_card > max) {
                     sec = max;
@@ -82,68 +75,49 @@ int main(int argc, char **argv)
             s->players[max_p].water_level = w_min;
             s->players[sec_p].water_level = w_max;
 
-            /* hoesten wasserstand finden */
+            /* find highest waterlevel */
             max = -1;
             for (p = 0; p < s->connected; p++)
                 if (s->players[p].water_level > max)
                     max = s->players[p].water_level;
 
-            /* int *wlevels = malloc(sizeof(int)*s->connected);
-            if (max > 0) */
-                for (p = 0; p < s->connected; p++) {
-                    /* wlevels[p] = players[p].water_level; */
-                    show_waterlevels(s, p);
-                    if (s->players[p].water_level == max)
-                        if (--s->players[p].current_deck.lifebelts < 0) {
-                            s->players[p].dead = true;
-                            alive--;
-                        }
-                }
-            /* else
-                printf("Etwas schreckliches ist geschehen! (%d)\n", max); */
-
-            /* for (p=0; p < s->connected; p++) 
-                show_waterlevels(wlevels, &players[p]); */
-            /* free(wlevels); */
+            for (p = 0; p < s->connected; p++) {
+                show_waterlevels(s, p);
+                if (s->players[p].water_level == max)
+                    if (--s->players[p].current_deck.lifebelts < 0) {
+                        s->players[p].dead = true;
+                        alive--;
+                    }
+            }
         }
 
-        /* Wertung: */
-        /* Niedrigsten Wasserstand finden: */
+        /* evolution: */
+        /* find lowest waterlevel: */
         int w_min = 13;
-        /* int *points = malloc(sizeof(int)*playernum); */
         for (p = 0; p < s->connected; p++)
             if (s->players[p].water_level < w_min)
                 w_min = s->players[p].water_level;
 
-        /* Punkte verteilen: */
+        /* distribute points */
         for (p = 0; p < s->connected; p++) {
-              /* Extrapunkte fuer Niedrigwasser verteilen: */
+              /* extra points for lowest waterlevel: */
               if (s->players[p].water_level == w_min)
                   s->players[p].points++;
-              /* Punkte fuer Ringe verteilen: */
+              /* points for lifebelts: */
               s->players[p].points += s->players[p].current_deck.lifebelts;
-              /* points[p] = players[p].points; */
         }
 
         for (p = 0; p < s->connected; p++)
               show_points(s, p);
 
-        /* free(points); */
     }
 
-    /* Platzierung ermitteln */
-    printf("Results:\n");
-    for (p = 0; p < s->connected; p++)
-        printf("%s:\t%d\n", s->players[p].name, s->players[p].points);
-
     fkml_shutdown(s);
-    /*free(players);*/
 
     return 0;
 }
 
-/*
- * Für später zum Töten:
+/* Für später zum Töten:
 Spieleranzahl S von Kommandozeile auswerten, sonst 3;
 S Decks erstellen;
 S Spieler mit Punktzahl 0 erstellen;
@@ -173,4 +147,5 @@ for i = 0 to S
 Platzierung ermitteln;
 Spielern Platzierung mitteilen;    // Kommunikation
 */
+
 /* vim: set sw=4 ts=4 fdm=syntax: */

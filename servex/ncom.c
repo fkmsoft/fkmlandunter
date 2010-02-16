@@ -7,7 +7,7 @@
 #include <ctype.h>
 
 #include "ncom.h"
-#include "servex/fkml_server.h"
+#include "fkml_server.h"
 
 static int getint(FILE *fp)
 {
@@ -18,6 +18,16 @@ static int getint(FILE *fp)
             n = 10 * n + (c - '0');
 
     return n;
+}
+
+void show_startmsg(fkml_server *s, int p)
+{
+    fkml_printf(s, p, "START %d", s->connected);
+    int i;
+    for (i = 0; i < s->connected; i++)
+        fkml_printf(s, p, " %s", s->players[i].name);
+
+    fkml_printf(s, p, "\n");
 }
 
 void print_deck(fkml_server *s, int p)

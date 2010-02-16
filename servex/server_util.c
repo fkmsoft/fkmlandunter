@@ -30,19 +30,16 @@ int *shuffle(int num)
 void create_players(player *p_array, int num)
 {
     int i;
-    /* player *p_array = malloc(sizeof(player) * num);*/
     deck *decks = create_decks(num);
 
     for (i = 0; i < num; i++) {
-        p_array[i].name = malloc(10); /* "PLAYER XX" */
-        sprintf(p_array[i].name, "Player %d", i);
+        /*p_array[i].name = malloc(10); "PLAYER XX"
+        sprintf(p_array[i].name, "Player_%d", i);*/
         p_array[i].points = 0;
         p_array[i].water_level = 0;
         p_array[i].current_deck = decks[i];
         p_array[i].dead = false;
-        /* p_array[i].fp = stdout; */
     }
-    /* return p_array; */
 }
 
 /* creates an amount of num decks */

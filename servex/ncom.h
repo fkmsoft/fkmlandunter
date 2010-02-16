@@ -2,7 +2,7 @@
  *
  * new communication
  *
- * (c) fkmsft, 2010
+ * (c) Fkmsft, 2010
  */
 
 #ifndef _NCOM_H_
@@ -12,12 +12,13 @@
 #include <stdio.h>
 
 #define MAX_PLAYERS (5)
-typedef struct {
+
+typedef struct { /* deck */
     int weathercards[12];
     int lifebelts;
 } deck;
 
-typedef struct {
+typedef struct { /* player */
     int points;
     deck current_deck;
     int water_level;
@@ -27,13 +28,14 @@ typedef struct {
     FILE *fp;
 } player;
 
-typedef struct {
+typedef struct { /* fkml_server */
     int socket;
     int connected;
     int water[24];
     player players[MAX_PLAYERS];
 } fkml_server;
 
+void show_startmsg(fkml_server *s, int p);
 void print_deck(fkml_server *s, int p);
 void show_weather(int min, int max, fkml_server *s, int p);
 void show_waterlevels(fkml_server *s, int p);

@@ -1,36 +1,24 @@
-/*
- * fkmsft
+/* fkml_server.h
+ *
+ * (c) Fkmsft, 2010
  */
 
 #ifndef FKML_SERVER
 #define FKML_SERVER
 
 #include <stdarg.h>
+#include <stdbool.h>
 
-#include "../ncom.h"
-
-#define MAX_PLAYERS (5)
-
-#if 0
-typedef struct {
-    int socket; /* socket for accepting new clients */
-    int connected; /* number of connected clients */
-#if 0
-    FILE *clients[MAX_PLAYERS]; /* FILE handles of connected clients */
-    int clientfds[MAX_PLAYERS]; /* sockets of connected clients */
-#endif
-    player players[MAX_PLAYERS];
-} fkml_server;
-#endif
+#include "ncom.h"
 
 /* Create a fkmlandunter for players players on port port */
 fkml_server *init_server(unsigned int port, unsigned int players);
 
 /* Wait for a new player to connect and add it to server s */
-void fkml_addplayer(fkml_server *s);
+bool fkml_addplayer(fkml_server *s);
 
 /* Add a new client described by file descriptor fd to server s */
-void fkml_addclient(fkml_server *s, int fd);
+int fkml_addclient(fkml_server *s, int fd);
 
 /* Remove client c from server s */
 void fkml_rmclient(fkml_server *s, int c);

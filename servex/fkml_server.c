@@ -39,7 +39,7 @@
 /* for close(): */
 #include <unistd.h>
 
-#include "../ncom.h"
+#include "ncom.h"
 #include "fkml_server.h"
 #include "queue.h"
 
@@ -84,22 +84,41 @@ fkml_server *init_server(unsigned int port, unsigned int players)
     return server;
 }
 
-void fkml_addclient(fkml_server *s, int fd)
+int fkml_addclient(fkml_server *s, int fd)
 {
     s->players[s->connected].fd = fd;
     s->players[s->connected].fp = fdopen(fd, "a+");
     s->connected++;
+    return s->connected-1;
 }
 
-void fkml_addplayer(fkml_server *s)
+bool fkml_addplayer(fkml_server *s)
 {
     int fd = accept(s->socket, 0, 0);
     if (fd == -1) {
         puts("Error waiting for client connection");
-        return;
+        return false;
     } else {
         printf("Adding player with fd %d\n", fd);
-        fkml_addclient(s, fd);
+        int newplayer = fkml_addclient(s, fd);
+
+        char buf[MAXLEN];
+        fgets(buf, MAXLEN-1, s->players[newplayer].fp);
+        /* brithing of buf */
+        buf[strlen(buf)-1] = 0;
+        if (strncmp(buf, client_command[LOGIN],
+                    strlen(client_command[LOGIN])) != 0) {
+            fkml_printf(s, newplayer, "%s\n", server_command[FAIL]);
+            fkml_rmclient(s, newplayer);
+            return false;
+        } else {
+            s->players[newplayer].name = malloc(sizeof(char) *
+                    (strlen(buf) - strlen(client_command[LOGIN])));
+            strcpy(s->players[newplayer].name, strchr(buf, ' ') + 1);
+            fkml_printf(s, newplayer, "%s %s\n", server_command[ACK],
+                    s->players[newplayer].name);
+            return true;
+        }
     }
 }
 
