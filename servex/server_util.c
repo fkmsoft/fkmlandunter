@@ -8,6 +8,7 @@
 #include <time.h>
 
 #include "server_util.h"
+/* #include "fkml_server.h" */
 
 /* returns int array with num numbers between 1 and num */
 int *shuffle(int num)
@@ -33,8 +34,6 @@ void create_players(player *p_array, int num)
     deck *decks = create_decks(num);
 
     for (i = 0; i < num; i++) {
-        /*p_array[i].name = malloc(10); "PLAYER XX"
-        sprintf(p_array[i].name, "Player_%d", i);*/
         p_array[i].points = 0;
         p_array[i].water_level = 0;
         p_array[i].current_deck = decks[i];

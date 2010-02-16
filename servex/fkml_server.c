@@ -1,26 +1,6 @@
-/* fkmsft
+/* fkml_server.c
  *
- * fkmlandunter prtcl:
- * -----------------------------
- * -> LOGIN name
- * <- ACK nam
- * -> START
- * <- START 3 nam1 nam2 nam3
- *
- * <- WEATHER 7 8
- * <- DECK 3 1 2 56
- * -> PLAY 56
- * <- ACK 56
- * <- FAIL 56
- * <- WLEVELS 7 8 0
- * <- POINTS 1 2 -1
- *
- * -> LOGOUT bye
- * <- TERMINATE fuck off
- *
- * -> MSG fu all los0rZ
- * <- MSGFROM name fu all los0rZ
- * -----------------------------
+ * (c) Fkmsft, 2010
  */
 
 /* for fdopen() from stdio */
@@ -54,6 +34,14 @@ static char *server_command[] = { "ACK", "START", "WEATHER", "DECK", "FAIL",
     "WLEVELS", "POINTS", "TERMINATE", "MSGFROM" };
 
 static char *client_command[] = { "LOGIN", "START", "PLAY", "MSG", "LOGOUT" };
+
+static void trim(char *str, char *evil)
+{
+    char *ep;
+    for (ep = str + strlen(str); ep > str && strchr(evil, *(ep-1)); ep--)
+        ;
+    *ep = 0;
+}
 
 fkml_server *init_server(unsigned int port, unsigned int players)
 {
@@ -105,7 +93,8 @@ bool fkml_addplayer(fkml_server *s)
         char buf[MAXLEN];
         fgets(buf, MAXLEN-1, s->players[newplayer].fp);
         /* brithing of buf */
-        buf[strlen(buf)-1] = 0;
+        /* buf[strlen(buf)-2] = 0; */
+        trim(buf,"\n\r");
         if (strncmp(buf, client_command[LOGIN],
                     strlen(client_command[LOGIN])) != 0) {
             fkml_printf(s, newplayer, "%s\n", server_command[FAIL]);
@@ -155,6 +144,7 @@ int fkml_puts(fkml_server *s, int c, char *msg)
 
 void fkml_printf(fkml_server *s, int c, char *fmt, ...)
 {
+    fputs(fmt, stdout);
     va_list ap;
     va_start(ap, fmt);
     vfprintf(s->players[c].fp, fmt, ap);

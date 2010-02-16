@@ -37,6 +37,7 @@ typedef struct { /* fkml_server */
 
 void show_startmsg(fkml_server *s, int p);
 void print_deck(fkml_server *s, int p);
+void show_rings(fkml_server *s, int p);
 void show_weather(int min, int max, fkml_server *s, int p);
 void show_waterlevels(fkml_server *s, int p);
 void show_points(fkml_server *s, int p);

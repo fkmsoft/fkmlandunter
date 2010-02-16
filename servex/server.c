@@ -3,6 +3,29 @@
  * Mainfunktion des Fkmlandunter
  * "Servers"
  *
+ * fkmlandunter prtcl:
+ * -----------------------------
+ * -> LOGIN name
+ * <- ACK nam
+ * -> START
+ * <- START 3 nam1 nam2 nam3
+ *
+ * <- WEATHER 7 8
+ * <- DECK 1 2 56
+ * <- RINGS 2 4 1
+ * -> PLAY 56
+ * <- ACK 56
+ * <- FAIL 56
+ * <- WLEVELS 7 8 0
+ * <- POINTS 1 2 -1
+ *
+ * -> LOGOUT bye
+ * <- TERMINATE fuck off
+ *
+ * -> MSG fu all los0rZ
+ * <- MSGFROM name fu all los0rZ
+ * -----------------------------
+ *
  * (c) Fkmsoft, 2010
  */
 
@@ -26,8 +49,9 @@ int main(int argc, char **argv)
     printf("%d connected\n", s->connected);
     create_players(s->players, PNUM);
 
-    for (i = 0; i < PNUM; i++)
-        fkml_addplayer(s);
+    for (i = 0; i < PNUM;)
+        if (fkml_addplayer(s))
+            i++;
 
     /* This loop lasts one round */
     for (i = 0; i < s->connected; i++) {
@@ -53,6 +77,7 @@ int main(int argc, char **argv)
             int max=0, sec=0, sec_p=-1, max_p=-1;
             for (p = 0; p < s->connected; p++) {
                 print_deck(s, p);
+                show_rings(s, p);
                 show_weather(w_min, w_max, s, p);
         
                 int w_card = read_weather(s, p);

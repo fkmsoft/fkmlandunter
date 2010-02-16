@@ -32,11 +32,20 @@ void show_startmsg(fkml_server *s, int p)
 
 void print_deck(fkml_server *s, int p)
 {
-    fkml_printf(s, p, "DECK %d", s->players[p].current_deck.lifebelts);
+    fkml_printf(s, p, "DECK");
     int i;
     for (i = 0; i < 12; i++)
         if (s->players[p].current_deck.weathercards[i])
             fkml_printf(s, p, " %d", s->players[p].current_deck.weathercards[i]);
+    fkml_printf(s, p, "\n");
+}
+
+void show_rings(fkml_server *s, int p)
+{
+    fkml_printf(s, p, "RINGS");
+    int i;
+    for (i = 0; i < s->connected; i++)
+        fkml_printf(s, p, " %d", s->players[i].current_deck.lifebelts);
     fkml_printf(s, p, "\n");
 }
 
