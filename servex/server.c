@@ -33,15 +33,24 @@ int main(int argc, char **argv)
 
     /* This loop lasts one round */
     for (i = 0; i < s->connected; i++) {
+        /* shuffle watercards */
         int *buf = shuffle(12);
         for (j = 0; j < 12; j++)
             s->water[j] = buf[j];
         free(buf);
-        hand_decks(s->players, deck_rotate(deck_set, i, s->connected), s->connected);
 
+        /* hand out decks after rotating them (using the original deckset as
+         * basis */
+        hand_decks(s->players, deck_rotate(deck_set, i, s->connected),
+                s->connected);
+
+        /* make sure all players are alive again */
         int alive = s->connected;
-        for (p = 0; p < s->connected; p++)
+        for (p = 0; p < s->connected; p++) {
+            s->players[p].dead = false;
+            /* and tell them about the new round */
             show_startmsg(s, p);
+        }
 
         /* This loop lasts one move */    
         for (j = 0; j < 12 && alive > 2; j++) {
@@ -52,20 +61,27 @@ int main(int argc, char **argv)
             w_max = (s->water[j] > s->water[j+1] ?
                   s->water[j] : s->water[j+1]);
 
-            /* This loop does the in- and output for every player */
-            int max=0, sec=0, sec_p=-1, max_p=-1;
+            /* This loop provides all players with information necessary to
+             * make their move */
             for (p = 0; p < s->connected; p++) {
                 print_deck(s, p);
                 show_rings(s, p);
                 show_weather(w_min, w_max, s, p);
-        
+            }
+
+            /* This loop gets the next card to be played from every player */
+            int max = 0, sec = 0, sec_p = -1, max_p = -1;
+            for (p = 0; p < s->connected; p++) {
                 int w_card = read_weather(s, p);
                 /* remove chosen card from deck */
                 int d = 0;
-                for (; s->players[p].current_deck.weathercards[d] != w_card; d++)
-                    ; /* sehr nais! */
+                for (; s->players[p].current_deck.weathercards[d] != w_card;
+                        d++)
+                    ; /* it's all done! */
+                /* remove used weathercard from deck */
                 s->players[p].current_deck.weathercards[d] = 0;
         
+                /* remember highest and lowest card */
                 if (w_card > max) {
                     sec = max;
                     sec_p = max_p;
@@ -76,6 +92,8 @@ int main(int argc, char **argv)
                     sec_p = p;
                 }
             }
+
+            /* hand out new watercards */
             s->players[max_p].water_level = w_min;
             s->players[sec_p].water_level = w_max;
 
@@ -85,15 +103,17 @@ int main(int argc, char **argv)
                 if (s->players[p].water_level > max)
                     max = s->players[p].water_level;
 
+            /* inform players about the new waterlevels */
             for (p = 0; p < s->connected; p++) {
                 show_waterlevels(s, p);
+                /* remove rings and make sure they die when necessary */
                 if (s->players[p].water_level == max)
                     if (--s->players[p].current_deck.lifebelts < 0) {
                         s->players[p].dead = true;
                         alive--;
                     }
             }
-        }
+        } /* one move */
 
         /* evolution: */
         /* find lowest waterlevel: */
@@ -114,43 +134,13 @@ int main(int argc, char **argv)
         for (p = 0; p < s->connected; p++)
               show_points(s, p);
 
+        /* remove used decks (real ones are saved in deck_set) */
         free_decks(s);
-    }
+    } /* one round */
 
     fkml_shutdown(s);
 
     return 0;
 }
-
-/* Für später zum Töten:
-Spieleranzahl S von Kommandozeile auswerten, sonst 3;
-S Decks erstellen;
-S Spieler mit Punktzahl 0 erstellen;
-for i = 0 to S
-    Wasserstaende 0 setzen;
-    Decks zuweisen;
-    Den Spielern Decks geben;    // Kommunikation
-    Spieler auf lebendig setzen;
-        Wasserstapel mischen;
-    for j = 0 to 12
-        Den Spielern neue Wasserkarten zeigen;    // Kommunikation
-        Eingabe von Spielern lesen solange bis gueltig;
-                            // Kommunikation
-        Wasserstand der Spieler updaten;
-        Spieler mit hoechstem Wasserstand ermitteln und Ring
-            entfernen;
-        Spielern neue Wasserstaende mitteilen; // Kommunikation
-        Pruefen auf Wasserstand -1 - Spieler als Tot markieren;
-        Pruefen ob Anzahl lebender Spieler >= 2
-            wenn nicht Runde beenden;
-
-    Spieler mit niedrigstem Wasserstand ermitteln
-        +1 Punkt;
-    Wasserstand auf Punktzahl addieren;
-    Spielern Punktzahlen mitteilen; // evtl unnoetig ausser f. Markierung
-
-Platzierung ermitteln;
-Spielern Platzierung mitteilen;    // Kommunikation
-*/
 
 /* vim: set sw=4 ts=4 fdm=syntax: */

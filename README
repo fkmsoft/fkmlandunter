@@ -20,3 +20,32 @@ The fkmlandunter prtcl:
 -> MSG fu all los0rZ
 <- MSGFROM name fu all los0rZ
 -----------------------------
+
+Spieleranzahl S von Kommandozeile auswerten, sonst 3;
+S Decks erstellen;
+S Spieler mit Punktzahl 0 erstellen;
+for i = 0 to S
+    Wasserstaende 0 setzen;
+    Decks zuweisen;
+    Den Spielern Decks geben;    // Kommunikation
+    Spieler auf lebendig setzen;
+        Wasserstapel mischen;
+    for j = 0 to 12
+        Den Spielern neue Wasserkarten zeigen;    // Kommunikation
+        Eingabe von Spielern lesen solange bis gueltig;
+                            // Kommunikation
+        Wasserstand der Spieler updaten;
+        Spieler mit hoechstem Wasserstand ermitteln und Ring
+            entfernen;
+        Spielern neue Wasserstaende mitteilen; // Kommunikation
+        Pruefen auf Wasserstand -1 - Spieler als Tot markieren;
+        Pruefen ob Anzahl lebender Spieler >= 2
+            wenn nicht Runde beenden;
+
+    Spieler mit niedrigstem Wasserstand ermitteln
+        +1 Punkt;
+    Wasserstand auf Punktzahl addieren;
+    Spielern Punktzahlen mitteilen; // evtl unnoetig ausser f. Markierung
+
+Platzierung ermitteln;
+Spielern Platzierung mitteilen;    // Kommunikation

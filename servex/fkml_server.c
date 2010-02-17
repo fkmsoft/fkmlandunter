@@ -22,19 +22,14 @@
 #include "ncom.h"
 #include "fkml_server.h"
 
-#define MAXLEN (128)
+#define CMD_DELIM ('\n')
 
-enum SERVER_COMMANDS { ACK, START, WEATHER, DECK, FAIL, WLEVELS, POINTS,
-    TERMINATE, MSGFROM };
-
-enum CLIENT_COMMAND { LOGIN, START_C, PLAY, MSG, LOGOUT, INVALID };
-
-static char *server_command[] = { "ACK", "START", "WEATHER", "DECK", "FAIL",
-    "WLEVELS", "POINTS", "TERMINATE", "MSGFROM" };
+static char *server_command[] = { "ACK", "START", "WEATHER", "RINGS",
+    "DECK", "FAIL", "WLEVELS", "POINTS", "TERMINATE", "MSGFROM" };
 
 static char *client_command[] = { "LOGIN", "START", "PLAY", "MSG", "LOGOUT" };
 
-static void trim(char *str, char *evil)
+void trim(char *str, char *evil)
 {
     char *ep;
     for (ep = str + strlen(str); ep > str && strchr(evil, *(ep-1)); ep--)
@@ -71,6 +66,27 @@ fkml_server *init_server(unsigned int port, unsigned int players)
     return server;
 }
 
+enum CLIENT_COMMAND get_client_cmd(char *s)
+{
+    int i;
+    for (i = 0; i < 5; i++)
+        if (strncmp(s, client_command[i], strlen(client_command[i])) == 0)
+            return i;
+
+    return INVALID;
+}
+
+void send_cmd(fkml_server *s, int c, enum SERVER_COMMANDS cmd, char *msg, ...)
+{
+    va_list ap;
+    va_start(ap, msg);
+    fputs(server_command[cmd], s->players[c].fp);
+    fputc(' ', s->players[c].fp);
+    vfprintf(s->players[c].fp, msg, ap);
+    fputc(CMD_DELIM, s->players[c].fp);
+    fflush(s->players[c].fp);
+}
+
 int fkml_addclient(fkml_server *s, int fd)
 {
     s->players[s->connected].fd = fd;
@@ -86,7 +102,7 @@ bool fkml_addplayer(fkml_server *s)
         puts("Error waiting for client connection");
         return false;
     } else {
-        printf("Adding player with fd %d\n", fd);
+        /* printf("Adding player with fd %d\n", fd); */
         int newplayer = fkml_addclient(s, fd);
 
         char buf[MAXLEN];
@@ -96,15 +112,16 @@ bool fkml_addplayer(fkml_server *s)
         trim(buf,"\n\r");
         if (strncmp(buf, client_command[LOGIN],
                     strlen(client_command[LOGIN])) != 0) {
-            fkml_printf(s, newplayer, "%s\n", server_command[FAIL]);
+            send_cmd(s, newplayer, FAIL, 0);
             fkml_rmclient(s, newplayer);
             return false;
         } else {
             s->players[newplayer].name = malloc(sizeof(char) *
                     (strlen(buf) - strlen(client_command[LOGIN])));
             strcpy(s->players[newplayer].name, strchr(buf, ' ') + 1);
-            fkml_printf(s, newplayer, "%s %s\n", server_command[ACK],
-                    s->players[newplayer].name);
+            /*fkml_printf(s, newplayer, "%s %s\n", server_command[ACK],
+                    s->players[newplayer].name);*/
+            send_cmd(s, newplayer, ACK, s->players[newplayer].name);
             return true;
         }
     }
@@ -117,14 +134,18 @@ void fkml_rmclient(fkml_server *s, int i)
 
     /* printf("Removing client %i\n", i); */
 
+    /* printf("Closing fd %d\n", s->clientfds[n-1]); */
+    fclose(s->players[i].fp);
+    if (s->players[i].name)
+        free(s->players[i].name);
+    /* if (s->players[n-1].current_deck != 0)
+        free(&s->players[n-1].current_deck); */
+
     int n;
     for (n = i+1; n < MAX_PLAYERS && s->players[n-1].fp; n++) {
-        /* printf("Closing fd %d\n", s->clientfds[n-1]); */
-        fclose(s->players[n-1].fp);
-        /* if (s->players[n-1].current_deck != 0)
-            free(&s->players[n-1].current_deck); */
         s->players[n-1] = s->players[n];
     }
+
     s->players[n].fp = 0;
     s->connected--;
     printf("Client %d removed\n", i);

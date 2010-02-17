@@ -11,11 +11,25 @@
 
 #include "ncom.h"
 
+#define MAXLEN (128)
+
+enum SERVER_COMMANDS { ACK, START, WEATHER, RINGS, DECK, FAIL, WLEVELS, POINTS,
+    TERMINATE, MSGFROM };
+
+enum CLIENT_COMMAND { LOGIN, START_C, PLAY, MSG, LOGOUT, INVALID };
+
+void trim(char *str, char *evil);
+
 /* Create a fkmlandunter for players players on port port */
 fkml_server *init_server(unsigned int port, unsigned int players);
 
 /* Wait for a new player to connect and add it to server s */
 bool fkml_addplayer(fkml_server *s);
+
+/* Return client command of s */
+enum CLIENT_COMMAND get_client_cmd(char *s);
+
+void send_cmd(fkml_server *s, int c, enum SERVER_COMMANDS cmd, char *msg, ...);
 
 /* Add a new client described by file descriptor fd to server s */
 int fkml_addclient(fkml_server *s, int fd);
@@ -26,9 +40,10 @@ void fkml_rmclient(fkml_server *s, int c);
 /* Receive message from client c on server s */
 char *fkml_recv(fkml_server *s, int c);
 
-/* Send message msg to client c on server s */
+/* Send message msg to client c on server s */ /* XXX outplemented */
 int fkml_puts(fkml_server *s, int c, char *msg);
 
+/* Send formatted message to client c on server s */
 void fkml_printf(fkml_server *s, int c, char *msg, ...);
 
 /* process message msg from client c on server s */
