@@ -19,6 +19,9 @@ int main(int argc, char *argv[])
 
     char *input;
     player *p = create_player();
+    player **enemys = NULL;
+    int enemys_count = 0;
+    int i;
 
     /* creating interface */
     initialise_windows();
@@ -33,8 +36,6 @@ int main(int argc, char *argv[])
     do {
 	p->name = request_nick();
 	connect_server(sock_num, ip, port);
-	//sock_num = create_sock();
-	//connect_server(sock_num, ip, port);
 
 	/* printing server's banner
 	input = receive_from(fpsock);
@@ -45,22 +46,30 @@ int main(int argc, char *argv[])
 
 	input = receive_from(fpsock);
     } while (strncmp(input, "ACK", 3) != 0);
-    write_win(GAME_BOX, "Login succeed =)!\n");
+    write_win(GAME_BOX, "Login succeed!\n");
     
     /* start */
     do {
 	input = receive_from(fpsock);
     } while (strncmp(input, "START ", 6) != 0);
-    write_win(GAME_BOX, "Game is starting now =)!\n");
-    /* ORDENTLICHE START NACHRICHT EINBAUEN -.- */
-    /* Syntax = START PLAYERANZ NAME1 NAME2 NAME3 */
+    parse_start(input, enemys, &enemys_count);
+
+    write_win(GAME_BOX, "Game is starting with %d players:\n", enemys_count);
+    for (i = 0; i < enemys_count; i++)
+	write_win(GAME_BOX, "%s ", enemys[i]->name[i]); 
+
 
     /* deck */
     do {
 	input = receive_from(fpsock);
     } while (strncmp(input, "DECK ", 5) != 0);
-    p->current_deck = parse_deck(input);
+    parse_deck(p, input);
     print_deck(p);
+
+    /* rings */
+    do {
+	input = receive_from(fpsock);
+    } while (strncmp(input, "RINGS ", 6) != 0);
 
     /*
     if (strncmp(input, "MSGFROM ", 8) == 0)

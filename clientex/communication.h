@@ -36,9 +36,11 @@ player *create_player();
 
 char *request_nick();
 
-deck *parse_deck(char *s);
+void parse_deck(player *p, char *s);
 
 void print_deck(player *p);
+
+void parse_start(char *s, player **p, int *count);
 
 /*void show_names(int n, char **names, player *p);*/
 	/* nichts oder namen ausgeben */

@@ -38,24 +38,16 @@ char *request_nick()
     return nick;
 }
 
-deck *parse_deck(char *s)
+void parse_deck(player *p, char *s)
 {
-    int i, n = 0;
-
-    /* initioalisiere deck */
-    deck *d = malloc(sizeof(deck));
-    d->lifebelts = 0;
-    for (i = 0; i < 12; i++)
-	d->weathercards[i] = 0;
-
-    /* setze s auf die erste Zahl (lifebelts) und lese diese ein */
-    while (!isdigit(*s))
-	s++;
-    while (isdigit(*s))
-	n = 10 * n + (*s++ - '0');
-    d->lifebelts = n;
-
-    return d;
+    if (sscanf(s, "DECK %d %d %d %d %d %d %d %d %d %d %d %d",
+	&p->current_deck->weathercards[0], &p->current_deck->weathercards[1],
+        &p->current_deck->weathercards[2], &p->current_deck->weathercards[3],
+        &p->current_deck->weathercards[4], &p->current_deck->weathercards[5],
+        &p->current_deck->weathercards[6], &p->current_deck->weathercards[7],
+	&p->current_deck->weathercards[8], &p->current_deck->weathercards[9],
+	&p->current_deck->weathercards[10], &p->current_deck->weathercards[11]) < 12)
+	write_win(GAME_BOX, "Error parsing deck\n");
 }
 
 void print_deck(player *p)
@@ -63,14 +55,35 @@ void print_deck(player *p)
     int i;
     write_win(GAME_BOX, "Your current weathercards are:\n");
     for (i = 0; i < 12; i++) {
-        //if (p->current_deck->weathercards[i] > 0) {
+        if (p->current_deck->weathercards[i] > 0) {
             write_win(GAME_BOX, "%d", p->current_deck->weathercards[i]);
             if (i < 11)
                 write_win(GAME_BOX, ", ");
-        //}
+        }
     }
     write_win(GAME_BOX, "\n");
     write_win(GAME_BOX, "Your amount of lifebelts is: %d\n", p->current_deck->lifebelts);
+}
+
+void parse_start(char *s, player **p, int *count)
+{
+    int i;
+
+    sscanf(s, "START %d", count);
+
+    /* creating count players */
+    p = malloc(*count * sizeof(player));
+    for (i = 0; i < *count; i++) {
+	p[i]->points = 0;
+	p[i]->current_deck = NULL;
+	p[i]->water_level = 0;
+	p[i]->dead = false;
+	p[i]->name = ""; 
+    }
+
+    /* parsing names */
+    for (i = 0; i < *count; i++)
+	sscanf(s, "%s", p[i]->name);
 }
 
 /* Hilfsmethode zum Einlesen einer Ganzzahl */
