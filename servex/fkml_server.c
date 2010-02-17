@@ -47,7 +47,7 @@ fkml_server *init_server(unsigned int port, unsigned int players)
     if (players > MAX_PLAYERS || players < 0)
         players = MAX_PLAYERS;
 
-    fkml_server *server = malloc(sizeof(fkml_server));
+    fkml_server *server = calloc(1,sizeof(fkml_server));
 
     if (port < 1024)
         printf("Please choose a port > 1024 instead of %d\n",
@@ -121,6 +121,8 @@ void fkml_rmclient(fkml_server *s, int i)
     for (n = i+1; n < MAX_PLAYERS && s->players[n-1].fp; n++) {
         /* printf("Closing fd %d\n", s->clientfds[n-1]); */
         fclose(s->players[n-1].fp);
+        /* if (s->players[n-1].current_deck != 0)
+            free(&s->players[n-1].current_deck); */
         s->players[n-1] = s->players[n];
     }
     s->players[n].fp = 0;

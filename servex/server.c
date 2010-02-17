@@ -24,6 +24,7 @@ int main(int argc, char **argv)
     fkml_server *s = init_server(PORT, PNUM);
 
     printf("%d connected\n", s->connected);
+    deck *deck_set = create_decks(PNUM);
     create_players(s->players, PNUM);
 
     for (i = 0; i < PNUM;)
@@ -36,6 +37,7 @@ int main(int argc, char **argv)
         for (j = 0; j < 12; j++)
             s->water[j] = buf[j];
         free(buf);
+        hand_decks(s->players, deck_rotate(deck_set, i, s->connected), s->connected);
 
         int alive = s->connected;
         for (p = 0; p < s->connected; p++)
@@ -112,6 +114,7 @@ int main(int argc, char **argv)
         for (p = 0; p < s->connected; p++)
               show_points(s, p);
 
+        free_decks(s);
     }
 
     fkml_shutdown(s);
