@@ -8,7 +8,7 @@
 
 #include "communication.h"
 
-
+/* Create and initialize one player */
 player *create_player()
 {
     int i;
@@ -26,6 +26,7 @@ player *create_player()
     return p;
 }
 
+/* request nickname from user in GAME_BOX */
 char *request_nick()
 {
     char *nick;
@@ -35,6 +36,7 @@ char *request_nick()
     return nick;
 }
 
+/* parse deck from string s to player p */
 void parse_deck(player *p, char *s)
 {
     int i;

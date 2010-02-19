@@ -5,13 +5,13 @@ The fkmlandunter prtcl:
 //-> START
 <- START 3 nam1 nam2 nam3
 
-<- DECK 1 2 56
-<- RINGS 2 4 1
-<- WEATHER 7 8
--> PLAY 56
-<- ACK 56
-<- FAIL 56
-<- WLEVELS 7 8 0
+    <- DECK 1 2 56
+    <- RINGS 2 4 1
+    <- WEATHER 7 8
+    -> PLAY 56
+    <- ACK 56
+    <- FAIL 56
+    <- WLEVELS 7 8 0
 <- POINTS 1 2 -1
 
 //-> LOGOUT bye

@@ -24,7 +24,6 @@ int main(int argc, char *argv[])
     int w_card[] = { 0, 0 };
     bool indeck;
     int wcard;
-    int move = 0;
     int round = 0;
 
     /* creating interface */
@@ -51,7 +50,6 @@ int main(int argc, char *argv[])
     } while (strncmp(input, "ACK", 3) != 0);
     write_win(GAME_BOX, "Login succeed\n");
     
-    /* STARTING GAME */
     /* start */
     do {
 	input = receive_from(fpsock);
@@ -61,12 +59,13 @@ int main(int argc, char *argv[])
     write_win(GAME_BOX, "Game is starting with %d players\n", oppos->count);
 
 
-    do {
+    /* STARTING GAME */
+    while (round < oppos->count) {
 	/* deck */
-	do {
-	    if (move == 0)
-		input = receive_from(fpsock);
-	} while (strncmp(input, "DECK ", 5) != 0);
+	while (strncmp(input, "DECK ", 5) != 0) {
+	    write_win(GAME_BOX, "A new round has been started...\n");
+	    input = receive_from(fpsock);
+	}
 	parse_deck(p, input);
 	write_win(GAME_BOX, "Your current weathercards are:\n");
 	for (i = 0; i < 12; i++) {
@@ -78,20 +77,23 @@ int main(int argc, char *argv[])
 
 
 	/* rings */
-	do {
+	while (strncmp(input, "RINGS ", 6) != 0)
 	    input = receive_from(fpsock);
-	} while (strncmp(input, "RINGS ", 6) != 0);
 	parse_rings(oppos, input);
 	write_win(GAME_BOX, "Lifebelt ranking:\n");
-	for (i = 0; i < oppos->count; i++)
-	    write_win(GAME_BOX, "%s: %d\n", oppos->opponent[i].name, oppos->opponent[i].lifebelts);
+	for (i = 0; i < oppos->count; i++) {
+	    if (oppos->opponent[i].lifebelts == (-1))
+		write_win(GAME_BOX, "%s: drowned\n");
+	    else
+		write_win(GAME_BOX, "%s: %d\n", oppos->opponent[i].name, oppos->opponent[i].lifebelts);
+	}
 
 	/* weather */
-	do {
+	while (strncmp(input, "WEATHER ", 8) != 0)
 	    input = receive_from(fpsock);
-	} while (strncmp(input, "WEATHER ", 8) != 0);
 	parse_weather(w_card, input);
 	write_win(GAME_BOX, "The new watercards are %d and %d\n", w_card[0], w_card[1]); 
+
 
 	/* play */
 	indeck = false;
@@ -104,34 +106,35 @@ int main(int argc, char *argv[])
 		    indeck = true;
 	}
 	write_win(GAME_BOX, "%d\n", wcard);
+	write_win(GAME_BOX, "Please wait till the other players acted\n");
 	do {
 	    send_to(fpsock, "PLAY %d\n", wcard);
 	    input = receive_from(fpsock);
 	} while (strncmp(input, "ACK ", 4) != 0);
 
-	write_win(GAME_BOX, "Please wait till the other players acted\n");
 
 	/* wlevels */
-	do {
+	while (strncmp(input, "WLEVELS ", 8) != 0)
 	    input = receive_from(fpsock);
-	} while (strncmp(input, "WLEVELS ", 8) != 0);
 	parse_wlevels(oppos, input);
 	write_win(GAME_BOX, "The waterlevels are:\n");
-	for (i = 0; i < oppos->count; i++)
-	    write_win(GAME_BOX, "%s: %d\n", oppos->opponent[i].name, oppos->opponent[i].water_level);
+	for (i = 0; i < oppos->count; i++) {
+	    if (oppos->opponent[i].water_level == (-1))
+		write_win(GAME_BOX, "%s: drowned\n", oppos->opponent[i].name);
+	    else
+		write_win(GAME_BOX, "%s: %d\n", oppos->opponent[i].name, oppos->opponent[i].water_level);
+	}
 
-	/* points? */
+	/* points or next round? */
 	input = receive_from(fpsock);
 	if (strncmp(input, "POINTS ", 7) == 0) {
-	    move = 0;
 	    round++;
 	    parse_points(oppos, input);
 	    write_win(GAME_BOX, "The score is:\n");
 	    for (i = 0; i < oppos->count; i++)
 		write_win(GAME_BOX, "%s: %d\n", oppos->opponent[i].name, oppos->opponent[i].points);
-	} else
-	    move++;
-    } while (round < oppos->count);
+	}
+    }
 
     write_win(GAME_BOX, "END OF GAME!\n");
     getch();

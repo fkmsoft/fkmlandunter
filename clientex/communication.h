@@ -32,10 +32,13 @@ typedef struct {
 } opponents;
 
 
+/* Create and initialize one player */
 player *create_player();
 
+/* request nickname from user in GAME_BOX */
 char *request_nick();
 
+/* parse deck from string s to player p */
 void parse_deck(player *p, char *s);
 
 opponents *parse_start(char *s);
