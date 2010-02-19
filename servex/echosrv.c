@@ -142,7 +142,7 @@ int echo()
         }
     }
 
-    fkml_shutdown(s);
+    fkml_shutdown(s, "goodbye");
 
     return 0;
 }

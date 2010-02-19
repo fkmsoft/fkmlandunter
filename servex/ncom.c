@@ -32,7 +32,7 @@ void show_startmsg(fkml_server *s, int p)
     send_cmd(s, p, START, "%d%s", s->connected, buf);
 }
 
-void print_deck(fkml_server *s, int p)
+void show_deck(fkml_server *s, int p)
 {
     send_cmd(s, p, DECK, "%d %d %d %d %d %d %d %d %d %d %d %d",
             s->players[p].current_deck.weathercards[0],
@@ -85,16 +85,21 @@ void show_points(fkml_server *s, int p)
     send_cmd(s, p, POINTS, buf);
 }
 
+/* returns played weather card or -1 if other command */
 int read_weather(fkml_server *s, int p)
 {
     bool indeck = false;
-    int i, c;
-    char buf[BUFSIZ];
-    while (!indeck) {
-        fgets(buf, BUFSIZ-1, s->players[p].fp);
+    int i, c = -1;
+    char buf[MAXLEN];
+    fgets(buf, MAXLEN-1, s->players[p].fp);
 
-        switch(get_client_cmd(buf)) {
-            case PLAY:
+    switch(get_client_cmd(buf)) {
+        case PLAY:
+            if (s->players[p].played) {
+                send_cmd(s, p, FAIL, "you made your move");
+            } if (s->players[p].dead) {
+                send_cmd(s, p, FAIL, "you drowned");
+            } else {
                 sscanf(strchr(buf, ' '), "%d\n", &c);
                 for (i = 0; i < 12; i++)
                     if (c > 0 &&
@@ -102,32 +107,36 @@ int read_weather(fkml_server *s, int p)
                         indeck = true;
                         break;
                     }
-                if (!indeck)
+                if (!indeck) {
                     send_cmd(s, p, FAIL, "%d", c);
-                break;
-            case LOGIN:
-                send_cmd(s, p, FAIL, "already logged in");
-                break;
-            case LOGOUT:
-                send_cmd(s, p, TERMINATE, "bye");
-                printf("Client %d (%s) disconnected!\n",
-                        p, s->players[p].name);
-                fkml_rmclient(s, p);
-                break;
-            case MSG:
-                trim(buf, "\r\n");
-                for (i = 0; i < s->connected; i++)
-                    if (i != p) {
-                        send_cmd(s, i, MSGFROM, "%s %s",
-                                s->players[p].name, strchr(buf, ' ') + 1);
-                    }
-                break;
-            default:
-                send_cmd(s, p, INVALID, buf);
-        }
+                    c = -1;
+                } else {
+                    s->players[p].played = true;
+                    send_cmd(s, p, ACK, 0);
+                }
+            }
+            break;
+        case LOGIN:
+            send_cmd(s, p, FAIL, "already logged in");
+            break;
+        case LOGOUT:
+            send_cmd(s, p, TERMINATE, "bye");
+            printf("Client %d (%s) logged out\n",
+                    p, s->players[p].name);
+            fkml_rmclient(s, p);
+            break;
+        case MSG:
+            trim(buf, "\r\n");
+            for (i = 0; i < s->connected; i++)
+                if (i != p) {
+                    send_cmd(s, i, MSGFROM, "%s %s",
+                            s->players[p].name, strchr(buf, ' ') + 1);
+                }
+            break;
+        default:
+            send_cmd(s, p, INVALID, buf);
     }
 
-    send_cmd(s, p, ACK, "%d", c);
     return c;
 }
 

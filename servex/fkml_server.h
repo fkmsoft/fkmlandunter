@@ -18,6 +18,10 @@ enum SERVER_COMMANDS { ACK, START, WEATHER, RINGS, DECK, FAIL, WLEVELS, POINTS,
 
 enum CLIENT_COMMAND { LOGIN, START_C, PLAY, MSG, LOGOUT, INVALID };
 
+/* Return number of first client that has send input */
+int poll_for_input(fkml_server *s);
+
+/* Remove any chars in evil from the end of str */
 void trim(char *str, char *evil);
 
 /* Create a fkmlandunter for players players on port port */
@@ -56,7 +60,7 @@ int fkml_handle_command(fkml_server *s, char *cmd, char *args);
 void fkml_printclients(fkml_server *);
 
 /* Shut down server s */
-void fkml_shutdown(fkml_server *s);
+void fkml_shutdown(fkml_server *s, char *msg);
 
 #endif /* FKML_SERVER */
 

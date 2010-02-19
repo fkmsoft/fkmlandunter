@@ -5,6 +5,8 @@
 
 /* for fdopen() from stdio */
 #define _POSIX_SOURCE
+/* for POLLRDHUP from poll */
+#define _GNU_SOURCE
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -18,6 +20,8 @@
 #include <netinet/in.h>
 /* for close(): */
 #include <unistd.h>
+/* for poll() */
+#include <poll.h>
 
 #include "ncom.h"
 #include "fkml_server.h"
@@ -28,6 +32,39 @@ static char *server_command[] = { "ACK", "START", "WEATHER", "RINGS",
     "DECK", "FAIL", "WLEVELS", "POINTS", "TERMINATE", "MSGFROM" };
 
 static char *client_command[] = { "LOGIN", "START", "PLAY", "MSG", "LOGOUT" };
+
+/* returns number of client or -1 if error or need to read from master socket
+ * */
+int poll_for_input(fkml_server *s)
+{
+    int i, ret = -1;
+    struct pollfd *pfds = malloc((s->connected + 1)*sizeof(struct pollfd));
+
+    for (i = 0; i < s->connected; i++) {
+        pfds[i].fd = s->players[i].fd;
+        pfds[i].events = POLLIN | POLLRDHUP;
+    }
+    pfds[i].fd = s->socket;
+    pfds[i].events = POLLIN;
+
+    if (poll(pfds, s->connected + 1, -1) < 0)
+        perror("poll_for_input: poll failed:");
+
+    for (i = 0; ret < 0 && i < s->connected; i++) {
+        if (pfds[i].revents & POLLIN)
+            ret = i;
+        if (pfds[i].revents & POLLRDHUP) {
+            printf("Client %d (%s) disconnected\n", i,
+                    s->players[i].name);
+            fkml_rmclient(s, i);
+            ret = -2;
+        }
+    }
+
+    free(pfds);
+
+    return ret;
+}
 
 void trim(char *str, char *evil)
 {
@@ -48,7 +85,9 @@ fkml_server *init_server(unsigned int port, unsigned int players)
         printf("Please choose a port > 1024 instead of %d\n",
                 port);
 
-    server->socket = socket(AF_INET, SOCK_STREAM, 0);
+    if ((server->socket = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+        perror("socket");
+
     server->connected = 0;
 
     struct sockaddr_in s_addr;
@@ -58,10 +97,17 @@ fkml_server *init_server(unsigned int port, unsigned int players)
     s_addr.sin_addr.s_addr = INADDR_ANY;
     s_addr.sin_port = htons(port);
 
-    bind(server->socket, (struct sockaddr *) &s_addr, sizeof(s_addr));
-    listen(server->socket, players);
+    int val = 1;
+    if (setsockopt(server->socket, SOL_SOCKET, SO_REUSEADDR,
+            &val, sizeof(int)) == -1)
+        perror("setsockopt");
 
-    puts("Server initialized, returning control");
+    if (bind(server->socket, (struct sockaddr *) &s_addr, sizeof(s_addr)) == -1)
+        perror("bind");
+    if (listen(server->socket, /*players*/1) == -1)
+        perror("listen");
+
+    /* puts("Server initialized, returning control"); */
 
     return server;
 }
@@ -107,9 +153,8 @@ bool fkml_addplayer(fkml_server *s)
 
         char buf[MAXLEN];
         fgets(buf, MAXLEN-1, s->players[newplayer].fp);
-        /* brithing of buf */
-        /* buf[strlen(buf)-2] = 0; */
         trim(buf,"\n\r");
+
         if (strncmp(buf, client_command[LOGIN],
                     strlen(client_command[LOGIN])) != 0) {
             send_cmd(s, newplayer, FAIL, 0);
@@ -241,14 +286,12 @@ void fkml_printclients(fkml_server *s)
     }
 }
 
-void fkml_shutdown(fkml_server *s)
+void fkml_shutdown(fkml_server *s, char *msg)
 {
     int i;
 
     for (i = 0; i < s->connected; i++) {
-        /*fkml_puts(s, i, server_command[TERMINATE]);
-        fkml_puts(s, i, "\n"); */
-        send_cmd(s, i, TERMINATE, "thank you, play again");
+        send_cmd(s, i, TERMINATE, msg);
         fclose(s->players[i].fp);
     }
 

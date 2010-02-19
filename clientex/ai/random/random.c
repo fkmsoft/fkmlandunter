@@ -26,10 +26,11 @@ void destroy_windows()
 }
 
 int main(int argc, char **argv) {
+    bool debug = false;
     char *name = DEFNAME, *host = DEFHOST;
     int opt, port = DEFPORT;
 
-    while ((opt = getopt(argc, argv, "n:p:h:")) != -1) {
+    while ((opt = getopt(argc, argv, "n:p:h:d")) != -1) {
         switch(opt) {
             case 'n':
                 name = optarg;
@@ -40,6 +41,8 @@ int main(int argc, char **argv) {
             case 'h':
                 host = optarg;
                 break;
+            case 'd':
+                debug = true;
             default:
                 printf("Usage: %s [-n name] [-h host] [-p port]\n", name);
                 exit(EXIT_FAILURE);
@@ -50,10 +53,10 @@ int main(int argc, char **argv) {
     FILE *fp = fdopen(sock, "a+");
 	connect_server(sock, host, port);
 	send_to(fp, "LOGIN %s\n", name);
+    printf("%s verbinden\n", name);
 
-    char *input;
+    char *input, *p;
     bool play = true;
-
     while (play) {
         if ((input = receive_from(fp)) == 0) {
             play = false;
@@ -63,10 +66,16 @@ int main(int argc, char **argv) {
         if (strncmp(input, "TERMINATE", 9) == 0)
             play = false;
         else if (strncmp(input, "DECK ", 5) == 0) {
-            int card = atoi(input + 5);
-            printf("%s play %d\n", name, card);
+            int card = 0;
+            p = input + 5;
+            while (!card)
+                card = atoi(p++);
+            printf("%s spielt %d\n", name, card);
             send_to(fp, "PLAY %d\n", card);
-        }
+        } else if (debug)
+            fputs(input, stdout);
+
+        free (input);
     }
 
     fclose(fp);

@@ -8,7 +8,8 @@
 
 #include <stdbool.h>
 #include <stdlib.h>
-#include <stdio.h>
+#include <string.h>
+/* #include <stdio.h> */
 #include <time.h>
 
 #include "ncom.h"
@@ -21,18 +22,41 @@
 int main(int argc, char **argv)
 {
     int i, j, p;
-    fkml_server *s = init_server(PORT, PNUM);
+    fkml_server *s = init_server(PORT, MAX_PLAYERS);
 
-    printf("%d connected\n", s->connected);
     deck *deck_set = create_decks(PNUM);
     create_players(s->players, PNUM);
 
-    for (i = 0; i < PNUM;)
-        if (fkml_addplayer(s))
-            i++;
+    for (i = 0; i < MAX_PLAYERS;)
+        if ((p = poll_for_input(s)) == -1) {
+            if (fkml_addplayer(s))
+                i++;
+        } else {
+            char buf[MAXLEN];
+            fgets(buf, MAXLEN-1, s->players[p].fp);
+            switch(get_client_cmd(buf)) {
+                case MSG:
+                    trim(buf, "\r\n");
+                    for (j = 0; j < s->connected; j++)
+                        if (j != p)
+                            send_cmd(s, j, MSGFROM, "%s %s",
+                                s->players[p].name, strchr(buf, ' ') + 1);
+                    break;
+                case START_C:
+                    if (i > 2)
+                        i = MAX_PLAYERS;
+                    else
+                        send_cmd(s, p, FAIL, "not enough players");
+                    break;
+                case PLAY:
+                case LOGIN:
+                default:
+                    send_cmd(s, p, FAIL, "invalid command");
+            }
+        }
 
     /* show startmessages (only once per game) */
-    for (p = 0; p < PNUM; p++)
+    for (p = 0; p < s->connected; p++)
         show_startmsg(s, p);
 
     /* This loop lasts one round */
@@ -69,18 +93,35 @@ int main(int argc, char **argv)
             /* This loop provides all players with information necessary to
              * make their move */
             for (p = 0; p < s->connected; p++) {
-                print_deck(s, p);
+                show_deck(s, p);
                 show_rings(s, p);
                 show_weather(w_min, w_max, s, p);
+                /* allow all players to make a move */
+                s->players[p].played = false;
             }
 
             /* This loop gets the next card to be played from every player */
             int max = 0, sec = 0, sec_p = -1, max_p = -1;
-            for (p = 0; p < s->connected; p++) {
-                int w_card = read_weather(s, p);
+            int played = 0, plnum = s->connected;
+            while (played < alive) {
+                if (s->connected < plnum) {
+                    fkml_shutdown(s,
+                            "game aborted because of client disconnect");
+                    /* puts("game aborted because of client disconnect"); */
+                    return 1;
+                }
+
+                if ((p = poll_for_input(s)) < 0)
+                    continue;
+
+                int w_card;
+                if ((w_card = read_weather(s, p)) < 0)
+                    continue;
+
                 /* remove chosen card from deck */
                 int d = 0;
-                for (; s->players[p].current_deck.weathercards[d] != w_card;
+                for (played++;
+                        s->players[p].current_deck.weathercards[d] != w_card;
                         d++)
                     ; /* it's all done! */
                 /* remove used weathercard from deck */
@@ -149,8 +190,8 @@ int main(int argc, char **argv)
         /* free_decks(s); */
     } /* one round */
 
-    fkml_shutdown(s);
-    puts("bye");
+    fkml_shutdown(s, "thank you, play again");
+    /* puts("bye"); */
 
     return 0;
 }
