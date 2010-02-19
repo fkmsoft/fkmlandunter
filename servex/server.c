@@ -31,6 +31,10 @@ int main(int argc, char **argv)
         if (fkml_addplayer(s))
             i++;
 
+    /* show startmessages (only once per game) */
+    for (p = 0; p < PNUM; p++)
+        show_startmsg(s, p);
+
     /* This loop lasts one round */
     for (i = 0; i < s->connected; i++) {
         /* shuffle watercards */
@@ -49,7 +53,7 @@ int main(int argc, char **argv)
         for (p = 0; p < s->connected; p++) {
             s->players[p].dead = false;
             /* and tell them about the new round */
-            show_startmsg(s, p);
+            /* show_startmsg(s, p); DONt */
         }
 
         /* This loop lasts one move */    
@@ -139,6 +143,7 @@ int main(int argc, char **argv)
     } /* one round */
 
     fkml_shutdown(s);
+    puts("bye");
 
     return 0;
 }

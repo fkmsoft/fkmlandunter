@@ -67,9 +67,12 @@ void show_waterlevels(fkml_server *s, int p)
 {
     int i;
     char buf[MAXLEN], *ptr = buf;
-    for (i = 0; i < s->connected; i++)
+    for (i = 0; i < s->connected; i++) {
         if (!s->players[i].dead)
             ptr += sprintf(ptr, " %d", s->players[i].water_level);
+        else
+            ptr += sprintf(ptr, " %d", -1);
+    }
     send_cmd(s, p, WLEVELS, buf);
 }
 
