@@ -246,8 +246,9 @@ void fkml_shutdown(fkml_server *s)
     int i;
 
     for (i = 0; i < s->connected; i++) {
-        fkml_puts(s, i, server_command[TERMINATE]);
-        fkml_puts(s, i, "\n");
+        /*fkml_puts(s, i, server_command[TERMINATE]);
+        fkml_puts(s, i, "\n"); */
+        send_cmd(s, i, TERMINATE, "thank you, play again");
         fclose(s->players[i].fp);
     }
 

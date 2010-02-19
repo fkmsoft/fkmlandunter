@@ -81,7 +81,7 @@ void show_points(fkml_server *s, int p)
     int i;
     char buf[MAXLEN], *ptr = buf;
     for (i = 0; i < s->connected; i++)
-        ptr += sprintf(ptr, " %d", s->players[p].points);
+        ptr += sprintf(ptr, " %d", s->players[i].points);
     send_cmd(s, p, POINTS, buf);
 }
 

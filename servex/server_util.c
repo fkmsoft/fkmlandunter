@@ -18,7 +18,7 @@ int *shuffle(int num)
     srand(time(NULL));
 
     for (i = 1; i <= num; i++) {
-        do {
+    do {
             r = rand()%num;
         } while (arr[r] != 0);
         arr[r] = i;
@@ -54,7 +54,7 @@ deck *create_decks(int num)
             if (c > 12 && c < 49)
                 deck_arr[i].lifebelts += 1;
             if (c > 24 && c < 37)
-                deck_arr[i].lifebelts += 2;
+                deck_arr[i].lifebelts += 1; /* we already got +1 above */
         }    
         deck_arr[i].lifebelts /= 2;
     }

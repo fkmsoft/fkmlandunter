@@ -38,14 +38,15 @@ int main(int argc, char **argv)
     /* This loop lasts one round */
     for (i = 0; i < s->connected; i++) {
         /* shuffle watercards */
-        int *buf = shuffle(12);
-        for (j = 0; j < 12; j++)
-            s->water[j] = buf[j];
+        int *buf = shuffle(24);
+        for (j = 0; j < 24; j++)
+            s->water[j] = (buf[j] % 12) + 1;
         free(buf);
 
         /* hand out decks after rotating them (using the original deckset as
          * basis */
-        hand_decks(s->players, deck_rotate(deck_set, i, s->connected),
+        deck *df;
+        hand_decks(s->players, (df = deck_rotate(deck_set, i, s->connected)),
                 s->connected);
 
         /* make sure all players are alive again */
@@ -114,6 +115,7 @@ int main(int argc, char **argv)
                 if (s->players[p].water_level == max)
                     if (--s->players[p].current_deck.lifebelts < 0) {
                         s->players[p].dead = true;
+                        s->players[p].water_level = -2;
                         alive--;
                     }
             }
@@ -123,23 +125,28 @@ int main(int argc, char **argv)
         /* find lowest waterlevel: */
         int w_min = 13;
         for (p = 0; p < s->connected; p++)
-            if (s->players[p].water_level < w_min)
+            if (!s->players[p].dead && s->players[p].water_level < w_min)
                 w_min = s->players[p].water_level;
 
         /* distribute points */
         for (p = 0; p < s->connected; p++) {
-              /* extra points for lowest waterlevel: */
-              if (s->players[p].water_level == w_min)
-                  s->players[p].points++;
-              /* points for lifebelts: */
-              s->players[p].points += s->players[p].current_deck.lifebelts;
+            if (s->players[p].dead)
+                s->players[p].points--;
+            else {
+                /* extra points for lowest waterlevel: */
+                if (s->players[p].water_level == w_min)
+                     s->players[p].points++;
+                /* points for lifebelts: */
+                s->players[p].points += s->players[p].current_deck.lifebelts;
+            }
         }
 
         for (p = 0; p < s->connected; p++)
               show_points(s, p);
 
         /* remove used decks (real ones are saved in deck_set) */
-        free_decks(s);
+        free(df);
+        /* free_decks(s); */
     } /* one round */
 
     fkml_shutdown(s);
