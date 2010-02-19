@@ -126,7 +126,7 @@ int select_input(int inputA, int inputB)
 
 void error_exit(char *error_message, int socket)
 {
-    getch();
+    //getch();
     destroy_windows();
     fprintf(stderr, "%s: %s\n", error_message, strerror(errno));
     close(socket);

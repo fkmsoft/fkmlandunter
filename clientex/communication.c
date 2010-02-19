@@ -11,20 +11,17 @@
 
 player *create_player()
 {
-    /* creating deck */
-    deck *d = malloc(sizeof(deck));
     int i;
-    for (i = 0; i < 12; i++)
-	d->weathercards[i] = 0;
-    d->lifebelts = 0;
 
     /* creating player */
     player *p = malloc(sizeof(player));
     p->points = 0;
-    p->current_deck = d;
     p->water_level = 0;
     p->dead = false;
     p->name = ""; 
+    for (i = 0; i < 12; i++)
+	p->weathercards[i] = 0;
+    p->lifebelts = 0;
 
     return p;
 }
@@ -40,53 +37,85 @@ char *request_nick()
 
 void parse_deck(player *p, char *s)
 {
-    if (sscanf(s, "DECK %d %d %d %d %d %d %d %d %d %d %d %d",
-	&p->current_deck->weathercards[0], &p->current_deck->weathercards[1],
-        &p->current_deck->weathercards[2], &p->current_deck->weathercards[3],
-        &p->current_deck->weathercards[4], &p->current_deck->weathercards[5],
-        &p->current_deck->weathercards[6], &p->current_deck->weathercards[7],
-	&p->current_deck->weathercards[8], &p->current_deck->weathercards[9],
-	&p->current_deck->weathercards[10], &p->current_deck->weathercards[11]) < 12)
-	write_win(GAME_BOX, "Error parsing deck\n");
+    int i;
+    for (i = 0; i < 12; i++)
+	p->weathercards[i] = 0;
+    sscanf(s, "DECK %d %d %d %d %d %d %d %d %d %d %d %d",
+	&p->weathercards[0], &p->weathercards[1],
+        &p->weathercards[2], &p->weathercards[3],
+        &p->weathercards[4], &p->weathercards[5],
+        &p->weathercards[6], &p->weathercards[7],
+	&p->weathercards[8], &p->weathercards[9],
+	&p->weathercards[10], &p->weathercards[11]);
 }
 
-void print_deck(player *p)
+opponents *parse_start(char *s)
 {
-    int i;
-    write_win(GAME_BOX, "Your current weathercards are:\n");
-    for (i = 0; i < 12; i++) {
-        if (p->current_deck->weathercards[i] > 0) {
-            write_win(GAME_BOX, "%d", p->current_deck->weathercards[i]);
-            if (i < 11)
-                write_win(GAME_BOX, ", ");
-        }
+    int i, j;
+
+    opponents *oppo = malloc(sizeof(opponents));
+
+    sscanf(s, "START %d", &oppo->count);
+
+    /* creating player */
+    player *p = malloc(sizeof(player) * oppo->count);
+    for (i = 0; i < oppo->count; i++) {
+	p[i].points = 0;
+	p[i].water_level = 0;
+	p[i].dead = false;
+	p[i].name = NULL;
+	for (j = 0; j < 12; j++)
+	    p[i].weathercards[j] = 0;
+	p[i].lifebelts = 0;
     }
-    write_win(GAME_BOX, "\n");
-    write_win(GAME_BOX, "Your amount of lifebelts is: %d\n", p->current_deck->lifebelts);
+
+    /* skipping first two items */
+    strtok(s, " ");
+    strtok(NULL, " ");
+    
+    for (i = 0; i < oppo->count; i++)
+	p[i].name = strtok(NULL, " ");
+    /* freeing last char from newline */
+    p[oppo->count-1].name[strlen(p[oppo->count-1].name) - 1] = '\0';
+
+    oppo->opponent = p;
+    return oppo;
 }
 
-void parse_start(char *s, player **p, int *count)
+void parse_rings(opponents *o, char *s) 
 {
     int i;
+    strtok(s, " ");
+    for (i = 0; i < o->count; i++) 
+	o->opponent[i].lifebelts = atoi(strtok(NULL, " "));
+}
 
-    sscanf(s, "START %d", count);
 
-    /* creating count players */
-    p = malloc(*count * sizeof(player));
-    for (i = 0; i < *count; i++) {
-	p[i]->points = 0;
-	p[i]->current_deck = NULL;
-	p[i]->water_level = 0;
-	p[i]->dead = false;
-	p[i]->name = ""; 
-    }
+void parse_weather(int *w_card, char *s)
+{
+    strtok(s, " ");
+    w_card[0] = atoi(strtok(NULL, " "));
+    w_card[1] = atoi(strtok(NULL, " "));
+}
 
-    /* parsing names */
-    for (i = 0; i < *count; i++)
-	sscanf(s, "%s", p[i]->name);
+void parse_wlevels(opponents *o, char *s)
+{
+    int i;
+    strtok(s, " ");
+    for (i = 0; i < o->count; i++)
+	o->opponent[i].water_level = atoi(strtok(NULL, " "));
+}
+
+void parse_points(opponents *o, char *s)
+{
+    int i;
+    strtok(s, " ");
+    for (i = 0; i < o->count; i++)
+	o->opponent[i].points = atoi(strtok(NULL, " "));
 }
 
 /* Hilfsmethode zum Einlesen einer Ganzzahl */
+#if 0
 static int getint()
 {
     int c, n = 0;
@@ -97,6 +126,7 @@ static int getint()
 
     return n;
 }
+#endif
 
 #if 0
 /* test */

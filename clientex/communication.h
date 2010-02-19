@@ -17,19 +17,19 @@
 
 #define	MAXNICK	(30)
 
-
-typedef struct {
-	int	weathercards[12];
-	int	lifebelts;
-} deck;
-
 typedef struct {
 	int	points;
-	deck	*current_deck;
 	int	water_level;
 	bool	dead;
 	char	*name;
+	int	weathercards[12];
+	int	lifebelts;
 } player;
+
+typedef struct {
+	player	*opponent;
+	int	count;
+} opponents;
 
 
 player *create_player();
@@ -38,9 +38,15 @@ char *request_nick();
 
 void parse_deck(player *p, char *s);
 
-void print_deck(player *p);
+opponents *parse_start(char *s);
 
-void parse_start(char *s, player **p, int *count);
+void parse_rings(opponents *o, char *s);
+
+void parse_weather(int *w_card, char *s);
+
+void parse_wlevels(opponents *o, char *s);
+
+void parse_points(opponents *o, char *s);
 
 /*void show_names(int n, char **names, player *p);*/
 	/* nichts oder namen ausgeben */
