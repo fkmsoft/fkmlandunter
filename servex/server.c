@@ -16,7 +16,6 @@
 #include "server_util.h"
 #include "fkml_server.h"
 
-#define PNUM (3)
 #define PORT (1337)
 
 int main(int argc, char **argv)
@@ -24,8 +23,8 @@ int main(int argc, char **argv)
     int i, j, p;
     fkml_server *s = init_server(PORT, MAX_PLAYERS);
 
-    deck *deck_set = create_decks(PNUM);
-    create_players(s->players, PNUM);
+    deck *deck_set = create_decks(MAX_PLAYERS);
+    create_players(s->players, MAX_PLAYERS);
 
     for (i = 0; i < MAX_PLAYERS;)
         if ((p = poll_for_input(s)) == -1) {
@@ -72,6 +71,8 @@ int main(int argc, char **argv)
         deck *df;
         hand_decks(s->players, (df = deck_rotate(deck_set, i, s->connected)),
                 s->connected);
+        /* remove used decks (real ones are saved in deck_set) */
+        free(df);
 
         /* make sure all players are alive again */
         int alive = s->connected;
@@ -185,8 +186,6 @@ int main(int argc, char **argv)
         for (p = 0; p < s->connected; p++)
               show_points(s, p);
 
-        /* remove used decks (real ones are saved in deck_set) */
-        free(df);
         /* free_decks(s); */
     } /* one round */
 
