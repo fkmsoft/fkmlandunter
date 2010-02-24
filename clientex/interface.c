@@ -1,7 +1,6 @@
 /* interface.c - The fat-headed interface for fkmlandunter */
 #include "interface.h"
 
-#define	win_percent	(60)
 
 win_struct game_box;
 win_struct chat_box;
@@ -13,7 +12,7 @@ void initialise_windows()
     noecho();
     curs_set(0);
     keypad(stdscr, TRUE);
-    //while((c=getch()) == KEY_DOWN || c==KEY_UP || c==KEY_LEFT || c==KEY_RIGHT)
+    /* while((c=getch()) == KEY_DOWN || c==KEY_UP || c==KEY_LEFT || c==KEY_RIGHT) */
 
     int ymax, xmax, height;
     getmaxyx(stdscr, ymax, xmax);
@@ -45,7 +44,7 @@ void destroy_windows()
     endwin();
 }
 
-// struct_no 1 = game_box; struct_no 2 = chat_box
+/* struct_no 1 = game_box; struct_no 2 = chat_box */
 void write_win(int struct_no, char *format, ...)
 {
     win_struct *win_struct;
@@ -142,7 +141,7 @@ void scroll_win(win_struct *w_struct)
     }
 }
 
-// struct_no 1 = game_box; struct_no 2 = chat_box
+/* struct_no 1 = game_box; struct_no 2 = chat_box */
 void read_win(int struct_no, char *s, int size)
 {
     win_struct *w_struct;
@@ -157,5 +156,4 @@ void read_win(int struct_no, char *s, int size)
     noecho();
     curs_set(0);
 }
-
-
+/* vim: set sw=4 ts=4 et fdm=syntax: */

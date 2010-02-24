@@ -1,6 +1,6 @@
 /* interface.h
  *
- * Das Interface von Fkmlandunter
+ * interface
  *
  * (c) Fkmsoft, 2010
  */
@@ -14,6 +14,7 @@
 
 #define GAME_BOX    (1)
 #define	CHAT_BOX    (2)
+#define	win_percent (60)
 
 typedef struct WINDOW_STRUCT {
     WINDOW *output;
@@ -33,3 +34,4 @@ void scroll_win(win_struct *w_struct);
 void read_win(int struct_no, char *s, int size);
 
 #endif
+/* vim: set sw=4 ts=4 et fdm=syntax: */

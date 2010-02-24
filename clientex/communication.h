@@ -1,7 +1,6 @@
 /* communication.h
  *
- * Die Kommunikationsschnittstelle von
- * Fkmlandunter
+ * communication interface
  *
  * (c) Fkmsoft, 2010
  */
@@ -9,68 +8,71 @@
 #ifndef COMMUNICATION_H
 #define COMMUNICATION_H
 
-#include <stdlib.h>
 #include <stdbool.h>
-#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <stdarg.h>
+#include <sys/time.h>
 
-#include "interface.h"
-
-#define	MAXNICK	(30)
+#define BUF_SIZE    (1024)
+#define max(A,B)    ((A) > (B) ? (A) : (B))
 
 typedef struct {
-	int	points;
-	int	water_level;
-	bool	dead;
-	char	*name;
-	int	weathercards[12];
-	int	lifebelts;
+    int points;
+    int water_level;
+    bool dead;
+    char *name;
+    int weathercards[12];
+    int lifebelts;
 } player;
 
 typedef struct {
-	player	*opponent;
-	int	count;
+    player *p;
+    int count;
 } opponents;
 
+/* GAMEPLAY */
 
 /* Create and initialize one player */
 player *create_player();
 
-/* request nickname from user in GAME_BOX */
-char *request_nick();
+/* create opponents from string s */
+opponents *parse_start(char *s);
 
 /* parse deck from string s to player p */
 void parse_deck(player *p, char *s);
 
-opponents *parse_start(char *s);
-
+/* parse rings from string s to opponents o */
 void parse_rings(opponents *o, char *s);
 
+/* parse weathercards from string s to w_card */
 void parse_weather(int *w_card, char *s);
 
+/* parse waterlevel from string s to opponents o */
 void parse_wlevels(opponents *o, char *s);
 
+/* parse points from string s to opponents o */
 void parse_points(opponents *o, char *s);
 
-/*void show_names(int n, char **names, player *p);*/
-	/* nichts oder namen ausgeben */
-	/* int n und n nullterminierte strings nach fd */
-/*void anzahl_der_player(int num); XXX CRAP!*/
+/* NETWORK */
 
-/*void print_player(player *p);*/
+/* create and return socket */
+int create_sock();
 
-/*void show_waterlevel(int a, int b, player *p);*/
-	/* 2 wasserstaende nach stdout */
-	/* 2 ints nach fd */
-/* int get_weather(player *p);*/
-	/* do { lies ein int i von stdin} while(i nicht in deck); */
-	/* 1 int von fd (bis es passt) */
-/*void show_waterlevels(int *levels, player *p);*/
-	/* S Wasserstande (mit namen) nach stdout */
-	/* S ints nach fd */
-/*void show_points(int *points, player *p);*/
-	/* S Punktzahlen nach stdout */
-	/* S ints nach fd */
-/*int getint();*/
+/* connect to socket sock - return -1 if attempt fails, -2 if host unknown */
+int connect_socket(int sock, char *serv_addr, unsigned short port);
+
+/* receive BUF_SIZE chars from *fp */
+char *receive_from(FILE *fp);
+
+/* send formated string *fmt to *fp */
+void send_to(FILE *fp, char *fmt, ...);
+
+/* select from fd inputA and inputB */
+int select_input(int inputA, int inputB);
 
 #endif
-/* vim: set sw=4 ts=4 fdm=syntax: */
+/* vim: set sw=4 ts=4 et fdm=syntax: */

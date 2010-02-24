@@ -1,8 +1,8 @@
 CC = gcc
 CFLAGS = -g -Wall #-ansi
 
-ROBJS = random.o ../../fkml_client_util.o
-RHEADS = ../../fkml_client_util.h
+ROBJS = random.o ../../communication.o
+RHEADS = ../../communication.h
 OBJS = $(ROBJS)
 HEADERS = $(RHEADS)
 TARGETS = random

@@ -1,12 +1,6 @@
-/* communication.c
- *
- * Die Kommunikationsschnittstelle von
- * Fkmlandunter
- *
- * (c) Fkmsoft, 2010
- */
-
+/* communication.c - the thickheaded communication interface */
 #include "communication.h"
+
 
 /* Create and initialize one player */
 player *create_player()
@@ -20,37 +14,13 @@ player *create_player()
     p->dead = false;
     p->name = ""; 
     for (i = 0; i < 12; i++)
-	p->weathercards[i] = 0;
+        p->weathercards[i] = 0;
     p->lifebelts = 0;
 
     return p;
 }
 
-/* request nickname from user in GAME_BOX */
-char *request_nick()
-{
-    char *nick;
-    nick = malloc(MAXNICK * sizeof(char));
-    write_win(GAME_BOX, "Please enter your nickname: \n");
-    read_win(GAME_BOX, nick, MAXNICK);
-    return nick;
-}
-
-/* parse deck from string s to player p */
-void parse_deck(player *p, char *s)
-{
-    int i;
-    for (i = 0; i < 12; i++)
-	p->weathercards[i] = 0;
-    sscanf(s, "DECK %d %d %d %d %d %d %d %d %d %d %d %d",
-	&p->weathercards[0], &p->weathercards[1],
-        &p->weathercards[2], &p->weathercards[3],
-        &p->weathercards[4], &p->weathercards[5],
-        &p->weathercards[6], &p->weathercards[7],
-	&p->weathercards[8], &p->weathercards[9],
-	&p->weathercards[10], &p->weathercards[11]);
-}
-
+/* create opponents from string s */
 opponents *parse_start(char *s)
 {
     int i, j;
@@ -62,13 +32,13 @@ opponents *parse_start(char *s)
     /* creating player */
     player *p = malloc(sizeof(player) * oppo->count);
     for (i = 0; i < oppo->count; i++) {
-	p[i].points = 0;
-	p[i].water_level = 0;
-	p[i].dead = false;
-	p[i].name = NULL;
-	for (j = 0; j < 12; j++)
-	    p[i].weathercards[j] = 0;
-	p[i].lifebelts = 0;
+        p[i].points = 0;
+        p[i].water_level = 0;
+        p[i].dead = false;
+        p[i].name = NULL;
+        for (j = 0; j < 12; j++)
+            p[i].weathercards[j] = 0;
+        p[i].lifebelts = 0;
     }
 
     /* skipping first two items */
@@ -76,23 +46,37 @@ opponents *parse_start(char *s)
     strtok(NULL, " ");
     
     for (i = 0; i < oppo->count; i++)
-	p[i].name = strtok(NULL, " ");
+        p[i].name = strtok(NULL, " ");
     /* freeing last char from newline */
     p[oppo->count-1].name[strlen(p[oppo->count-1].name) - 1] = '\0';
 
-    oppo->opponent = p;
+    oppo->p = p;
     return oppo;
 }
 
-void parse_rings(opponents *o, char *s) 
+/* parse deck from string s to player p */
+void parse_deck(player *p, char *s)
+{
+    int i;
+    for (i = 0; i < 12; i++)
+        p->weathercards[i] = 0;
+    sscanf(s, "DECK %d %d %d %d %d %d %d %d %d %d %d %d",
+        &p->weathercards[0], &p->weathercards[1],  &p->weathercards[2],
+        &p->weathercards[3], &p->weathercards[4],  &p->weathercards[5],
+        &p->weathercards[6], &p->weathercards[7],  &p->weathercards[8],
+        &p->weathercards[9], &p->weathercards[10], &p->weathercards[11]);
+}
+
+/* parse rings from string s to opponents o */
+void parse_rings(opponents *o, char *s)
 {
     int i;
     strtok(s, " ");
     for (i = 0; i < o->count; i++) 
-	o->opponent[i].lifebelts = atoi(strtok(NULL, " "));
+        o->p[i].lifebelts = atoi(strtok(NULL, " "));
 }
 
-
+/* parse weathercards from string s to w_card */
 void parse_weather(int *w_card, char *s)
 {
     strtok(s, " ");
@@ -100,176 +84,134 @@ void parse_weather(int *w_card, char *s)
     w_card[1] = atoi(strtok(NULL, " "));
 }
 
+/* parse waterlevel from string s to opponents o */
 void parse_wlevels(opponents *o, char *s)
 {
     int i;
     strtok(s, " ");
     for (i = 0; i < o->count; i++)
-	o->opponent[i].water_level = atoi(strtok(NULL, " "));
+        o->p[i].water_level = atoi(strtok(NULL, " "));
 }
 
+/* parse points from string s to opponents o */
 void parse_points(opponents *o, char *s)
 {
     int i;
     strtok(s, " ");
     for (i = 0; i < o->count; i++)
-	o->opponent[i].points = atoi(strtok(NULL, " "));
+        o->p[i].points = atoi(strtok(NULL, " "));
 }
 
-/* Hilfsmethode zum Einlesen einer Ganzzahl */
-#if 0
-static int getint()
+/* create and return socket */
+int create_sock()
 {
-    int c, n = 0;
-
-    while((c = getchar()) != '\n')
-        if(isdigit(c))
-            n = 10 * n + (c - '0');
-
-    return n;
+    int sock;
+    const int y = 1;
+    sock = socket(PF_INET, SOCK_STREAM, 0);
+    setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &y, sizeof(int));
+    return sock;
 }
-#endif
 
-#if 0
-/* test */
-main(int argc, char *argv[])
+/* connect to socket sock - return -1 if attempt fails, -2 if host unknown */
+int connect_socket(int sock, char *serv_addr, unsigned short port)
 {
-    char *testnames[] = { "Hans", "Peter" };
-
-    deck testdeck;
-    int i;
-    for (i = 1; i <= 12; i++)
-        testdeck.weathercards[i-1] = i*2;
-    testdeck.lifebelts = 25;
-
-    player testplayer;
-    testplayer.name = "Paul";
-    testplayer.current_deck = testdeck;
-
-    int testlevels[] = { 5, -1 };
-    int testpoints[] = { 99, 0 };
-
-    show_names(2, testnames, &testplayer);
-    give_deck(&testplayer);
-    show_waterlevel(1, 12, &testplayer);
-    //printf("%d\n", get_weather(&testplayer));
-    show_waterlevels(testlevels, &testplayer);
-    show_points(testpoints, &testplayer);
+   struct sockaddr_in server;
+   struct hostent *host_info;
+   unsigned long addr;
+   memset(&server, 0, sizeof (server));
+   if ((addr = inet_addr( serv_addr )) != INADDR_NONE)
+       memcpy((char *)&server.sin_addr, &addr, sizeof(addr));
+   else {
+       host_info = gethostbyname(serv_addr);
+       if (NULL == host_info)
+           return (-2);
+       memcpy((char *)&server.sin_addr, host_info->h_addr_list[0], host_info->h_length);
+   }
+   server.sin_family = AF_INET;
+   server.sin_port = htons( port );
+   if (connect(sock, (struct sockaddr *)&server, sizeof( server)) < 0)
+      return (-1);
+   return 0;
 }
-#endif
 
-
-
-/* nichts oder namen ausgeben */
-#if 0
-void show_names(int n, char **names, player *p)
+/* receive BUF_SIZE chars from *fp */
+char *receive_from(FILE *fp)
 {
-    prompt(p);
-    _n = n; //XXX crap!
-    while (n-- > 0) {
-        printf("%s", *names++);
-        if (n >= 1)
-            printf(", ");
-    }
-    printf("\n");
+    char *buffer = calloc(BUF_SIZE, sizeof(char));
+    
+    fgets(buffer, BUF_SIZE, fp);
+
+    return buffer;
 }
-#endif
 
-/* BESCHISSENDSTE FUNKTION ÜBERHAUPT! WEGEN CRAP DESIGN NOTWENDIG */
-#if 0
-void anzahl_der_player(int num)
+/* send formated string *fmt to *fp */
+void send_to(FILE *fp, char *fmt, ...)
 {
-    _n = num;
+    va_list args;
+
+    va_start(args, fmt);
+    vfprintf(fp, fmt, args);
+    fflush(fp);
+
+    va_end(args);
 }
-#endif
 
-#if 0
-void print_player(player *p)
+/* select from fd inputA and inputB */
+int select_input(int inputA, int inputB)
 {
-    printf("Player \"%s\":\n"
-        "points = %d, ", p->name, p->points);
+    fd_set re;
+    FD_ZERO(&re);
+    FD_SET(inputA, &re);
+    FD_SET(inputB, &re);
+
+    select(max(inputA, inputB) + 1, &re, NULL, NULL, NULL);
+
+    if (FD_ISSET(inputA, &re))
+        return inputA;
+
+    if (FD_ISSET(inputB, &re))
+        return inputB;
+
+    return (-1);
 }
-#endif
 
-/* 12 weathercards + lifebelt ausgeben */
-#if 0
-void print_deck(player *p)
+/*
+char *receive_from2(int fd)
 {
-    prompt(p);
+    char *buffer = calloc(BUF_SIZE, sizeof(char));
 
-    int i;
-    printf("Your current weathercards are: ");
-    for (i = 0; i < 12; i++) {
-        if (p->current_deck.weathercards[i] > 0) {
-            printf("%d", p->current_deck.weathercards[i]);
-            if (i < 11)
-                printf(", ");
+    if (read(fd, buffer, BUF_SIZE) < 0)
+       //error_exit("Error receiving from %d", fd);
+
+    return buffer;
+}
+
+void send_to2(int fd, char *format, ...)
+{
+    va_list ap;
+    char *p, *sval;
+
+    va_start(ap, format);
+    for (p = format; *p; p++) {
+        if (*p != '%') {
+            if (send(fd, p, sizeof(*p), 0) == -1)
+                error_exit("Error sending to %d", fd);
+            continue;
         }
-    }
-    printf("\n");
-    prompt(p);
-    printf("Your amount of lifebelts is: %d\n", p->current_deck.lifebelts);
-}
-#endif
-
-/* Wasserstand a und b ausgeben */
-#if 0
-void show_waterlevel(int a, int b, player *p)
-{
-    prompt(p);
-    printf("The new \"watercards\" are %d and %d\n", a, b); 
-}
-#endif
-
-/* Liest die auszuspielende Wassergarte ein */
-#if 0
-int get_weather(player *p)
-{
-    bool indeck = false;
-    int i, c;
-    while (!indeck) {
-        prompt(p);
-        printf("Please enter your chosen \"watercard\": ");
-        c = getint();
-        for (i = 0; i < 12; i++) {
-            if (c > 0 && c == p->current_deck.weathercards[i])
-                indeck = true;
+        switch (*++p) {
+        case 's':
+            for (sval = va_arg(ap, char *); *sval; sval++)
+                if (send(fd, sval, sizeof(*sval), 0) == -1)
+                    error_exit("Error sending to %d", fd);
+            break;
+        default:
+            if (send(fd, p, sizeof(*p), 0) == -1)
+                error_exit("Error sending to %d", fd);
+            break;
         }
-    }
-    return c;
+    }        
+    va_end(ap);
 }
-#endif
+*/
 
-/* Gibt alle Wasserstände aus */
-#if 0
-void show_waterlevels(int *levels, player *p)
-{
-    int i;
-    prompt(p);
-    printf("The \"waterlevels\" are: ");
-    for (i = 0; i < _n; i++) { //XXX crap!
-        printf("%d", levels[i]);
-        if (i < _n - 1)
-            printf(", ");
-    }
-    printf("\n");
-}
-#endif
-
-/* Gibt alle Punkte aus */
-#if 0
-void show_points(int *points, player *p)
-{
-    int i;
-    prompt(p);
-    printf("The score is: ");
-    for (i = 0; i < _n; i++) { //XXX crap!
-        printf("%d", points[i]);
-        if (i < _n - 1)
-            printf(", ");
-    }
-    printf("\n");
-}
-#endif
-
-/* vim: set sw=4 ts=4 fdm=syntax: */
+/* vim: set sw=4 ts=4 et fdm=syntax: */

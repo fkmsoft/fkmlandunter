@@ -13,7 +13,7 @@
 /* for getopt */
 #include <unistd.h>
 
-#include "../../fkml_client_util.h"
+#include "../../communication.h"
 
 void write_win(int struct_no, char *format, ...)
 {
