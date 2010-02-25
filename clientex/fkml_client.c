@@ -15,11 +15,10 @@ int main(int argc, char *argv[])
         port = atoi(*++argv);
     }
 
-    char *input;
-    player *p = create_player();
-    opponents *o = NULL;
-    int i, wcard, round = 0, w_card[] = { 0, 0 };
+    char *input = NULL;
+    int i, wcard;
     bool indeck;
+    gamestr *game = create_game();
 
     /* creating interface */
     initialise_windows();
@@ -38,9 +37,8 @@ int main(int argc, char *argv[])
     /* LOGIN */
     do {
         /* nick */
-        p->name = malloc(MAXNICK * sizeof(char));
         write_win(GAME_BOX, "Please enter your nickname: \n");
-        read_win(GAME_BOX, p->name, MAXNICK);
+        read_win(GAME_BOX, game->player.name, MAXNICK);
 
         /* connect */
         write_win(GAME_BOX, "IP = %s, Port = %d. Trying to connect...", ip, port);
@@ -53,8 +51,8 @@ int main(int argc, char *argv[])
         write_win(GAME_BOX, "Connecting succeed\n");
 
         /* login */
-        write_win(GAME_BOX, "Try to login with nick %s...", p->name);
-        send_to(fpsock, "LOGIN %s\n", p->name);
+        write_win(GAME_BOX, "Try to login with nick %s...", game->player.name);
+        send_to(fpsock, "LOGIN %s\n", game->player.name);
 
         /* ack? */
         input = receive_from(fpsock);
@@ -62,89 +60,58 @@ int main(int argc, char *argv[])
     write_win(GAME_BOX, "Login succeed\n");
     
     /* start */
+    write_win(GAME_BOX, "");
     do {
         input = receive_from(fpsock);
     } while (strncmp(input, "START ", 6) != 0);
-    o = parse_start(input);
+    parse_start(game, input);
 
-    write_win(GAME_BOX, "Game is starting with %d players\n", o->count);
+    write_win(GAME_BOX, "Game is starting with %d players\n", game->count);
 
 
     /* STARTING GAME */
-    while (round < o->count) {
-        /* deck */
-        while (strncmp(input, "DECK ", 5) != 0) {
-            write_win(GAME_BOX, "A new round has been started...\n");
+    while (game->round < game->count) {
+
+        /* get + print deck & rings & weather*/
+        while (!game->deck || !game->rings || !game->weather) {
             input = receive_from(fpsock);
+            if (parse_cmd(game, input) < 0)
+                write_win(GAME_BOX, "server cmd not valid:%s\n", input);
         }
-        parse_deck(p, input);
-        write_win(GAME_BOX, "Your current weathercards are:\n");
-        for (i = 0; i < 12; i++) {
-            if (p->weathercards[i] > 0) {
-                write_win(GAME_BOX, "%d, ", p->weathercards[i]);
-            }
-        }
-        write_win(GAME_BOX, "\n");
-
-
-        /* rings */
-        while (strncmp(input, "RINGS ", 6) != 0)
-            input = receive_from(fpsock);
-        parse_rings(o, input);
-        write_win(GAME_BOX, "Lifebelt ranking:\n");
-        for (i = 0; i < o->count; i++) {
-            if (o->p[i].lifebelts == (-1))
-                write_win(GAME_BOX, "%s: drowned\n");
-            else
-                write_win(GAME_BOX, "%s: %d\n", o->p[i].name, o->p[i].lifebelts);
-        }
-
-        /* weather */
-        while (strncmp(input, "WEATHER ", 8) != 0)
-            input = receive_from(fpsock);
-        parse_weather(w_card, input);
-        write_win(GAME_BOX, "The new watercards are %d and %d\n", w_card[0], w_card[1]); 
-
+        print_deck(game);
+        print_rings(game);
+        print_weathercards(game);
 
         /* play */
+        write_win(GAME_BOX, "Please choose a card from your deck: ");
         indeck = false;
-        write_win(GAME_BOX, "Please choose a weathercard from your deck: ");
         while (!indeck) { 
             read_win(GAME_BOX, input, 2);
             wcard = atoi(input);
             for (i = 0; i < 12; i++)
-                if (wcard > 0 && wcard == p->weathercards[i])
+                if (wcard > 0 && wcard == game->player.weathercards[i])
                     indeck = true;
         }
-        write_win(GAME_BOX, "%d\n", wcard);
-        write_win(GAME_BOX, "Please wait till the other players acted\n");
+        write_win(GAME_BOX, "%d\nPlease wait till the other players acted\n", wcard);
         do {
             send_to(fpsock, "PLAY %d\n", wcard);
             input = receive_from(fpsock);
         } while (strncmp(input, "ACK ", 4) != 0);
 
-
-        /* wlevels */
-        while (strncmp(input, "WLEVELS ", 8) != 0)
+        /* get + print wlevel */
+        while (!game->wlevel) {
             input = receive_from(fpsock);
-        parse_wlevels(o, input);
-        write_win(GAME_BOX, "The waterlevels are:\n");
-        for (i = 0; i < o->count; i++) {
-            if (o->p[i].water_level == (-1))
-                write_win(GAME_BOX, "%s: drowned\n", o->p[i].name);
-            else
-                write_win(GAME_BOX, "%s: %d\n", o->p[i].name, o->p[i].water_level);
+            if (parse_cmd(game, input) < 0)
+                write_win(GAME_BOX, "server cmd not valid:%s\n", input);
         }
+        print_wlevel(game);
 
-        /* points or next round? */
+        /* points? */
         input = receive_from(fpsock);
-        if (strncmp(input, "POINTS ", 7) == 0) {
-            round++;
-            parse_points(o, input);
-            write_win(GAME_BOX, "The score is:\n");
-            for (i = 0; i < o->count; i++)
-                write_win(GAME_BOX, "%s: %d\n", o->p[i].name, o->p[i].points);
-        }
+        if (parse_cmd(game, input) < 0)
+            write_win(GAME_BOX, "server cmd not valid:%s\n", input);
+        if (game->points)
+            print_points(game);
     }
 
     write_win(GAME_BOX, "END OF GAME!\n");
@@ -156,5 +123,59 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+
+/* bonus */
+void print_deck(gamestr *game)
+{
+    int i;
+    write_win(GAME_BOX, "Your current deck is:\n");
+    for (i = 0; i < 12; i++)
+        if (game->player.weathercards[i] > 0)
+            write_win(GAME_BOX, "%d, ", game->player.weathercards[i]);
+    write_win(GAME_BOX, "\n");
+    game->deck = false;
+}
+
+void print_rings(gamestr *game)
+{
+    int i;
+    write_win(GAME_BOX, "Lifebelt ranking:\n");
+    for (i = 0; i < game->count; i++)
+        if (game->villain[i].lifebelts == (-1))
+            write_win(GAME_BOX, "%s: drowned\n", game->villain[i].name);
+        else
+            write_win(GAME_BOX, "%s: %d\n", game->villain[i].name, game->villain[i].lifebelts);
+    game->rings = false;
+}
+
+void print_weathercards(gamestr *game)
+{
+    write_win(GAME_BOX, "The new watercards are %d and %d\n", game->w_card[0], game->w_card[1]); 
+    game->weather = false;
+}
+
+void print_wlevel(gamestr *game)
+{
+    int i;
+    write_win(GAME_BOX, "The waterlevels are:\n");
+    for (i = 0; i < game->count; i++) {
+        if (game->villain[i].water_level == (-1))
+            write_win(GAME_BOX, "%s: drowned\n", game->villain[i].name);
+        else
+            write_win(GAME_BOX, "%s: %d\n", game->villain[i].name, game->villain[i].water_level);
+    }
+    game->wlevel = false;
+}
+
+void print_points(gamestr *game)
+{
+    int i;
+    write_win(GAME_BOX, "The score is:\n");
+    for (i = 0; i < game->count; i++)
+        write_win(GAME_BOX, "%s: %d\n", game->villain[i].name, game->villain[i].points);
+    game->points = false;
+    write_win(GAME_BOX, "A new round has been started...\n");
+}
+
 
 /* vim: set sw=4 ts=4 et fdm=syntax: */

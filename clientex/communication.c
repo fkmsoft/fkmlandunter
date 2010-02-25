@@ -2,104 +2,121 @@
 #include "communication.h"
 
 
-/* Create and initialize one player */
-player *create_player()
+/* Create and initialize game */
+gamestr *create_game()
 {
     int i;
 
-    /* creating player */
-    player *p = malloc(sizeof(player));
-    p->points = 0;
-    p->water_level = 0;
-    p->dead = false;
-    p->name = ""; 
-    for (i = 0; i < 12; i++)
-        p->weathercards[i] = 0;
-    p->lifebelts = 0;
+    gamestr *game = malloc(sizeof(gamestr));
 
-    return p;
+    /* count */
+    game->count = 0;
+
+    /* w_card[2] */
+    game->w_card[0] = 0;
+    game->w_card[1] = 1;
+
+    /* round */
+    game->round = 0;
+
+    /* bools */
+    game->deck = false;
+    game->rings = false;
+    game->weather = false;
+    game->wlevel = false;
+    game->points = false;
+
+    /* creating player */
+    /*game->player = malloc(sizeof(player));*/
+    game->player.points = 0;
+    game->player.water_level = 0;
+    game->player.dead = false;
+    game->player.name = malloc(MAXNICK * sizeof(char));
+    for (i = 0; i < 12; i++)
+        game->player.weathercards[i] = 0;
+    game->player.lifebelts = 0;
+
+    /* creating villain(s) - later in parse_start */
+    game->villain = NULL;
+
+    return game;
 }
 
-/* create opponents from string s */
-opponents *parse_start(char *s)
+/* initialise gamestr->villains from string s */
+void parse_start(gamestr *game, char *s)
 {
     int i, j;
 
-    opponents *oppo = malloc(sizeof(opponents));
+    sscanf(s, "START %d", &game->count);
 
-    sscanf(s, "START %d", &oppo->count);
-
-    /* creating player */
-    player *p = malloc(sizeof(player) * oppo->count);
-    for (i = 0; i < oppo->count; i++) {
-        p[i].points = 0;
-        p[i].water_level = 0;
-        p[i].dead = false;
-        p[i].name = NULL;
+    /* creating villains */
+    player *v = malloc(sizeof(player) * game->count);
+    for (i = 0; i < game->count; i++) {
+        v[i].points = 0;
+        v[i].water_level = 0;
+        v[i].dead = false;
+        v[i].name = NULL;
         for (j = 0; j < 12; j++)
-            p[i].weathercards[j] = 0;
-        p[i].lifebelts = 0;
+            v[i].weathercards[j] = 0;
+        v[i].lifebelts = 0;
     }
 
     /* skipping first two items */
     strtok(s, " ");
     strtok(NULL, " ");
     
-    for (i = 0; i < oppo->count; i++)
-        p[i].name = strtok(NULL, " ");
+    for (i = 0; i < game->count; i++)
+        v[i].name = strtok(NULL, " ");
     /* freeing last char from newline */
-    p[oppo->count-1].name[strlen(p[oppo->count-1].name) - 1] = '\0';
+    v[game->count-1].name[strlen(v[game->count-1].name) - 1] = '\0';
 
-    oppo->p = p;
-    return oppo;
+    game->villain = v;
 }
 
-/* parse deck from string s to player p */
-void parse_deck(player *p, char *s)
+/* parse server command */
+int parse_cmd(gamestr *g, char *s)
 {
     int i;
-    for (i = 0; i < 12; i++)
-        p->weathercards[i] = 0;
-    sscanf(s, "DECK %d %d %d %d %d %d %d %d %d %d %d %d",
-        &p->weathercards[0], &p->weathercards[1],  &p->weathercards[2],
-        &p->weathercards[3], &p->weathercards[4],  &p->weathercards[5],
-        &p->weathercards[6], &p->weathercards[7],  &p->weathercards[8],
-        &p->weathercards[9], &p->weathercards[10], &p->weathercards[11]);
-}
 
-/* parse rings from string s to opponents o */
-void parse_rings(opponents *o, char *s)
-{
-    int i;
-    strtok(s, " ");
-    for (i = 0; i < o->count; i++) 
-        o->p[i].lifebelts = atoi(strtok(NULL, " "));
-}
-
-/* parse weathercards from string s to w_card */
-void parse_weather(int *w_card, char *s)
-{
-    strtok(s, " ");
-    w_card[0] = atoi(strtok(NULL, " "));
-    w_card[1] = atoi(strtok(NULL, " "));
-}
-
-/* parse waterlevel from string s to opponents o */
-void parse_wlevels(opponents *o, char *s)
-{
-    int i;
-    strtok(s, " ");
-    for (i = 0; i < o->count; i++)
-        o->p[i].water_level = atoi(strtok(NULL, " "));
-}
-
-/* parse points from string s to opponents o */
-void parse_points(opponents *o, char *s)
-{
-    int i;
-    strtok(s, " ");
-    for (i = 0; i < o->count; i++)
-        o->p[i].points = atoi(strtok(NULL, " "));
+    if (strncmp(s, "DECK ", 5) == 0) {
+        for (i = 0; i < 12; i++)
+            g->player.weathercards[i] = 0;
+        sscanf(s, "DECK %d %d %d %d %d %d %d %d %d %d %d %d",
+            &g->player.weathercards[0],  &g->player.weathercards[1],
+            &g->player.weathercards[2],  &g->player.weathercards[3],
+            &g->player.weathercards[4],  &g->player.weathercards[5],
+            &g->player.weathercards[6],  &g->player.weathercards[7],
+            &g->player.weathercards[8],  &g->player.weathercards[9],
+            &g->player.weathercards[10], &g->player.weathercards[11]);
+        g->deck = true; 
+        return 0;
+    } else if (strncmp(s, "RINGS ", 6) == 0) {
+        strtok(s, " ");
+        for (i = 0; i < g->count; i++) 
+            g->villain[i].lifebelts = atoi(strtok(NULL, " "));
+        g->rings = true;
+        return 0;
+    } else if (strncmp(s, "WEATHER ", 8) == 0) {
+        strtok(s, " ");
+        g->w_card[0] = atoi(strtok(NULL, " "));
+        g->w_card[1] = atoi(strtok(NULL, " "));
+        g->weather = true;
+        return 0;
+    } else if (strncmp(s, "WLEVELS ", 8) == 0) {
+        strtok(s, " ");
+        for (i = 0; i < g->count; i++)
+            g->villain[i].water_level = atoi(strtok(NULL, " "));
+        g->wlevel = true;
+       return 0; 
+    } else if (strncmp(s, "POINTS ", 7) == 0) {
+        strtok(s, " ");
+        for (i = 0; i < g->count; i++)
+            g->villain[i].points = atoi(strtok(NULL, " "));
+        g->round++;
+        g->points = true;
+        return 0;
+    }
+    return (-1);
 }
 
 /* create and return socket */

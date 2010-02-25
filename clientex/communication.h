@@ -17,6 +17,7 @@
 #include <stdarg.h>
 #include <sys/time.h>
 
+#define MAXNICK     (30)
 #define BUF_SIZE    (1024)
 #define max(A,B)    ((A) > (B) ? (A) : (B))
 
@@ -30,32 +31,28 @@ typedef struct {
 } player;
 
 typedef struct {
-    player *p;
+    player player;
+    player *villain;
     int count;
-} opponents;
+    int w_card[2];
+    int round;
+    bool deck;
+    bool rings;
+    bool weather;
+    bool wlevel;
+    bool points;
+} gamestr;
 
 /* GAMEPLAY */
 
-/* Create and initialize one player */
-player *create_player();
+/* Create and initialize game */
+gamestr *create_game();
 
-/* create opponents from string s */
-opponents *parse_start(char *s);
+/* initialise gamestr->villains from string s */
+void parse_start(gamestr *game, char *s);
 
-/* parse deck from string s to player p */
-void parse_deck(player *p, char *s);
-
-/* parse rings from string s to opponents o */
-void parse_rings(opponents *o, char *s);
-
-/* parse weathercards from string s to w_card */
-void parse_weather(int *w_card, char *s);
-
-/* parse waterlevel from string s to opponents o */
-void parse_wlevels(opponents *o, char *s);
-
-/* parse points from string s to opponents o */
-void parse_points(opponents *o, char *s);
+/* parse server command */
+int parse_cmd(gamestr *g, char *s);
 
 /* NETWORK */
 
