@@ -30,7 +30,7 @@ int main(int argc, char **argv)
         if ((p = poll_for_input(s)) == -1) {
             if (fkml_addplayer(s))
                 i++;
-        } else {
+        } else if (p > 0) {
             char buf[MAXLEN];
             fgets(buf, MAXLEN-1, s->players[p].fp);
             switch(get_client_cmd(buf)) {
