@@ -45,7 +45,7 @@ int main(int argc, char **argv)
                 case MSG:
                     /* printf("Sending message %s\n", buf); */
                     if (!data || *(++data) == 0) {
-                        send_cmd(s, p, FAIL, "Messag expected");
+                        send_cmd(s, p, FAIL, "Message expected");
                     } else for (j = 0; j < s->connected; j++)
                             if (j != p)
                                 send_cmd(s, j, MSGFROM, "%s %s",
@@ -57,6 +57,10 @@ int main(int argc, char **argv)
                         i = MAX_PLAYERS;
                     else
                         send_cmd(s, p, FAIL, "not enough players");
+                    break;
+                case LOGOUT:
+                    send_cmd(s, p, TERMINATE, "bye");
+                    fkml_rmclient(s, p);
                     break;
                 case PLAY:
                 case LOGIN:
