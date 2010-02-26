@@ -175,6 +175,7 @@ bool fkml_addplayer(fkml_server *s)
             send_cmd(s, newplayer, FAIL,
                     "Player names must not contain \'%%\'");
             fkml_rmclient(s, newplayer);
+            return false;
         } else {
             s->players[newplayer].name = malloc(sizeof(char) *
                     (buf + strlen(buf) - nam/*strlen(client_command[LOGIN])*/));
