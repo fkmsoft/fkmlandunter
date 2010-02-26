@@ -100,10 +100,11 @@ int read_weather(fkml_server *s, int p)
             } if (s->players[p].dead) {
                 send_cmd(s, p, FAIL, "you drowned");
             } else {
+                trim(buf, "\r\n");
                 char *cardstr = strchr(buf, ' ');
-                if (!cardstr || *(cardstr + 1) == 0) {
-                    send_cmd(s, p, FAIL, "card argument missing", c);
-                    c = -1;
+                if (!cardstr || *(++cardstr) == 0) {
+                    send_cmd(s, p, FAIL, "card argument missing");
+                    break;
                 } else {
                     sscanf(cardstr, "%d\n", &c);
                     for (i = 0; i < 12; i++)
