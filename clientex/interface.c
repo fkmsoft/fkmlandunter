@@ -166,26 +166,31 @@ void read_win(int struct_no, char *s, int size)
     clear_input(w_struct);
 }
 
-void read_chat(char *s)
+char *read_chat()
 {
-    int x, y;
     win_struct *w_struct = &chat_box;
     static int pos = 0;
-    static char input[CHAT_BUFFER];
+    static char input[CHAT_BUFFER + 1];
     int c = 0;
+    char *s = NULL;
 
-    echo();
+    /*echo();*/
     curs_set(2);
-    c = mvwgetch(w_struct->input, 1, 1 + pos);
-    input[pos++] = c;
-    if (c == '\n' || pos >= CHAT_BUFFER) {
-        pos = 0;
-        s = malloc(strlen(input) * sizeof(char));
-        strcpy(s, input); 
-        noecho();
-        curs_set(0);
-        clear_input(w_struct);
-        return s;
+    /*c = mvwgetch(w_struct->input, 1, 1 + pos);*/
+    c = getch();
+    if (c == '\n' || (c > 31 && c < 126)) {
+        mvwaddch(w_struct->input, 1, 1 + pos, c); 
+        input[pos++] = c;
+        if (c == '\n' || pos >= CHAT_BUFFER) {
+            pos = 0;
+            s = malloc((strlen(input) + 1) * sizeof(char));
+            strcpy(s, input); 
+            /*noecho();*/
+            /*curs_set(0);*/
+            clear_input(w_struct);
+        }
+        wrefresh(w_struct->input);
     }
+    return s;
 }
 /* vim: set sw=4 ts=4 et fdm=syntax: */

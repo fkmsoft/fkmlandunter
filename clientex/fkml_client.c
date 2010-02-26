@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     }
 
     char *input = NULL;
-    int i;
+    int i, status;
     bool indeck;
     gamestr *game = create_game();
 
@@ -53,7 +53,6 @@ int main(int argc, char *argv[])
     write_win(GAME_BOX, "Login succeed\n");
     
     /* START */
-    /*
     write_win(GAME_BOX, "Do you want to start the game now? (y)es/(n)o: ");
     read_win(GAME_BOX, input, 1);
     write_win(GAME_BOX, "%s\n", input);
@@ -65,29 +64,30 @@ int main(int argc, char *argv[])
     parse_start(game, input);
 
     write_win(GAME_BOX, "Game is starting with %d players\n", game->count);
-    */
-    game->count = 9999;
 
     /* STARTING GAME */
     while (game->round < game->count) {
         /* get + print deck & rings & weather*/
-        while (!game->deck || !game->rings || !game->weather || true) {
-            int fd;
-            if ((fd = poll_input(sock_num, 0)) == -1) {
+        while (!game->deck || !game->rings || !game->weather) {
+            status = poll_input(sock_num, 0);
+            if (status == -1)
                 error_exit(sock_num, "Server closed socket");
-            } else if (fd == sock_num) {
+            if (status == -2)
+                error_exit(sock_num, "Polling failed");
+            if (status == sock_num) {
                 input = receive_from(fpsock);
                 write_win(GAME_BOX, "Input from socket:%s\n", input);
+                if (parse_cmd(game, input) < 0)
+                    write_win(GAME_BOX, "server cmd not valid:%s\n", input);
+                if (game->message)
+                    print_message(game);
             } else {
-                write_win(GAME_BOX, "Input from stdin: %d\n", getch());
+                input = read_chat();
+                if (input != NULL) {
+                    write_win(CHAT_BOX, "%s: %s", game->player.name, input);
+                    send_to(fpsock, "MSG %s\n", input);
+                }
             }
-            /*
-            input = receive_from(fpsock);
-            if (parse_cmd(game, input) < 0)
-                write_win(GAME_BOX, "server cmd not valid:%s\n", input);
-            if (game->message) {
-                print_message(game);
-            }*/
         }
         print_deck(game);
         print_rings(game);
@@ -110,9 +110,24 @@ int main(int argc, char *argv[])
 
         /* get + print wlevel */
         while (!game->wlevel) {
-            input = receive_from(fpsock);
-            if (parse_cmd(game, input) < 0)
-                write_win(GAME_BOX, "server cmd not valid:%s\n", input);
+            status = poll_input(sock_num, 0);
+            if (status == -1)
+                error_exit(sock_num, "Server closed socket");
+            if (status == -2)
+                error_exit(sock_num, "Polling failed");
+            if (status == sock_num) {
+                input = receive_from(fpsock);
+                if (parse_cmd(game, input) < 0)
+                    write_win(GAME_BOX, "server cmd not valid:%s\n", input);
+                if (game->message)
+                    print_message(game);
+            } else {
+                input = read_chat();
+                if (input != NULL) {
+                    write_win(CHAT_BOX, "%s: %s", game->player.name, input);
+                    send_to(fpsock, "MSG %s\n", input);
+                }
+            }
         }
         print_wlevel(game);
 

@@ -37,5 +37,7 @@ void scroll_win(win_struct *w_struct);
 
 void read_win(int struct_no, char *s, int size);
 
+char *read_chat();
+
 #endif
 /* vim: set sw=4 ts=4 et fdm=syntax: */
