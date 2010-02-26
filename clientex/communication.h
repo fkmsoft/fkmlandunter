@@ -9,17 +9,21 @@
 #define COMMUNICATION_H
 
 #include <stdbool.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <stdarg.h>
 #include <sys/time.h>
+#include <stdio.h>
+
+#include <unistd.h>
+#include <poll.h>
 
 #define MAXNICK     (30)
 #define BUF_SIZE    (1024)
 #define max(A,B)    ((A) > (B) ? (A) : (B))
+
 
 typedef struct {
     int points;
@@ -36,11 +40,10 @@ typedef struct {
     int count;
     int w_card[2];
     int round;
-    bool deck;
-    bool rings;
-    bool weather;
-    bool wlevel;
-    bool points;
+    bool deck, rings, weather, wlevel, points;
+    bool message;
+    char *msg_from;
+    char *msg_data;
 } gamestr;
 
 /* GAMEPLAY */
@@ -70,6 +73,9 @@ void send_to(FILE *fp, char *fmt, ...);
 
 /* select from fd inputA and inputB */
 int select_input(int inputA, int inputB);
+
+/* poll from fd inputA and inputB */
+int poll_input(int inputA, int inputB);
 
 #endif
 /* vim: set sw=4 ts=4 et fdm=syntax: */

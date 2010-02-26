@@ -2,7 +2,7 @@ The fkmlandunter prtcl:
 -----------------------------
 -> LOGIN name
 <- ACK nam
-//-> START
+-> START
 <- START 3 nam1 nam2 nam3
 
     <- DECK 1 2 56

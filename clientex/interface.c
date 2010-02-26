@@ -76,44 +76,52 @@ void write_win(int struct_no, char *format, ...)
 	    }
 	    switch (*++p) {
 	    case 'd':
-		ival = va_arg(ap, int);
-		wprintw(win_struct->output, "%d", ival);
-		break;
+            ival = va_arg(ap, int);
+            wprintw(win_struct->output, "%d", ival);
+            break;
 	    case 's':
-		for (sval = va_arg(ap, char *); *sval; sval++) {
-		    if (*sval == '\n') {
-			win_struct->lines++;
-			/* set curser on new line */
-			wmove(win_struct->output, win_struct->lines + 1, 1);
-		    } else
-			waddch(win_struct->output, *sval);
-		}
-		break;
+            for (sval = va_arg(ap, char *); *sval; sval++) {
+                if (*sval == '\n') {
+                win_struct->lines++;
+                /* set curser on new line */
+                wmove(win_struct->output, win_struct->lines + 1, 1);
+                } else
+                waddch(win_struct->output, *sval);
+            }
+            break;
 	    default:
-		waddch(win_struct->output, *sval);
-		win_struct->lines++;
-		break;
+            waddch(win_struct->output, *sval);
+            win_struct->lines++;
+            break;
 	    }
 	}	
 	va_end(ap);
     } else {
-	/* to initialise or the like */
-	box(win_struct->output, 0, 0);
-	mvwprintw(win_struct->output, 0, 1, " %s output: ", win_struct->title);
-	wmove(win_struct->output, 1, 1);
+        /* to initialise or the like */
+        box(win_struct->output, 0, 0);
+        mvwprintw(win_struct->output, 0, 1, " %s output: ", win_struct->title);
+        wmove(win_struct->output, 1, 1);
     }
 
-    /* input box zeichnen + löschen */
-    wmove(win_struct->input, 1, 0);
-    winsertln(win_struct->input);
-    box(win_struct->input, 0, 0);
-    mvwprintw(win_struct->input, 0, 1, " %s input: ", win_struct->title);
-
-    /* curser in input setzen */
-    wmove(win_struct->input, 1, 1);
+    /* wenn fmt leer, dann input box zeichnen + löschen */
+    if (strlen(format) == 0) {
+        clear_input(win_struct);
+    }
 
     wrefresh(win_struct->output);
     wrefresh(win_struct->input);
+}
+
+/* clears input window and set curser */
+void clear_input(win_struct *w_struct)
+{
+    wmove(w_struct->input, 1, 0);
+    winsertln(w_struct->input);
+    box(w_struct->input, 0, 0);
+    mvwprintw(w_struct->input, 0, 1, " %s input: ", w_struct->title);
+
+    wmove(w_struct->input, 1, 1);
+    wrefresh(w_struct->input);
 }
 
 /* scrolls if necessary (last line written) */
@@ -124,20 +132,20 @@ void scroll_win(win_struct *w_struct)
     getyx(w_struct->output, y, x);
 
     if (w_struct->lines >= ymax - 2) {
-	/* delete last line (box bottom) */
-	wmove(w_struct->output, ymax - 1, 0);
-	wdeleteln(w_struct->output);
+        /* delete last line (box bottom) */
+        wmove(w_struct->output, ymax - 1, 0);
+        wdeleteln(w_struct->output);
 
-	/* scroll and reprint box */
-	scrollok(w_struct->output, TRUE);
-	wscrl(w_struct->output, 1);
-	box(w_struct->output, 0, 0);
-	mvwprintw(w_struct->output, 0, 1, " %s output: ", w_struct->title);
+        /* scroll and reprint box */
+        scrollok(w_struct->output, TRUE);
+        wscrl(w_struct->output, 1);
+        box(w_struct->output, 0, 0);
+        mvwprintw(w_struct->output, 0, 1, " %s output: ", w_struct->title);
 
-	/* set curser on new line */
-	wmove(w_struct->output, w_struct->lines, 1);
+        /* set curser on new line */
+        wmove(w_struct->output, w_struct->lines, 1);
 
-	w_struct->lines--;
+        w_struct->lines--;
     }
 }
 
@@ -155,5 +163,29 @@ void read_win(int struct_no, char *s, int size)
     mvwgetnstr(w_struct->input, 1, 1, s, size);
     noecho();
     curs_set(0);
+    clear_input(w_struct);
+}
+
+void read_chat(char *s)
+{
+    int x, y;
+    win_struct *w_struct = &chat_box;
+    getyx(w_struct->input, y, x);
+    static int pos = 0;
+    static char input[CHAT_BUFFER];
+    int c = 0;
+
+    echo();
+    curs_set(2);
+    c = mvwgetch(w_struct->input, 1, x);
+    input[pos++] = c;
+    if (c == '\n' || pos >= CHAT_BUFFER) {
+        pos = 0;
+        s = malloc(strlen(input) * sizeof(char));
+        strcpy(s, input); 
+        noecho();
+        curs_set(0);
+        clear_input(w_struct);
+    }
 }
 /* vim: set sw=4 ts=4 et fdm=syntax: */

@@ -26,6 +26,7 @@ void print_rings(gamestr *game);
 void print_weathercards(gamestr *game);
 void print_wlevel(gamestr *game);
 void print_points(gamestr *game);
+void print_message(gamestr *game);
 
 #endif
 /* vim: set sw=4 ts=4 et fdm=syntax: */

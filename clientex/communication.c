@@ -26,6 +26,11 @@ gamestr *create_game()
     game->wlevel = false;
     game->points = false;
 
+    /* message */
+    game->message = false;
+    game->msg_from = NULL;
+    game->msg_data = NULL;
+
     /* creating player */
     /*game->player = malloc(sizeof(player));*/
     game->player.points = 0;
@@ -74,6 +79,9 @@ void parse_start(gamestr *game, char *s)
 }
 
 /* parse server command */
+/* parse successful -> return 0
+ * parse failed     -> return -1
+ * string is msg    -> return 1 */
 int parse_cmd(gamestr *g, char *s)
 {
     int i;
@@ -114,6 +122,15 @@ int parse_cmd(gamestr *g, char *s)
             g->villain[i].points = atoi(strtok(NULL, " "));
         g->round++;
         g->points = true;
+        return 0;
+    } else if (strncmp(s, "MSGFROM ", 8) == 0) {
+        g->msg_from = strchr(s, ' ') + 1;
+        g->msg_data = strchr(g->msg_from, ' ') + 1;
+
+        *(g->msg_data - 1) = '\0';
+        g->msg_data[strlen(g->msg_data) - 1] = '\0';
+        
+        g->message = true;
         return 0;
     }
     return (-1);
@@ -157,6 +174,7 @@ char *receive_from(FILE *fp)
     char *buffer = calloc(BUF_SIZE, sizeof(char));
     
     fgets(buffer, BUF_SIZE, fp);
+    /*fgets_unlocked(buffer, BUF_SIZE, fp);*/
 
     return buffer;
 }
@@ -181,6 +199,7 @@ int select_input(int inputA, int inputB)
     FD_SET(inputA, &re);
     FD_SET(inputB, &re);
 
+
     select(max(inputA, inputB) + 1, &re, NULL, NULL, NULL);
 
     if (FD_ISSET(inputA, &re))
@@ -192,13 +211,38 @@ int select_input(int inputA, int inputB)
     return (-1);
 }
 
+/* poll from fd inputA and inputB */
+int poll_input(int inputA, int inputB)
+{
+    struct pollfd pfds[2];
+
+    pfds[0].fd = inputA;
+    pfds[0].events = POLLIN;
+    pfds[1].fd = inputB;
+    pfds[1].events = POLLIN;
+
+    if (poll(pfds, 2, -1) < 0)
+        return -1;
+
+    if (pfds[0].revents & POLLIN)
+        return inputA;
+    if (pfds[1].revents & POLLIN)
+        return inputB;
+
+    return -1;
+}
+
 /*
 char *receive_from2(int fd)
 {
-    char *buffer = calloc(BUF_SIZE, sizeof(char));
+    char *buffer = malloc(sizeof(char) * BUF_SIZE);
+    int i;
 
-    if (read(fd, buffer, BUF_SIZE) < 0)
-       //error_exit("Error receiving from %d", fd);
+    for(i = 0; i < BUF_SIZE; i++) {
+        read(fd, buffer+i, 1);
+        if (buffer[i] == '\n')
+            break;
+    }
 
     return buffer;
 }

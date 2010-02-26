@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     }
 
     char *input = NULL;
-    int i, wcard;
+    int i;
     bool indeck;
     gamestr *game = create_game();
 
@@ -59,8 +59,12 @@ int main(int argc, char *argv[])
     } while (strncmp(input, "ACK", 3) != 0);
     write_win(GAME_BOX, "Login succeed\n");
     
-    /* start */
-    write_win(GAME_BOX, "");
+    /* START */
+    write_win(GAME_BOX, "Do you want to start the game now? (y)es/(n)o: ");
+    read_win(GAME_BOX, input, 1);
+    write_win(GAME_BOX, "%s\n", input);
+    if (input[0] == 'y')
+        send_to(fpsock, "START\n");
     do {
         input = receive_from(fpsock);
     } while (strncmp(input, "START ", 6) != 0);
@@ -71,12 +75,22 @@ int main(int argc, char *argv[])
 
     /* STARTING GAME */
     while (game->round < game->count) {
-
         /* get + print deck & rings & weather*/
-        while (!game->deck || !game->rings || !game->weather) {
+        while (!game->deck || !game->rings || !game->weather || true) {
+            if (poll_input(sock_num, 0) == sock_num) {
+                /*input = receive_from2(sock_num);*/
+                input = receive_from(fpsock);
+                write_win(GAME_BOX, "Input from socket:%s\n", input);
+            } else {
+                write_win(GAME_BOX, "Input from stdin: %d\n", getch());
+            }
+            /*
             input = receive_from(fpsock);
             if (parse_cmd(game, input) < 0)
                 write_win(GAME_BOX, "server cmd not valid:%s\n", input);
+            if (game->message) {
+                print_message(game);
+            }*/
         }
         print_deck(game);
         print_rings(game);
@@ -87,14 +101,13 @@ int main(int argc, char *argv[])
         indeck = false;
         while (!indeck) { 
             read_win(GAME_BOX, input, 2);
-            wcard = atoi(input);
             for (i = 0; i < 12; i++)
-                if (wcard > 0 && wcard == game->player.weathercards[i])
+                if (atoi(input) > 0 && atoi(input) == game->player.weathercards[i])
                     indeck = true;
         }
-        write_win(GAME_BOX, "%d\nPlease wait till the other players acted\n", wcard);
+        write_win(GAME_BOX, "%s\nPlease wait till the other players acted\n", input);
         do {
-            send_to(fpsock, "PLAY %d\n", wcard);
+            send_to(fpsock, "PLAY %s\n", input);
             input = receive_from(fpsock);
         } while (strncmp(input, "ACK ", 4) != 0);
 
@@ -127,11 +140,13 @@ int main(int argc, char *argv[])
 /* bonus */
 void print_deck(gamestr *game)
 {
-    int i;
+    int i, j;
     write_win(GAME_BOX, "Your current deck is:\n");
-    for (i = 0; i < 12; i++)
-        if (game->player.weathercards[i] > 0)
-            write_win(GAME_BOX, "%d, ", game->player.weathercards[i]);
+    for (j = 1; j <= 60; j++) {
+        for (i = 0; i < 12; i++)
+            if (game->player.weathercards[i] == j)
+                write_win(GAME_BOX, "%d, ", game->player.weathercards[i]);
+    }
     write_win(GAME_BOX, "\n");
     game->deck = false;
 }
@@ -177,5 +192,10 @@ void print_points(gamestr *game)
     write_win(GAME_BOX, "A new round has been started...\n");
 }
 
+void print_message(gamestr *game)
+{
+    write_win(CHAT_BOX, "%s: %s\n", game->msg_from, game->msg_data);
+    game->message = false; 
+}
 
 /* vim: set sw=4 ts=4 et fdm=syntax: */
