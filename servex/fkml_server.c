@@ -167,14 +167,18 @@ bool fkml_addplayer(fkml_server *s)
         if (strncmp(buf, client_command[LOGIN],
                     strlen(client_command[LOGIN])) != 0
                 || (nam = strchr(buf, ' ')) == 0
-                || *(nam + 1) == 0) {
-            send_cmd(s, newplayer, FAIL, 0);
+                || *(++nam) == 0) {
+            send_cmd(s, newplayer, FAIL, "Player name expected");
             fkml_rmclient(s, newplayer);
             return false;
+        } else if (strchr(nam, '%')) {
+            send_cmd(s, newplayer, FAIL,
+                    "Player names must not contain \'%%\'");
+            fkml_rmclient(s, newplayer);
         } else {
             s->players[newplayer].name = malloc(sizeof(char) *
                     (buf + strlen(buf) - nam/*strlen(client_command[LOGIN])*/));
-            strcpy(s->players[newplayer].name, nam + 1);
+            strcpy(s->players[newplayer].name, nam);
             send_cmd(s, newplayer, ACK, s->players[newplayer].name);
             return true;
         }

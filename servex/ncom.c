@@ -100,13 +100,20 @@ int read_weather(fkml_server *s, int p)
             } if (s->players[p].dead) {
                 send_cmd(s, p, FAIL, "you drowned");
             } else {
-                sscanf(strchr(buf, ' '), "%d\n", &c);
-                for (i = 0; i < 12; i++)
-                    if (c > 0 &&
-                            c == s->players[p].current_deck.weathercards[i]) {
-                        indeck = true;
-                        break;
-                    }
+                char *cardstr = strchr(buf, ' ');
+                if (!cardstr || *(cardstr + 1) == 0) {
+                    send_cmd(s, p, FAIL, "card argument missing", c);
+                    c = -1;
+                } else {
+                    sscanf(cardstr, "%d\n", &c);
+                    for (i = 0; i < 12; i++)
+                        if (c > 0 &&
+                                c ==
+                                s->players[p].current_deck.weathercards[i]) {
+                            indeck = true;
+                            break;
+                        }
+                }
                 if (!indeck) {
                     send_cmd(s, p, FAIL, "%d", c);
                     c = -1;
@@ -127,11 +134,14 @@ int read_weather(fkml_server *s, int p)
             break;
         case MSG:
             trim(buf, "\r\n");
-            for (i = 0; i < s->connected; i++)
-                if (i != p) {
-                    send_cmd(s, i, MSGFROM, "%s %s",
-                            s->players[p].name, strchr(buf, ' ') + 1);
-                }
+            char *msgdata = strchr(buf, ' ');
+            if (!msgdata || *(++msgdata) == 0)
+                send_cmd(s, p, FAIL, "Message expected");
+            else for (i = 0; i < s->connected; i++)
+                    if (i != p) {
+                        send_cmd(s, i, MSGFROM, "%s %s",
+                                s->players[p].name, msgdata);
+                    }
             break;
         default:
             send_cmd(s, p, INVALID, buf);
