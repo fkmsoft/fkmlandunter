@@ -33,16 +33,23 @@ int main(int argc, char **argv)
         } else if (p >= 0) {
             char buf[MAXLEN];
             fgets(buf, MAXLEN-1, s->players[p].fp);
+            trim(buf, "\r\n");
+            if (strchr(buf, '%')) {
+                send_cmd(s, p, FAIL, "invalid character \'%%\' in input");
+                continue;
+            }
+            char *data = strchr(buf, ' ');
             /* printf("Got input from client %d (%s)\n",
                     p, s->players[p].name); */
             switch(get_client_cmd(buf)) {
                 case MSG:
-                    trim(buf, "\r\n");
                     /* printf("Sending message %s\n", buf); */
-                    for (j = 0; j < s->connected; j++)
-                        if (j != p)
-                            send_cmd(s, j, MSGFROM, "%s %s",
-                                s->players[p].name, strchr(buf, ' ') + 1);
+                    if (!data || *(++data) == 0) {
+                        send_cmd(s, p, FAIL, "Messag expected");
+                    } else for (j = 0; j < s->connected; j++)
+                            if (j != p)
+                                send_cmd(s, j, MSGFROM, "%s %s",
+                                        s->players[p].name, data);
                     /* puts("Done."); */
                     break;
                 case START_C:

@@ -92,7 +92,13 @@ int read_weather(fkml_server *s, int p)
     int i, c = -1;
     char buf[MAXLEN];
     fgets(buf, MAXLEN-1, s->players[p].fp);
+    trim(buf, "\r\n");
+    if (strchr(buf, '%')) {
+        send_cmd(s, p, FAIL, "invalid character \'%%\' in input");
+        return -1;
+    }
 
+    char *cmddata = strchr(buf, ' ');
     switch(get_client_cmd(buf)) {
         case PLAY:
             if (s->players[p].played) {
@@ -100,7 +106,6 @@ int read_weather(fkml_server *s, int p)
             } if (s->players[p].dead) {
                 send_cmd(s, p, FAIL, "you drowned");
             } else {
-                trim(buf, "\r\n");
                 char *cardstr = strchr(buf, ' ');
                 if (!cardstr || *(++cardstr) == 0) {
                     send_cmd(s, p, FAIL, "card argument missing");
@@ -134,14 +139,12 @@ int read_weather(fkml_server *s, int p)
             fkml_rmclient(s, p);
             break;
         case MSG:
-            trim(buf, "\r\n");
-            char *msgdata = strchr(buf, ' ');
-            if (!msgdata || *(++msgdata) == 0)
+            if (!cmddata || *(++cmddata) == 0)
                 send_cmd(s, p, FAIL, "Message expected");
             else for (i = 0; i < s->connected; i++)
                     if (i != p) {
                         send_cmd(s, i, MSGFROM, "%s %s",
-                                s->players[p].name, msgdata);
+                                s->players[p].name, cmddata);
                     }
             break;
         default:
