@@ -30,16 +30,20 @@ int main(int argc, char **argv)
         if ((p = poll_for_input(s)) == -1) {
             if (fkml_addplayer(s))
                 i++;
-        } else if (p > 0) {
+        } else if (p >= 0) {
             char buf[MAXLEN];
             fgets(buf, MAXLEN-1, s->players[p].fp);
+            /* printf("Got input from client %d (%s)\n",
+                    p, s->players[p].name); */
             switch(get_client_cmd(buf)) {
                 case MSG:
                     trim(buf, "\r\n");
+                    /* printf("Sending message %s\n", buf); */
                     for (j = 0; j < s->connected; j++)
                         if (j != p)
                             send_cmd(s, j, MSGFROM, "%s %s",
                                 s->players[p].name, strchr(buf, ' ') + 1);
+                    /* puts("Done."); */
                     break;
                 case START_C:
                     if (i > 2)
@@ -112,8 +116,11 @@ int main(int argc, char **argv)
                     return 1;
                 }
 
-                if ((p = poll_for_input(s)) < 0)
+                if ((p = poll_for_input(s)) < 0) {
+                    if (p == -1)
+                        fkml_failclient(s);
                     continue;
+                }
 
                 int w_card;
                 if ((w_card = read_weather(s, p)) < 0)

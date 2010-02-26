@@ -9,21 +9,15 @@
 #define DEFNAME ("Randall")
 #define DEFHOST ("127.0.0.1")
 
+/* for fdopen */
+#define _POSIX_SOURCE
+
 #include <stdio.h>
 /* for getopt */
-#include <unistd.h>
+#include <getopt.h>
+/* #include <unistd.h> */
 
 #include "../../communication.h"
-
-void write_win(int struct_no, char *format, ...)
-{
-    return;
-}
-
-void destroy_windows()
-{
-    return;
-}
 
 int main(int argc, char **argv) {
     bool debug = false;
@@ -51,7 +45,10 @@ int main(int argc, char **argv) {
 
     int sock = create_sock();
     FILE *fp = fdopen(sock, "a+");
-	connect_server(sock, host, port);
+	if (connect_socket(sock, host, port) == -1) {
+        puts("Randall not find server");
+        exit(EXIT_FAILURE);
+    };
 	send_to(fp, "LOGIN %s\n", name);
     printf("%s verbinden\n", name);
 

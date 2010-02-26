@@ -59,6 +59,9 @@ int fkml_handle_command(fkml_server *s, char *cmd, char *args);
 /* Print debug info about client c on server s */
 void fkml_printclients(fkml_server *);
 
+/* Tell a client that connection is impossible and disconnect */
+void fkml_failclient(fkml_server *);
+
 /* Shut down server s */
 void fkml_shutdown(fkml_server *s, char *msg);
 

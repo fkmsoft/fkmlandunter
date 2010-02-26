@@ -33,8 +33,7 @@ static char *server_command[] = { "ACK", "START", "WEATHER", "RINGS",
 
 static char *client_command[] = { "LOGIN", "START", "PLAY", "MSG", "LOGOUT" };
 
-/* returns number of client or -1 if error or need to read from master socket
- * */
+/* returns number of client or -1 if error or need to read from master socket */
 int poll_for_input(fkml_server *s)
 {
     int i, ret = -1;
@@ -124,13 +123,22 @@ enum CLIENT_COMMAND get_client_cmd(char *s)
 
 void send_cmd(fkml_server *s, int c, enum SERVER_COMMANDS cmd, char *msg, ...)
 {
+    FILE *fp;
+    if (!s)
+        fp = fdopen(c, "a+");
+    else
+        fp = s->players[c].fp;
+
     va_list ap;
     va_start(ap, msg);
-    fputs(server_command[cmd], s->players[c].fp);
-    fputc(' ', s->players[c].fp);
-    vfprintf(s->players[c].fp, msg, ap);
-    fputc(CMD_DELIM, s->players[c].fp);
-    fflush(s->players[c].fp);
+    fputs(server_command[cmd], fp);
+    fputc(' ', fp);
+    vfprintf(fp, msg, ap);
+    fputc(CMD_DELIM, fp);
+    fflush(fp);
+
+    if (!s)
+        fclose(fp);
 }
 
 int fkml_addclient(fkml_server *s, int fd)
@@ -153,19 +161,20 @@ bool fkml_addplayer(fkml_server *s)
 
         char buf[MAXLEN];
         fgets(buf, MAXLEN-1, s->players[newplayer].fp);
+        /* printf("Client said: %s", buf); */
         trim(buf,"\n\r");
-
+        char *nam;
         if (strncmp(buf, client_command[LOGIN],
-                    strlen(client_command[LOGIN])) != 0) {
+                    strlen(client_command[LOGIN])) != 0
+                || (nam = strchr(buf, ' ')) == 0
+                || *(nam + 1) == 0) {
             send_cmd(s, newplayer, FAIL, 0);
             fkml_rmclient(s, newplayer);
             return false;
         } else {
             s->players[newplayer].name = malloc(sizeof(char) *
-                    (strlen(buf) - strlen(client_command[LOGIN])));
-            strcpy(s->players[newplayer].name, strchr(buf, ' ') + 1);
-            /*fkml_printf(s, newplayer, "%s %s\n", server_command[ACK],
-                    s->players[newplayer].name);*/
+                    (buf + strlen(buf) - nam/*strlen(client_command[LOGIN])*/));
+            strcpy(s->players[newplayer].name, nam + 1);
             send_cmd(s, newplayer, ACK, s->players[newplayer].name);
             return true;
         }
@@ -284,6 +293,11 @@ void fkml_printclients(fkml_server *s)
     for (i = 0; i < MAX_PLAYERS; i++) {
         /*print_player(&(s->players[i]));*/
     }
+}
+
+void fkml_failclient(fkml_server *s)
+{
+    send_cmd(0, accept(s->socket, 0, 0), FAIL, "Server full");
 }
 
 void fkml_shutdown(fkml_server *s, char *msg)
