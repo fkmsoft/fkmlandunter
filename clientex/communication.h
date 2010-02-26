@@ -8,6 +8,8 @@
 #ifndef COMMUNICATION_H
 #define COMMUNICATION_H
 
+#define _GNU_SOURCE
+#include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,9 +17,7 @@
 #include <arpa/inet.h>
 #include <stdarg.h>
 #include <sys/time.h>
-#include <stdio.h>
 
-#include <unistd.h>
 #include <poll.h>
 
 #define MAXNICK     (30)
@@ -71,10 +71,10 @@ char *receive_from(FILE *fp);
 /* send formated string *fmt to *fp */
 void send_to(FILE *fp, char *fmt, ...);
 
-/* select from fd inputA and inputB */
-int select_input(int inputA, int inputB);
-
-/* poll from fd inputA and inputB */
+/* poll from fd inputA and inputB
+ * return fd for POLLIN
+ * return -1 for POLLRDHUP
+ * return -2 if polling failed */
 int poll_input(int inputA, int inputB);
 
 #endif

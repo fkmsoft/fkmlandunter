@@ -32,7 +32,6 @@ gamestr *create_game()
     game->msg_data = NULL;
 
     /* creating player */
-    /*game->player = malloc(sizeof(player));*/
     game->player.points = 0;
     game->player.water_level = 0;
     game->player.dead = false;
@@ -174,7 +173,6 @@ char *receive_from(FILE *fp)
     char *buffer = calloc(BUF_SIZE, sizeof(char));
     
     fgets(buffer, BUF_SIZE, fp);
-    /*fgets_unlocked(buffer, BUF_SIZE, fp);*/
 
     return buffer;
 }
@@ -191,88 +189,30 @@ void send_to(FILE *fp, char *fmt, ...)
     va_end(args);
 }
 
-/* select from fd inputA and inputB */
-int select_input(int inputA, int inputB)
-{
-    fd_set re;
-    FD_ZERO(&re);
-    FD_SET(inputA, &re);
-    FD_SET(inputB, &re);
-
-
-    select(max(inputA, inputB) + 1, &re, NULL, NULL, NULL);
-
-    if (FD_ISSET(inputA, &re))
-        return inputA;
-
-    if (FD_ISSET(inputB, &re))
-        return inputB;
-
-    return (-1);
-}
-
-/* poll from fd inputA and inputB */
-int poll_input(int inputA, int inputB)
+/* poll from fd inputA and inputB
+ * return fd for POLLIN
+ * return -1 for POLLRDHUP
+ * return -2 if polling failed */
+int poll_input(int sock, int inputB)
 {
     struct pollfd pfds[2];
 
-    pfds[0].fd = inputA;
-    pfds[0].events = POLLIN;
+    pfds[0].fd = sock;
+    pfds[0].events = POLLIN | POLLRDHUP;
     pfds[1].fd = inputB;
     pfds[1].events = POLLIN;
 
     if (poll(pfds, 2, -1) < 0)
-        return -1;
+        return -2;
 
+    if (pfds[0].revents & POLLRDHUP)
+        return -1;
     if (pfds[0].revents & POLLIN)
-        return inputA;
+        return sock;
     if (pfds[1].revents & POLLIN)
         return inputB;
 
-    return -1;
+    return -2;
 }
-
-/*
-char *receive_from2(int fd)
-{
-    char *buffer = malloc(sizeof(char) * BUF_SIZE);
-    int i;
-
-    for(i = 0; i < BUF_SIZE; i++) {
-        read(fd, buffer+i, 1);
-        if (buffer[i] == '\n')
-            break;
-    }
-
-    return buffer;
-}
-
-void send_to2(int fd, char *format, ...)
-{
-    va_list ap;
-    char *p, *sval;
-
-    va_start(ap, format);
-    for (p = format; *p; p++) {
-        if (*p != '%') {
-            if (send(fd, p, sizeof(*p), 0) == -1)
-                error_exit("Error sending to %d", fd);
-            continue;
-        }
-        switch (*++p) {
-        case 's':
-            for (sval = va_arg(ap, char *); *sval; sval++)
-                if (send(fd, sval, sizeof(*sval), 0) == -1)
-                    error_exit("Error sending to %d", fd);
-            break;
-        default:
-            if (send(fd, p, sizeof(*p), 0) == -1)
-                error_exit("Error sending to %d", fd);
-            break;
-        }
-    }        
-    va_end(ap);
-}
-*/
 
 /* vim: set sw=4 ts=4 et fdm=syntax: */

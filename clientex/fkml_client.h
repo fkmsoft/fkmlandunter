@@ -10,7 +10,6 @@
 
 /* fdopen */
 #define _POSIX_SOURCE
-
 #include <stdio.h>
 #include <errno.h>
 #include <unistd.h>
@@ -27,6 +26,8 @@ void print_weathercards(gamestr *game);
 void print_wlevel(gamestr *game);
 void print_points(gamestr *game);
 void print_message(gamestr *game);
+
+void error_exit(int sock_num, char *msg);
 
 #endif
 /* vim: set sw=4 ts=4 et fdm=syntax: */

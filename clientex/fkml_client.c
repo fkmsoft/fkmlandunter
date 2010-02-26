@@ -26,13 +26,10 @@ int main(int argc, char *argv[])
 
     /* creating socket */
     sock_num = create_sock();
-    if (sock_num < 0) {
-        destroy_windows();
-        close(sock_num);
-        fprintf(stderr, "Error creating socket: %s\n", strerror(errno));
-        exit(EXIT_FAILURE);
-    }    
+    if (sock_num < 0)
+        error_exit(sock_num, "Error creating socket");
     fpsock = fdopen(sock_num, "a+");
+    setbuf(fpsock, NULL);
 
     /* LOGIN */
     do {
@@ -42,12 +39,8 @@ int main(int argc, char *argv[])
 
         /* connect */
         write_win(GAME_BOX, "IP = %s, Port = %d. Trying to connect...", ip, port);
-        if (connect_socket(sock_num, ip, port) < 0) {
-            destroy_windows();
-            close(sock_num);
-            fprintf(stderr, "Can't connect to server: %s\n", strerror(errno));
-            exit(EXIT_FAILURE);
-        }
+        if (connect_socket(sock_num, ip, port) < 0)
+            error_exit(sock_num, "Can't connect to server");
         write_win(GAME_BOX, "Connecting succeed\n");
 
         /* login */
@@ -60,6 +53,7 @@ int main(int argc, char *argv[])
     write_win(GAME_BOX, "Login succeed\n");
     
     /* START */
+    /*
     write_win(GAME_BOX, "Do you want to start the game now? (y)es/(n)o: ");
     read_win(GAME_BOX, input, 1);
     write_win(GAME_BOX, "%s\n", input);
@@ -71,14 +65,17 @@ int main(int argc, char *argv[])
     parse_start(game, input);
 
     write_win(GAME_BOX, "Game is starting with %d players\n", game->count);
-
+    */
+    game->count = 9999;
 
     /* STARTING GAME */
     while (game->round < game->count) {
         /* get + print deck & rings & weather*/
         while (!game->deck || !game->rings || !game->weather || true) {
-            if (poll_input(sock_num, 0) == sock_num) {
-                /*input = receive_from2(sock_num);*/
+            int fd;
+            if ((fd = poll_input(sock_num, 0)) == -1) {
+                error_exit(sock_num, "Server closed socket");
+            } else if (fd == sock_num) {
                 input = receive_from(fpsock);
                 write_win(GAME_BOX, "Input from socket:%s\n", input);
             } else {
@@ -196,6 +193,14 @@ void print_message(gamestr *game)
 {
     write_win(CHAT_BOX, "%s: %s\n", game->msg_from, game->msg_data);
     game->message = false; 
+}
+
+void error_exit(int sock, char *msg)
+{
+    close(sock);
+    destroy_windows();
+    fprintf(stderr, "%s: %s\n", msg, strerror(errno));
+    exit(EXIT_FAILURE);
 }
 
 /* vim: set sw=4 ts=4 et fdm=syntax: */

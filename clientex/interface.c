@@ -170,14 +170,13 @@ void read_chat(char *s)
 {
     int x, y;
     win_struct *w_struct = &chat_box;
-    getyx(w_struct->input, y, x);
     static int pos = 0;
     static char input[CHAT_BUFFER];
     int c = 0;
 
     echo();
     curs_set(2);
-    c = mvwgetch(w_struct->input, 1, x);
+    c = mvwgetch(w_struct->input, 1, 1 + pos);
     input[pos++] = c;
     if (c == '\n' || pos >= CHAT_BUFFER) {
         pos = 0;
@@ -186,6 +185,7 @@ void read_chat(char *s)
         noecho();
         curs_set(0);
         clear_input(w_struct);
+        return s;
     }
 }
 /* vim: set sw=4 ts=4 et fdm=syntax: */
