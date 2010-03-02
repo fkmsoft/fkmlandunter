@@ -1,15 +1,18 @@
 #!/usr/bin/env python
+
 import sys
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 from PyQt4 import QtNetwork
 
+# Some important global shit
 MAXPLAYERS = 5
-defname = "Guilord"
-defhost = "localhost"
-defport = 1337
+DEFNAME = "Guilord"
+DEFHOST = "localhost"
+DEFPORT = 1337
 
-class MainWindow(QtGui.QMainWindow):
+# class for the (main) window of a fkmlandunter client
+class FkmlandunterMainWin(QtGui.QMainWindow):
 
     def __init__(self, win_parent = None):
         # Init the base class
@@ -22,10 +25,10 @@ class MainWindow(QtGui.QMainWindow):
         self.haveWeather = False
         self.haveCard = -1
         self.playernum = 0
-        self.ownnum = -1
         self.names = []
-        self.myname = defname
-        #self.connect(defname, defhost, defport)
+        self.myname = DEFNAME
+        self.lastCard = -1
+        #self.connect(DEFNAME, DEFHOST, DEFPORT)
 
     def creat_widgets(self):
         # Players
@@ -92,9 +95,9 @@ class MainWindow(QtGui.QMainWindow):
         QtCore.QObject.connect(self.deckPlay,
                 QtCore.SIGNAL("clicked()"),
                 self.play)
-        QtCore.QObject.connect(self.deckPlay,
-                QtCore.SIGNAL("returnPressed()"),
-                self.play)
+        #QtCore.QObject.connect(self.deckPlay,
+                #QtCore.SIGNAL("returnPressed()"),
+                #self.play)
         # Master layout
         layout = QtGui.QGridLayout()
         layout.addLayout(topbox, 0, 0, 1, -1)
@@ -114,15 +117,21 @@ class MainWindow(QtGui.QMainWindow):
         self.btns[0].toggle()
 
     def on_input(self):
-        msg = str(self.chat_input.displayText())
+        msg = unicode(self.chat_input.displayText())
         if len(msg) == 0: return
         if msg[0] != '/':
+            for char in msg:
+                if char == '%':
+                    self.chat_box.append("% not allowed in messages")
+                    self.chat_input.clear()
+                    return
             self.sock.writeData("MSG ")
-            self.sock.writeData(msg)
+            self.sock.writeData(msg.encode("utf-8"))
             self.sock.writeData("\n")
             self.sock.flush()
             self.chat_box.setFontItalic(False)
-            self.chat_box.append(QtCore.QString('<' + self.myname + "> " + msg))
+            self.chat_box.append(QtCore.QString('<' + self.myname + "> "
+                + msg))
             self.chat_box.setFontItalic(True)
         elif msg.startswith("/q"):
             if self.connected:
@@ -133,9 +142,9 @@ class MainWindow(QtGui.QMainWindow):
             if len(words) == 3:
                 self.connect(self.myname, words[1], int(words[2]))
             elif len(words) == 2:
-                self.connect(self.myname, words[1], defport)
+                self.connect(self.myname, words[1], DEFPORT)
             else:
-                self.connect(self.myname, defhost, defport)
+                self.connect(self.myname, DEFHOST, DEFPORT)
         elif msg.startswith("/s"):
             self.sock.writeData("START\n")
             self.sock.flush()
@@ -145,6 +154,11 @@ class MainWindow(QtGui.QMainWindow):
                 self.chat_box.append("Game has already started")
                 self.chat_input.clear()
                 return
+            for char in msg:
+                if char == '%':
+                    self.chat_box.append("% not allowed in nicknames")
+                    self.chat_input.clear()
+                    return
             words = msg.split()
             if len(words) == 2:
                 self.myname = words[1]
@@ -156,7 +170,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def parse(self):
         while self.sock.canReadLine():
-            msg = str(self.sock.readLine())
+            msg = unicode(self.sock.readLine())
             msg = msg.strip()
             if msg.startswith("MSGFROM"):
                 words = msg.split(None, 2)
@@ -164,14 +178,13 @@ class MainWindow(QtGui.QMainWindow):
                 self.chat_box.append('<' + words[1] + "> " + words[2])
                 self.chat_box.setFontItalic(True)
             elif msg.startswith("ACK"):
-                print "acked"
+                print "ACKed"
             elif msg.startswith("START"):
                 words = msg.split(None, 2)
                 self.names = words[2].split(None, int(words[1]))
                 i = 0
                 for name in self.names:
                     self.player_box[i].setTitle(name + ": 0 points")
-                    if name == self.myname: ownnum = i
                     i += 1
                 for j in range(i, MAXPLAYERS):
                     self.player_box[j].hide()
@@ -194,13 +207,11 @@ class MainWindow(QtGui.QMainWindow):
                 i = 0
                 words = msg.split(None, 1)
                 for num in words[1].split():
-                    self.player_lifebelts[i].setValue(int(num))
                     if self.haveBelts == False:
                         self.player_lifebelts[i].setMaximum(int(num))
                         self.player_wlevel[i].setValue(0)
-                    #print "setting ring for player %d to %d" % i int(num)
+                    self.player_lifebelts[i].setValue(int(num))
                     i += 1
-                print "Had no belts info"
                 self.haveBelts = True
             elif msg.startswith("WEATHER"):
                 words = msg.split(None, 1)
@@ -224,11 +235,13 @@ class MainWindow(QtGui.QMainWindow):
                 pts = words[1].split(None, self.playernum)
                 for i in range(self.playernum):
                     self.player_wlevel[i].setValue(0)
+                    self.player_lifebelts[i].setValue(0)
                     self.player_box[i].setTitle(self.names[i] + ": " +
                             pts[i] + " points")
                 self.chat_box.append("Points distributed")
             elif msg.startswith("FAIL"):
                 self.chat_box.append("Communication error, please play again")
+                self.btns[self.lastCard].setEnabled(True)
                 self.deckPlay.setEnabled(True)
             elif msg.startswith("TERMINATE"):
                 words = msg.split(None, 1)
@@ -250,7 +263,7 @@ class MainWindow(QtGui.QMainWindow):
             print "Server unavailable"
             exit()
         self.sock.writeData("LOGIN ") 
-        self.sock.writeData(name)
+        self.sock.writeData(name.encode("utf-8"))
         self.sock.writeData("\n")
         self.sock.flush()
         self.chat_box.append("Logged in")
@@ -259,7 +272,7 @@ class MainWindow(QtGui.QMainWindow):
         dummy = -1
         for i in range(12):
             if self.btns[i].isChecked() and self.btns[i].isEnabled():
-                dummy = i
+                self.lastCard = dummy = i
         self.sock.writeData("PLAY ")
         self.sock.writeData(self.btns[dummy].text())
         self.sock.writeData("\n")
@@ -286,7 +299,7 @@ if __name__ == "__main__":
     # create qapp
     app = QtGui.QApplication(sys.argv)
     # create main window
-    main_window = MainWindow()
+    main_window = FkmlandunterMainWin()
     main_window.show()
     # enter main loop
     app.exec_()
