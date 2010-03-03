@@ -124,9 +124,11 @@ enum CLIENT_COMMAND get_client_cmd(char *s)
 void send_cmd(fkml_server *s, int c, enum SERVER_COMMANDS cmd, char *msg, ...)
 {
     FILE *fp;
-    if (!s)
+    if (!s) {
         fp = fdopen(c, "a+");
-    else
+        if (setvbuf(s->players[s->connected].fp, 0, _IONBF, 0) != 0)
+            perror("setvbuf");
+    } else
         fp = s->players[c].fp;
 
     va_list ap;
@@ -145,6 +147,8 @@ int fkml_addclient(fkml_server *s, int fd)
 {
     s->players[s->connected].fd = fd;
     s->players[s->connected].fp = fdopen(fd, "a+");
+    if (setvbuf(s->players[s->connected].fp, 0, _IONBF, 0) != 0)
+        perror("setvbuf");
     s->connected++;
     return s->connected-1;
 }

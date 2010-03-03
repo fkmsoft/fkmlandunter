@@ -7,7 +7,8 @@ TOBJS = testenv.o
 THEADS =
 OBJS = $(ROBJS) $(TOBJS)
 HEADERS = $(RHEADS) $(THEADS)
-TARGETS = random testenv
+#TARGETS = random testenv
+TARGETS = testenv
 
 all: $(TARGETS)
 

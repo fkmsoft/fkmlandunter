@@ -30,8 +30,8 @@ int main(int argc, char **argv) {
     int sock = create_sock();
     FILE *fp = fdopen(sock, "a+");
     if (connect_socket(sock, DEFHOST, DEFPORT) == -1) {
-	fprintf(stderr, "%s did not find a server\n", name);
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "%s did not find a server\n", name);
+        exit(EXIT_FAILURE);
     }
     send_to(fp, "LOGIN %s\n", name);
     printf("%s verbunden\n", name);
@@ -45,8 +45,8 @@ int main(int argc, char **argv) {
     } while (strncmp(input, "START ", 6) != 0);
     strtok(input, " "); 
     while (strcmp(strtok(NULL, " "), name) != 0)
-	pos++;
-	 	
+        pos++;
+                 
     while (1) {
         if ((input = receive_from(fp)) == 0)
             break;
@@ -60,11 +60,11 @@ int main(int argc, char **argv) {
                 card = atoi(p++);
             printf("%s spielt %d\n", name, card);
             send_to(fp, "PLAY %d\n", card);
-	} else if (strncmp(input, "POINTS ", 7) == 0) {
-	    strtok(input, " ");
-	    for (i = 0; i < pos; i++)
-		points = atoi(strtok(NULL, " "));
-	    printf("%s.points = %d\n", name, points);
+        } else if (strncmp(input, "POINTS ", 7) == 0) {
+            strtok(input, " ");
+            for (i = 0; i < pos; i++)
+                points = atoi(strtok(NULL, " "));
+            printf("%s.points = %d\n", name, points);
         } else if (debug)
             fputs(input, stdout);
 
@@ -76,3 +76,5 @@ int main(int argc, char **argv) {
 
     return points;
 }
+
+/* vim: set sw=4 ts=4 et fdm=syntax: */
