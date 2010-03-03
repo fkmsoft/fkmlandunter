@@ -1,0 +1,41 @@
+1. Build Instructions:
+======================
+
+Contents:
+---------
+1.1 The Server
+1.2 The NCurses Client
+1.3 The Random AI
+1.4 The pyQt4 Client
+
+1.1 The Server
+--------------
+Requirements: glibc
+Resulting executables: server
+Procedure:
+    cd servex/
+    make
+
+1.2 The NCurses Client
+----------------------
+Requirements: glibc, ncurses headers (ncurses-dev)
+Resulting executables: client, client.db
+Procedure:
+    cd clientex/
+    make
+
+1.3 The Random AI
+-----------------
+Requirements: glibc, completed client build
+Resulting executables: random
+Procedure:
+    cd clientex/ai/random/
+    make
+
+1.4 The pyQt4 Client
+--------------------
+Requirements: python, pyqt4 (python-qt4)
+Resulting executables: client.py
+Procedure:
+    cd pyqt/
+    chmod +x client.py
