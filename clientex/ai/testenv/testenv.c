@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
 	        exit(EXIT_FAILURE);
 		break;
 	    case 0:
-		if (execl(server, "") < 0)
+		if (execl(server, "server", 0L) < 0)
 		    printf("Error bei \"execl %s\": %s\n", server, strerror(errno));
 		exit(EXIT_FAILURE);
 		break;
@@ -50,7 +50,9 @@ int main(int argc, char **argv) {
 		    exit(EXIT_FAILURE);
 		    break;
 		case 0:
-		    if (execl(bot[j], "") < 0)
+            printf("Running execl(%s, \"\")\n", bot[j]);
+            errno = 0;
+		    if (execl(bot[j], "random", 0L) < 0)
 			printf("Error bei \"execl %s\": %s\n", bot[j], strerror(errno));
 		    exit(EXIT_FAILURE);
 		    break;
