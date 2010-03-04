@@ -10,16 +10,6 @@
 #include "ncom.h"
 #include "fkml_server.h"
 
-/*static int getint(FILE *fp)
-{
-    int c, n = 0;
-
-    while((c = fgetc(fp)) != '\n')
-        if(isdigit(c))
-            n = 10 * n + (c - '0');
-
-    return n;
-}*/
 
 void show_startmsg(fkml_server *s, int p)
 {
@@ -152,6 +142,16 @@ int read_weather(fkml_server *s, int p)
     }
 
     return c;
+}
+
+void show_join(fkml_server *s, int p, int new)
+{
+    send_cmd(s, p, JOIN, s->players[new].name); 
+}
+
+void show_leave(fkml_server *s, int p, int leaver)
+{
+    send_cmd(s, p, LEAVE, s->players[leaver].name);
 }
 
 /* vim: set sw=4 ts=4 fdm=syntax: */

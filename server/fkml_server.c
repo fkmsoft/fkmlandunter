@@ -28,8 +28,8 @@
 
 #define CMD_DELIM ('\n')
 
-static char *server_command[] = { "ACK", "START", "WEATHER", "RINGS",
-    "DECK", "FAIL", "WLEVELS", "POINTS", "TERMINATE", "MSGFROM" };
+static char *server_command[] = { "ACK", "START", "WEATHER", "RINGS", "DECK",
+    "FAIL", "WLEVELS", "POINTS", "TERMINATE", "MSGFROM", "JOIN", "LEAVE" };
 
 static char *client_command[] = { "LOGIN", "START", "PLAY", "MSG", "LOGOUT" };
 
@@ -81,8 +81,7 @@ fkml_server *init_server(unsigned int port, unsigned int players)
     fkml_server *server = calloc(1,sizeof(fkml_server));
 
     if (port < 1024)
-        printf("Please choose a port > 1024 instead of %d\n",
-                port);
+        printf("Please choose a port > 1024 instead of %d\n", port);
 
     if ((server->socket = socket(AF_INET, SOCK_STREAM, 0)) == -1)
         perror("socket");
@@ -205,9 +204,8 @@ void fkml_rmclient(fkml_server *s, int i)
         free(&s->players[n-1].current_deck); */
 
     int n;
-    for (n = i+1; n < MAX_PLAYERS && s->players[n-1].fp; n++) {
+    for (n = i+1; n < MAX_PLAYERS && s->players[n-1].fp; n++)
         s->players[n-1] = s->players[n];
-    }
 
     s->players[n].fp = 0;
     s->connected--;

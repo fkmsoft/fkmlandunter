@@ -43,6 +43,8 @@ void show_weather(int min, int max, fkml_server *s, int p);
 void show_waterlevels(fkml_server *s, int p);
 void show_points(fkml_server *s, int p);
 int read_weather(fkml_server *s, int p);
+void show_join(fkml_server *s, int p, int new);
+void show_leave(fkml_server *s, int p, int leaver);
 
 #endif /* _NCOM_H_ */
 

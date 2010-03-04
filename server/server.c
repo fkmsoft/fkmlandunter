@@ -28,8 +28,12 @@ int main(int argc, char **argv)
 
     for (i = 0; i < MAX_PLAYERS;)
         if ((p = poll_for_input(s)) == -1) {
-            if (fkml_addplayer(s))
+            if (fkml_addplayer(s)) {
+                for (j = 0; j < s->connected; j++)
+                    if (j != i)
+                        show_join(s, j, i);
                 i++;
+            }
         } else if (p >= 0) {
             char buf[MAXLEN];
             fgets(buf, MAXLEN-1, s->players[p].fp);
@@ -59,8 +63,13 @@ int main(int argc, char **argv)
                         send_cmd(s, p, FAIL, "not enough players");
                     break;
                 case LOGOUT:
-                    send_cmd(s, p, TERMINATE, "bye");
+                    for (j = 0; j < s->connected; j++)
+                        if (p == j)
+                            send_cmd(s, p, TERMINATE, "bye");
+                        else
+                            show_leave(s, j, p);
                     fkml_rmclient(s, p);
+                    i--;
                     break;
                 case PLAY:
                 case LOGIN:
