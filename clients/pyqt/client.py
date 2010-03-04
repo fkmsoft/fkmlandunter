@@ -33,32 +33,50 @@ class FkmlandunterMainWin(QtGui.QMainWindow):
     def creat_widgets(self):
         # Players
         self.player_box = []
-        self.player_wlevel = []
-        self.player_lifebelts = []
+        self.playerWaterBar = []
+        self.playerWaterLbl = []
+        self.playerLifeBar = []
+        self.playerLifeLbl = []
+        self.player_lastCard = []
         topbox = QtGui.QHBoxLayout()
         for i in range(MAXPLAYERS):
             # Create Widgets
             self.player_box.append(QtGui.QGroupBox("Player " + `i+1`))
             self.player_box[i].setAlignment(QtCore.Qt.AlignHCenter)
-            self.player_wlevel.append(QtGui.QProgressBar())
-            self.player_wlevel[i].setMinimum(0)
-            self.player_wlevel[i].setMaximum(12)
-            self.player_wlevel[i].setFormat("Waterlevel %v")
-            self.player_wlevel[i].setValue(i)
-            self.player_wlevel[i].setOrientation(QtCore.Qt.Vertical)
-            self.player_lifebelts.append(QtGui.QProgressBar())
-            self.player_lifebelts[i].setMinimum(0)
-            self.player_lifebelts[i].setMaximum(12)
-            self.player_lifebelts[i].setValue(i)
-            self.player_lifebelts[i].setOrientation(QtCore.Qt.Vertical)
-            self.player_lifebelts[i].setFormat("%v/%m Lifebelts")
-            #self.player_lifebelts[i].setInvertedAppearance(True)
+            self.playerWaterBar.append(QtGui.QProgressBar())
+            self.playerWaterBar[i].setMinimum(0)
+            self.playerWaterBar[i].setMaximum(12)
+            self.playerWaterBar[i].setFormat("Waterlevel %v")
+            self.playerWaterBar[i].setValue(i)
+            self.playerWaterBar[i].setOrientation(QtCore.Qt.Vertical)
+            #self.playerWaterBar[i].setAlignment(QtCore.Qt.AlignHCenter)
+            self.playerWaterLbl.append(QtGui.QLabel(" 00"))
+            #self.playerWaterLbl[i].setAlignment(QtCore.Qt.AlignCenter)
+            self.playerLifeBar.append(QtGui.QProgressBar())
+            self.playerLifeBar[i].setMinimum(0)
+            self.playerLifeBar[i].setMaximum(12)
+            self.playerLifeBar[i].setValue(i)
+            self.playerLifeBar[i].setOrientation(QtCore.Qt.Vertical)
+            self.playerLifeBar[i].setFormat("%v/%m Lifebelts")
+            #self.playerLifeBar[i].setAlignment(QtCore.Qt.AlignHCenter)
+            #self.playerLifeBar[i].setInvertedAppearance(True)
+            self.playerLifeLbl.append(QtGui.QLabel(" 0/0"))
+            #self.playerLifeLbl[i].setAlignment(QtCore.Qt.AlignHCenter)
+            self.player_lastCard.append(QtGui.QLabel("Last move: 0"))
             # Layout
-            hbox = QtGui.QHBoxLayout()
-            hbox.addWidget(self.player_wlevel[i])
-            hbox.addWidget(self.player_lifebelts[i])
+            #hbox = QtGui.QHBoxLayout()
+            grid = QtGui.QGridLayout()
+            #hbox.addWidget(self.playerWaterBar[i])
+            #hbox.addWidget(self.playerLifeBar[i])
+            #hbox.addWidget(self.player_lastCard[i])
+            grid.addWidget(self.playerWaterBar[i], 0, 0)
+            grid.addWidget(self.playerLifeBar[i], 0, 1)
+            grid.addWidget(self.playerWaterLbl[i], 1, 0)
+            grid.addWidget(self.playerLifeLbl[i], 1, 1)
+            grid.addWidget(self.player_lastCard[i], 2, 0, 1, -1)
             #vbox.addStretch(1)
-            self.player_box[i].setLayout(hbox)
+            #self.player_box[i].setLayout(hbox)
+            self.player_box[i].setLayout(grid)
             topbox.addWidget(self.player_box[i])
         # Deck
         # Create Widgets
@@ -179,6 +197,21 @@ class FkmlandunterMainWin(QtGui.QMainWindow):
                 self.chat_box.setFontItalic(True)
             elif msg.startswith("ACK"):
                 print "ACKed"
+            elif msg.startswith("JOIN"):
+                words = msg.split(None, 1)
+                self.playernum += i
+                self.names.append(words[1])
+                self.player_box[self.playernum -1].setTitle(
+                        self.names[playernum -1] + ": 0 points")
+                self.chat_box.append(words[1] + " joined the game")
+            elif msg.startswith("LEAVE"):
+                words = msg.split(None, 1)
+                self.player_box.append(words[1] + " left the game")
+                i = 0
+                for name in self.names:
+                    if name == words[1]:
+                        self.player_box[i].setTitle(name + " (left)")
+                    i += 1
             elif msg.startswith("START"):
                 words = msg.split(None, 2)
                 self.names = words[2].split(None, int(words[1]))
@@ -208,9 +241,9 @@ class FkmlandunterMainWin(QtGui.QMainWindow):
                 words = msg.split(None, 1)
                 for num in words[1].split():
                     if self.haveBelts == False:
-                        self.player_lifebelts[i].setMaximum(int(num))
-                        self.player_wlevel[i].setValue(0)
-                    self.player_lifebelts[i].setValue(int(num))
+                        self.playerLifeBar[i].setMaximum(int(num))
+                        self.playerWaterBar[i].setValue(0)
+                    self.playerLifeBar[i].setValue(int(num))
                     i += 1
                 self.haveBelts = True
             elif msg.startswith("WEATHER"):
@@ -219,11 +252,17 @@ class FkmlandunterMainWin(QtGui.QMainWindow):
                 self.haveWeather = True
                 #if self.haveCard > 0: self.deckPlay.setEnabled(True)
                 self.deckPlay.setEnabled(True)
+            elif msg.startswith("PLAYED"):
+                words = msg.split(None, 1)
+                i = 0
+                for num in words[1].split():
+                    self.chat_box.append(self.names[i] + " played " + num)
+                    i += 1
             elif msg.startswith("WLEVELS"):
                 words = msg.split(None, 1)
                 i = 0
                 for num in words[1].split():
-                    self.player_wlevel[i].setValue(int(num))
+                    self.playerWaterBar[i].setValue(int(num))
                     i += 1
             elif msg.startswith("POINTS"):
                 self.haveDeck = False
@@ -234,8 +273,8 @@ class FkmlandunterMainWin(QtGui.QMainWindow):
                 words = msg.split(None, 1)
                 pts = words[1].split(None, self.playernum)
                 for i in range(self.playernum):
-                    self.player_wlevel[i].setValue(0)
-                    self.player_lifebelts[i].setValue(0)
+                    self.playerWaterBar[i].setValue(0)
+                    self.playerLifeBar[i].setValue(0)
                     self.player_box[i].setTitle(self.names[i] + ": " +
                             pts[i] + " points")
                 self.chat_box.append("Points distributed")
