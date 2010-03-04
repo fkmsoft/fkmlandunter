@@ -17,7 +17,7 @@
 #include <getopt.h>
 /* #include <unistd.h> */
 
-#include "../../communication.h"
+#include "../../curses/communication.h"
 
 int main(int argc, char **argv) {
     bool debug = false, silent = false;

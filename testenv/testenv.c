@@ -24,7 +24,10 @@
 /* for getopt */
 #include <getopt.h>
 
-#include "../../communication.h"
+#include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
+/*#include "../../communication.h"*/
 
 #define PIDFILE (".testenv.pids")
 
