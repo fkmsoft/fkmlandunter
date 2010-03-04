@@ -12,6 +12,9 @@
 /* #include <stdio.h> */
 #include <time.h>
 
+/* for getopt */
+#include <getopt.h>
+
 #include "ncom.h"
 #include "server_util.h"
 #include "fkml_server.h"
@@ -20,13 +23,25 @@
 
 int main(int argc, char **argv)
 {
-    int i, j, p;
-    fkml_server *s = init_server(PORT, MAX_PLAYERS);
+    bool debug = false;
+    int i, j, p, pnum = MAX_PLAYERS;
+    while ((i = getopt(argc, argv, "p:d")) != -1) {
+        switch (i) {
+            case 'p':
+                pnum = atoi(optarg);
+                break;
+            case 'd':
+                debug = true;
+            default:
+                exit(EXIT_FAILURE);
+        }
+    }
+    fkml_server *s = init_server(PORT, pnum);
 
-    deck *deck_set = create_decks(MAX_PLAYERS);
-    create_players(s->players, MAX_PLAYERS);
+    deck *deck_set = create_decks(pnum);
+    create_players(s->players, pnum);
 
-    for (i = 0; i < MAX_PLAYERS;)
+    for (i = 0; i < pnum;)
         if ((p = poll_for_input(s)) == -1) {
             if (fkml_addplayer(s)) {
                 for (j = 0; j < s->connected; j++)
@@ -58,7 +73,7 @@ int main(int argc, char **argv)
                     break;
                 case START_C:
                     if (i > 2)
-                        i = MAX_PLAYERS;
+                        i = pnum;
                     else
                         send_cmd(s, p, FAIL, "not enough players");
                     break;

@@ -35,10 +35,6 @@ void kill_chldrn(void);
 void kill_children(int s);
 
 int main(int argc, char **argv) {
-    /*if (argc < 5 || argc > 8) {
-        printf("Usage: %s [-d] [-s] [-p passes] [SERVER] [BOT1] [BOT2] [BOT3] ([BOT4] [BOT5])\n", *(argv));
-        exit(EXIT_FAILURE);
-    }*/
     int i, j, k = 1, status, passes = 1, botcount;
     bool debug = false, silent = false;
     char *server = "./server";
@@ -70,7 +66,12 @@ int main(int argc, char **argv) {
                 puts("foo");
         }
     }
-    botcount = argc - k;
+
+    if ((botcount = argc - k) > 5) {
+        puts("Too many bots");
+        exit(EXIT_FAILURE);
+    }
+
     char *bot[botcount];
     int botpts[botcount];
     pid_t pid[botcount+1];
@@ -99,6 +100,8 @@ int main(int argc, char **argv) {
 
     /* start forking */
     printf("Starting %d passes of tests with %d bots\n", passes, botcount);
+
+    char botnumstr[2] = "3";
     for (i = 0; i < passes; i++) {
         /* starting server */
         switch (pid[botcount] = fork()) {
@@ -109,7 +112,9 @@ int main(int argc, char **argv) {
             case 0:
                 /*fprintf(pidfile, "%d\n", getpid());
                 fflush(pidfile);*/
-                if (execl(server, "server", 0L) < 0)
+                if (botcount > 3)
+                    botnumstr[0] = '0' + botcount;
+                if (execl(server, "server", "-p", botnumstr, 0L) < 0)
                     printf("Error bei \"execl %s\": %s\n",
                             server, strerror(errno));
                 _exit(EXIT_FAILURE);

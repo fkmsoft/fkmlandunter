@@ -153,6 +153,7 @@ class FkmlandunterMainWin(QtGui.QMainWindow):
             self.chat_box.setFontItalic(True)
         elif msg.startswith("/q"):
             if self.connected:
+                self.sock.writeData("LOGOUT\n")
                 self.sock.close()
             exit()
         elif msg.startswith("/c"):
@@ -199,19 +200,19 @@ class FkmlandunterMainWin(QtGui.QMainWindow):
                 print "ACKed"
             elif msg.startswith("JOIN"):
                 words = msg.split(None, 1)
-                self.playernum += i
-                self.names.append(words[1])
-                self.player_box[self.playernum -1].setTitle(
-                        self.names[playernum -1] + ": 0 points")
+                self.playernum += 1
+                #self.names.append(words[1])
+                #self.player_box[self.playernum -1].setTitle(
+                        #self.names[self.playernum -1] + ": 0 points")
                 self.chat_box.append(words[1] + " joined the game")
             elif msg.startswith("LEAVE"):
                 words = msg.split(None, 1)
                 self.player_box.append(words[1] + " left the game")
-                i = 0
-                for name in self.names:
-                    if name == words[1]:
-                        self.player_box[i].setTitle(name + " (left)")
-                    i += 1
+                #i = 0
+                #for name in self.names:
+                    #if name == words[1]:
+                        #self.player_box[i].setTitle(name + " (left)")
+                    #i += 1
             elif msg.startswith("START"):
                 words = msg.split(None, 2)
                 self.names = words[2].split(None, int(words[1]))
@@ -241,9 +242,18 @@ class FkmlandunterMainWin(QtGui.QMainWindow):
                 words = msg.split(None, 1)
                 for num in words[1].split():
                     if self.haveBelts == False:
+                        self.playerLifeBar[i].setFormat("%v/%m Lifebelts")
                         self.playerLifeBar[i].setMaximum(int(num))
                         self.playerWaterBar[i].setValue(0)
-                    self.playerLifeBar[i].setValue(int(num))
+                        self.playerWaterLbl[i].setText("0")
+                    n = int(num)
+                    if n < 0:
+                        self.playerLifeBar[i].setFormat("drowned")
+                        self.playerLifeLbl[i].setText("--")
+                    else:
+                        self.playerLifeBar[i].setValue(n)
+                        self.playerLifeLbl[i].setText(num + "/%d"
+                                % self.playerLifeBar[i].maximum())
                     i += 1
                 self.haveBelts = True
             elif msg.startswith("WEATHER"):
@@ -257,12 +267,14 @@ class FkmlandunterMainWin(QtGui.QMainWindow):
                 i = 0
                 for num in words[1].split():
                     self.chat_box.append(self.names[i] + " played " + num)
+                    self.player_lastCard[i].setText("Last move: " + num)
                     i += 1
             elif msg.startswith("WLEVELS"):
                 words = msg.split(None, 1)
                 i = 0
                 for num in words[1].split():
                     self.playerWaterBar[i].setValue(int(num))
+                    self.playerWaterLbl[i].setText(num)
                     i += 1
             elif msg.startswith("POINTS"):
                 self.haveDeck = False
@@ -274,7 +286,9 @@ class FkmlandunterMainWin(QtGui.QMainWindow):
                 pts = words[1].split(None, self.playernum)
                 for i in range(self.playernum):
                     self.playerWaterBar[i].setValue(0)
+                    self.playerWaterLbl[i].setText("0")
                     self.playerLifeBar[i].setValue(0)
+                    self.playerLifeLbl[i].setText("0/0")
                     self.player_box[i].setTitle(self.names[i] + ": " +
                             pts[i] + " points")
                 self.chat_box.append("Points distributed")

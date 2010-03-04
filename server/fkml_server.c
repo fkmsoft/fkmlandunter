@@ -55,6 +55,10 @@ int poll_for_input(fkml_server *s)
         if (pfds[i].revents & POLLRDHUP) {
             printf("Client %d (%s) disconnected\n", i,
                     s->players[i].name);
+            int p;
+            for (p = 0; p < s->connected; p++)
+                if (p != i)
+                    show_leave(s, p, i);
             fkml_rmclient(s, i);
             ret = -2;
         }
