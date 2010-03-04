@@ -174,9 +174,13 @@ int main(int argc, char **argv) {
             }
 
             if (WIFEXITED(status)) {
-                printf(" returned %d\n", k = WEXITSTATUS(status));
-                if (foo)
+                k = WEXITSTATUS(status);
+                if (foo) {
+                    if (k > 200)
+                        k -= 0x100;
                     botpts[l] += k;
+                }
+                printf(" returned %d\n", k);
             } else if (WIFSIGNALED(status))
                 printf(" killed by signal %d\n", WTERMSIG(status));
         }
