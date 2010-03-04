@@ -68,6 +68,8 @@ int connect_socket(int sock, char *serv_addr, unsigned short port);
 /* receive BUF_SIZE chars from *fp */
 char *receive_from(FILE *fp);
 
+char *receive_from2(FILE *fp);
+
 /* send formated string *fmt to *fp */
 void send_to(FILE *fp, char *fmt, ...);
 

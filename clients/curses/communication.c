@@ -172,9 +172,32 @@ char *receive_from(FILE *fp)
 {
     char *buffer = calloc(BUF_SIZE, sizeof(char));
     
-    fgets(buffer, BUF_SIZE, fp);
+    if (fgets(buffer, BUF_SIZE, fp) == NULL)
+        return NULL;
 
     return buffer;
+}
+
+char *receive_from2(FILE *fp)
+{
+    static char buffer[BUF_SIZE];
+    static int pos = 0;
+    int c;
+
+    while (true) {
+        c = getc(fp);
+        if (c == EOF)
+            return NULL;
+        if (pos < BUF_SIZE)
+            buffer[pos++] = c;
+        if (pos >= BUF_SIZE || c == '\n') {
+            char *rtn = calloc(strlen(buffer) + 1, sizeof(char));
+            strncpy(rtn, buffer, strlen(buffer));
+            pos = 0;
+            memset(buffer, '\0', BUF_SIZE);
+            return rtn;
+        }
+    }
 }
 
 /* send formated string *fmt to *fp */

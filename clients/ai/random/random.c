@@ -81,8 +81,10 @@ int main(int argc, char **argv) {
 
     bool play = true;
     while (play) {
-        if ((input = receive_from(fp)) == 0) {
+        if ((input = receive_from2(fp)) == 0) {
+            printf("%s, Error on receive_from!\n", name);
             play = false;
+            points = 113;
             continue;
         }
         if (debug)
