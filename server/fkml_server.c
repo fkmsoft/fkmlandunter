@@ -28,8 +28,10 @@
 
 #define CMD_DELIM ('\n')
 
-static char *server_command[] = { "ACK", "START", "WEATHER", "RINGS", "DECK",
-    "FAIL", "WLEVELS", "POINTS", "TERMINATE", "MSGFROM", "JOIN", "LEAVE" };
+static char *server_command[] = {
+    "ACK", "START", "WEATHER", "RINGS", "DECK",
+    "FAIL", "WLEVELS", "POINTS", "TERMINATE",
+    "MSGFROM", "JOIN", "LEAVE", "PLAYED" };
 
 static char *client_command[] = { "LOGIN", "START", "PLAY", "MSG", "LOGOUT" };
 
@@ -129,7 +131,7 @@ void send_cmd(fkml_server *s, int c, enum SERVER_COMMANDS cmd, char *msg, ...)
     FILE *fp;
     if (!s) {
         fp = fdopen(c, "a+");
-        if (setvbuf(s->players[s->connected].fp, 0, _IONBF, 0) != 0)
+        if (setvbuf(/*s->players[s->connected].*/fp, 0, _IOLBF, 0) != 0)
             perror("setvbuf");
     } else
         fp = s->players[c].fp;
@@ -150,7 +152,7 @@ int fkml_addclient(fkml_server *s, int fd)
 {
     s->players[s->connected].fd = fd;
     s->players[s->connected].fp = fdopen(fd, "a+");
-    if (setvbuf(s->players[s->connected].fp, 0, _IONBF, 0) != 0)
+    if (setvbuf(s->players[s->connected].fp, 0, _IOLBF, 0) != 0)
         perror("setvbuf");
     s->connected++;
     return s->connected-1;

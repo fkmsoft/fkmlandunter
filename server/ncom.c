@@ -5,6 +5,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 
 #include "ncom.h"
@@ -45,7 +46,7 @@ void show_rings(fkml_server *s, int p)
     char buf[MAXLEN], *ptr = buf;
     for (i = 0; i < s->connected; i++)
         ptr += sprintf(ptr, " %d", s->players[i].current_deck.lifebelts);
-    send_cmd(s, p, RINGS, buf);
+    send_cmd(s, p, RINGS, buf + 1);
 }
 
 void show_weather(int min, int max, fkml_server *s, int p)
@@ -63,7 +64,7 @@ void show_waterlevels(fkml_server *s, int p)
         else
             ptr += sprintf(ptr, " %d", -1);
     }
-    send_cmd(s, p, WLEVELS, buf);
+    send_cmd(s, p, WLEVELS, buf + 1);
 }
 
 void show_points(fkml_server *s, int p)
@@ -72,7 +73,7 @@ void show_points(fkml_server *s, int p)
     char buf[MAXLEN], *ptr = buf;
     for (i = 0; i < s->connected; i++)
         ptr += sprintf(ptr, " %d", s->players[i].points);
-    send_cmd(s, p, POINTS, buf);
+    send_cmd(s, p, POINTS, buf + 1);
 }
 
 /* returns played weather card or -1 if other command */
@@ -101,11 +102,12 @@ int read_weather(fkml_server *s, int p)
                     send_cmd(s, p, FAIL, "card argument missing");
                     break;
                 } else {
-                    sscanf(cardstr, "%d\n", &c);
+                    /*sscanf(cardstr, "%d\n", &c);*/
+                    c = atoi(cardstr);
                     for (i = 0; i < 12; i++)
                         if (c > 0 &&
-                                c ==
-                                s->players[p].current_deck.weathercards[i]) {
+                                (c ==
+                                s->players[p].current_deck.weathercards[i])) {
                             indeck = true;
                             break;
                         }
@@ -114,7 +116,7 @@ int read_weather(fkml_server *s, int p)
                     send_cmd(s, p, FAIL, "%d", c);
                     c = -1;
                 } else {
-                    s->players[p].played = true;
+                    s->players[p].played = c;
                     send_cmd(s, p, ACK, 0);
                 }
             }
@@ -152,6 +154,15 @@ void show_join(fkml_server *s, int p, int new)
 void show_leave(fkml_server *s, int p, int leaver)
 {
     send_cmd(s, p, LEAVE, s->players[leaver].name);
+}
+
+void show_played(fkml_server *s, int p)
+{
+    int i;
+    char buf[MAXLEN], *ptr = buf;
+    for (i = 0; i < s->connected; i++)
+        ptr += sprintf(ptr, " %d", s->players[i].played);
+    send_cmd(s, p, PLAYED, buf + 1);
 }
 
 /* vim: set sw=4 ts=4 fdm=syntax: */

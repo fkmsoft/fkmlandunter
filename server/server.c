@@ -137,7 +137,7 @@ int main(int argc, char **argv)
                 show_rings(s, p);
                 show_weather(w_min, w_max, s, p);
                 /* allow all players to make a move */
-                s->players[p].played = false;
+                s->players[p].played = 0;
             }
 
             /* This loop gets the next card to be played from every player */
@@ -192,9 +192,11 @@ int main(int argc, char **argv)
                 if (s->players[p].water_level > max)
                     max = s->players[p].water_level;
 
-            /* inform players about the new waterlevels */
+            /* inform players about the new waterlevels & the cards everybody
+             * played */
             for (p = 0; p < s->connected; p++) {
                 show_waterlevels(s, p);
+                show_played(s, p);
                 /* remove rings and make sure they die when necessary */
                 if (s->players[p].water_level == max)
                     if (--s->players[p].current_deck.lifebelts < 0) {

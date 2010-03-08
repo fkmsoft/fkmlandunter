@@ -10,3 +10,5 @@ $(DIR)/server: $(SERVEROBJS)
 
 $(DIR)/echosrv: $(ECHOOBJS)
 	$(CC) $(CFLAGS) -o $@ $^
+
+include $(DIR)/new/module.mk

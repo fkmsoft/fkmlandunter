@@ -38,13 +38,14 @@ int main(int argc, char **argv) {
     int i, j, k = 1, status, passes = 1, botcount;
     bool debug = false, silent = false;
     char *server = "./server";
-    char *silentstr = "", *debugstr = "";
+    char *silentstr = "", *debugstr = "", *passstr = "";
     while ((i = getopt(argc, argv, "s:p:dq")) != -1) {
         k++;
         switch (i) {
             case 'p':
                 k++;
                 passes = atoi(optarg);
+                passstr = optarg;
                 break;
             case 'q':
                 silent = true;
@@ -102,31 +103,32 @@ int main(int argc, char **argv) {
     printf("Starting %d passes of tests with %d bots\n", passes, botcount);
 
     char botnumstr[2] = "3";
-    for (i = 0; i < passes; i++) {
-        /* starting server */
-        switch (pid[botcount] = fork()) {
-            case -1:
-                printf("Fehler in fork()\n");
-                exit(EXIT_FAILURE);
-                break;
-            case 0:
-                /*fprintf(pidfile, "%d\n", getpid());
-                fflush(pidfile);*/
-                if (botcount > 3)
-                    botnumstr[0] = '0' + botcount;
-                if (execl(server, "server", "-p", botnumstr, 0L) < 0)
-                    printf("Error bei \"execl %s\": %s\n",
-                            server, strerror(errno));
-                _exit(EXIT_FAILURE);
-                break;
-            default:
-                /* wait a while to make sure server is running when clients
-                 * start to connect */
-                /* sleep(1); */
-                usleep(100000);
-                break;
-        }
+    /* starting server */
+    switch (pid[botcount] = fork()) {
+        case -1:
+            printf("Fehler in fork()\n");
+            exit(EXIT_FAILURE);
+            break;
+        case 0:
+            /*fprintf(pidfile, "%d\n", getpid());
+            fflush(pidfile);*/
+            if (botcount > 3)
+                botnumstr[0] = '0' + botcount;
+            if (execl(server, "server", "-l", botnumstr,
+                       "-g", passstr, debugstr, 0L) < 0)
+                printf("Error bei \"execl %s\": %s\n",
+                        server, strerror(errno));
+            _exit(EXIT_FAILURE);
+            break;
+        default:
+            /* wait a while to make sure server is running when clients
+             * start to connect */
+            /* sleep(1); */
+            usleep(100000);
+            break;
+    }
 
+    for (i = 0; i < passes; i++) {
         /* starting clients */
         /* char *botname = "PLAYER X"; */
         char botname[9] = { 'P', 'l', 'a', 'y', 'e', 'r', '_', '_', 0 };
@@ -156,11 +158,13 @@ int main(int argc, char **argv) {
 
         printf("\nPass %04d summary:\n"
                 "------------------\n", i);
-        for (j = 0; j < botcount + 1; j++) {
+        for (j = 0; j < botcount; j++) {
             bool foo = false;
             int l;
             wpid = wait(&status);
-            for (k = 0; k < botcount; k++)
+            for (k = 0;
+                    (i == passes -1) ? k < botcount + 1 : k < botcount;
+                    k++)
                 if (wpid == pid[k]) {
                     printf("%d (bot #%d)", wpid, k);
                     l = k;

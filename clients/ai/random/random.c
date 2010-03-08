@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
             free(input);
         input = receive_from(fp);
         if (debug)
-            fputs(input, stdout);
+            printf("%s: %s", name, input);
     } while (strncmp(input, "START ", 6) != 0);
     /* START 5 a b c d e */
     input[strlen(input)-1] = 0;
@@ -81,25 +81,29 @@ int main(int argc, char **argv) {
 
     bool play = true;
     while (play) {
-        if ((input = receive_from2(fp)) == 0) {
-            printf("%s, Error on receive_from!\n", name);
+        if ((input = receive_from(fp)) == 0) {
+            if (!silent || debug)
+                printf("%s: Error on receive_from!\n", name);
             play = false;
             points = 113;
             continue;
         }
         if (debug)
-            fputs(input, stdout);
+            printf("%s: %s", name, input);
 
         if (strncmp(input, "TERMINATE", 9) == 0)
             play = false;
         else if (strncmp(input, "DECK ", 5) == 0) {
             int card = 0;
             p = input + 5;
-            while (!card)
+            while (!card && *p)
                 card = atoi(p++);
-            if (!silent)
-                printf("%s has play %d\n", name, card);
-            send_to(fp, "PLAY %d\n", card);
+            if (card) {
+                if (!silent)
+                    printf("%s has play %d\n", name, card);
+                send_to(fp, "PLAY %d\n", card);
+            } else if (!silent)
+                printf("%s not find card in deck\n", name);
         } else if (strncmp(input, "POINTS ", 7) == 0) {
             strtok(input, " ");
             /*strtok(0, " ");*/

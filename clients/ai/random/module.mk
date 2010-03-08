@@ -6,4 +6,4 @@ RANDOMDEPS := $(RANDOMOBJS) $(RANDOMHS)
 OBJS += $(RANDOMOBJS)
 
 $(DIR)/random: $(RANDOMDEPS)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $(RANDOMOBJS)

@@ -22,5 +22,8 @@ include $(patsubst %,%/module.mk,$(MODULES))
 # go
 all: $(TARGETS)
 
+commit:
+	svn ci
+
 clean:
-	rm -rf $(OBJS) $(TARGETS)
+	$(RM) $(OBJS) $(TARGETS)

@@ -1,14 +1,11 @@
-/* server_util.c
+/* fkmlandunter_util.c
+ *
+ * Fkmlandunter utility functions
  *
  * (c) Fkmsoft, 2010
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
-
-#include "server_util.h"
-/* #include "fkml_server.h" */
+#include "fkmlandunter_util.h"
 
 /* returns int array with num numbers between 1 and num */
 int *shuffle(int num)
@@ -25,21 +22,6 @@ int *shuffle(int num)
     }
 
     return arr;
-}
-
-/* create + prepare num players for the game */
-void create_players(player *p_array/*, deck *d_array*/, int num)
-{
-    int i;
-    /* deck *decks = create_decks(num); */
-
-    for (i = 0; i < num; i++) {
-        p_array[i].points = 0;
-        p_array[i].water_level = 0;
-        /* p_array[i].current_deck = d_array[i]; */
-        p_array[i].dead = false;
-        p_array[i].played = 0;
-    }
 }
 
 /* creates an amount of num decks */
@@ -74,20 +56,13 @@ deck *deck_rotate(deck *decks, int d, int num)
     return rotated;
 }
 
-/* free the decks of all players in s */
-void free_decks(fkml_server *s)
+player *create_player(int fd)
 {
-    int i;
-    for (i = 0; i < s->connected; i++)
-        free(&s->players[i].current_deck);
-}
+    player *p = calloc(1,sizeof(player));
 
-/* hand out num decks to num players */
-void hand_decks(player *players, deck *decks, int num)
-{
-    int i;
-    for (i = 0; i < num; i++)
-        players[i].current_deck = decks[i];
+    p->fd = fd;
+
+    return p;
 }
 
 /* vim: set sw=4 ts=4 fdm=syntax: */

@@ -1,0 +1,19 @@
+LOGIN name
+ACK name
+JOIN name ****
+START
+START 3 nam1 nam2 nam3
+DECK 1 2 56
+RINGS 2 4 1
+WEATHER 7 8
+PLAY 56
+ACK 56
+FAIL 56
+PLAYED 1 25 60
+WLEVELS 7 8 0
+POINTS 1 2 -1
+LOGOUT bye
+LEAVE name i must go ****
+TERMINATE fuck off
+MSG fu all los0rZ
+MSGFROM name fu all los0rZ
