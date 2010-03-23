@@ -41,7 +41,7 @@ class FkmlandunterMainWin(QtGui.QMainWindow):
         topbox = QtGui.QHBoxLayout()
         for i in range(MAXPLAYERS):
             # Create Widgets
-            self.player_box.append(QtGui.QGroupBox("Player " + `i+1`))
+            self.player_box.append(QtGui.QGroupBox(self.tr("Player") + " " + `i+1`))
             self.player_box[i].setAlignment(QtCore.Qt.AlignHCenter)
             self.playerWaterBar.append(QtGui.QProgressBar())
             self.playerWaterBar[i].setMinimum(0)
@@ -57,12 +57,12 @@ class FkmlandunterMainWin(QtGui.QMainWindow):
             self.playerLifeBar[i].setMaximum(12)
             self.playerLifeBar[i].setValue(i)
             self.playerLifeBar[i].setOrientation(QtCore.Qt.Vertical)
-            self.playerLifeBar[i].setFormat("%v/%m Lifebelts")
+            self.playerLifeBar[i].setFormat("%v/%m " + self.tr("Lifebelts"))
             #self.playerLifeBar[i].setAlignment(QtCore.Qt.AlignHCenter)
             #self.playerLifeBar[i].setInvertedAppearance(True)
             self.playerLifeLbl.append(QtGui.QLabel(" 0/0"))
             #self.playerLifeLbl[i].setAlignment(QtCore.Qt.AlignHCenter)
-            self.player_lastCard.append(QtGui.QLabel("Last move: 0"))
+            self.player_lastCard.append(QtGui.QLabel(self.tr("Last move:") + " 0"))
             # Layout
             #hbox = QtGui.QHBoxLayout()
             grid = QtGui.QGridLayout()
@@ -80,17 +80,17 @@ class FkmlandunterMainWin(QtGui.QMainWindow):
             topbox.addWidget(self.player_box[i])
         # Deck
         # Create Widgets
-        self.wLabel = QtGui.QLabel("Weather:")
+        self.wLabel = QtGui.QLabel(self.tr("Weather:"))
         #self.deckChoose = QtGui.QComboBox()
         #self.cardGroup = QtGui.QButtonGroup()
         self.btns = []
         for i in range(12):
-            self.btns.append(QtGui.QRadioButton("Card " + `i + 1`))
+            self.btns.append(QtGui.QRadioButton(self.tr("Card") + " " + `i + 1`))
             self.btns[i].setEnabled(False)
             #self.cardGroup.addButton(self.btns[i], i)
         policy = QtGui.QSizePolicy(QtGui.QSizePolicy.PushButton)
         policy.setVerticalPolicy(QtGui.QSizePolicy.MinimumExpanding)
-        self.deckPlay = QtGui.QPushButton("Play")
+        self.deckPlay = QtGui.QPushButton(self.tr("Play"))
         self.deckPlay.setEnabled(False)
         self.deckPlay.setSizePolicy(policy)
         # Chat
@@ -351,6 +351,17 @@ if __name__ == "__main__":
     # direct launch
     # create qapp
     app = QtGui.QApplication(sys.argv)
+    locale = QtCore.QLocale.system().name()
+    print "Locale is %s" % locale
+    # translate it
+    qtTranslator = QtCore.QTranslator()
+    if qtTranslator.load("qt_" + locale, ""):
+        app.installTranslator(qtTranslator)
+    appTranslator = QtCore.QTranslator()
+    if appTranslator.load("client_" + locale, ""):
+        app.installTranslator(appTranslator)
+    # set icon
+    app.setWindowIcon(QtGui.QIcon("icon.png"))
     # create main window
     main_window = FkmlandunterMainWin()
     main_window.show()
