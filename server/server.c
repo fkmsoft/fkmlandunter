@@ -230,6 +230,9 @@ int main(int argc, char **argv)
                 if (s->players[p].water_level == w_min)
                      s->players[p].points++;
                 /* points for lifebelts: */
+                if (debug && s->players[p].current_deck.lifebelts > 12)
+           	        printf("player %d has LOTS of lifebelts left: %d!\n", p,
+                        s->players[p].current_deck.lifebelts);
                 s->players[p].points += s->players[p].current_deck.lifebelts;
             }
         }
@@ -247,4 +250,4 @@ int main(int argc, char **argv)
     return 0;
 }
 
-/* vim: set sw=4 ts=4 fdm=syntax: */
+/* vim: set sw=4 ts=4 et fdm=syntax: */

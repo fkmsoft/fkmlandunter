@@ -24,6 +24,19 @@ int *shuffle(int num)
         arr[r] = i;
     }
 
+    /* check it: */
+	if (debug) {
+		int *b = calloc(sizeof(int), num);
+		for (i = 0; i < num; i++)
+			b[arr[i] - 1]++;
+
+		for (i = 0; i < num; i++)
+			if (b[i] != 1)
+				printf("FAIL in shuffle(%d) at %d!\n", num, i);
+
+		free(b);
+	}
+
     return arr;
 }
 
@@ -50,14 +63,23 @@ deck *create_decks(int num)
     int i, j, c;
 
     for (i = 0; i < num; i++) {
+		deck_arr[i].lifebelts = 0;
         for (j = 0; j < 12; j++) {
-            c = deck_arr[i].weathercards[j] = cards[i*12 + j];
+            c = deck_arr[i].weathercards[j] = cards[12*i + j];
             if (c > 12 && c < 49)
                 deck_arr[i].lifebelts += 1;
             if (c > 24 && c < 37)
                 deck_arr[i].lifebelts += 1; /* we already got +1 above */
         }    
         deck_arr[i].lifebelts /= 2;
+
+        if (debug && deck_arr[i].lifebelts > 12) {
+            printf("LOTS of lifebelts in deck %d: %d\n", i, deck_arr[i].lifebelts);
+            printf("deck %d:\n", i);
+            for (j = 0; j < 12; j++)
+                printf("%d, ", deck_arr[i].weathercards[j]);
+            puts("");
+        }
     }
     return deck_arr;
 }
@@ -90,4 +112,4 @@ void hand_decks(player *players, deck *decks, int num)
         players[i].current_deck = decks[i];
 }
 
-/* vim: set sw=4 ts=4 fdm=syntax: */
+/* vim: set sw=4 ts=4 et fdm=syntax: */

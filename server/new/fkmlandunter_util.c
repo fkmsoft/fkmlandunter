@@ -32,6 +32,7 @@ deck *create_decks(int num)
     int i, j, c;
 
     for (i = 0; i < num; i++) {
+		deck_arr[i].lifebelts = 0;
         for (j = 0; j < 12; j++) {
             c = deck_arr[i].weathercards[j] = cards[i*12 + j];
             if (c > 12 && c < 49)

@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
     int i, j, k = 1, status, passes = 1, botcount;
     bool debug = false, silent = false;
     char *server = "./server";
-    char *silentstr = "", *debugstr = "", *passstr = "";
+    char *silentstr = "", *debugstr = "", *passstr = "1";
     while ((i = getopt(argc, argv, "s:p:dq")) != -1) {
         k++;
         switch (i) {
@@ -158,14 +158,16 @@ int main(int argc, char **argv) {
 
         printf("\nPass %04d summary:\n"
                 "------------------\n", i);
-        for (j = 0; j < botcount; j++) {
+        for (j = 0;
+                (i == passes - 1) ? j < botcount + 1 : j < botcount;
+                j++) {
             bool foo = false;
             int l;
             wpid = wait(&status);
             for (k = 0;
-                    (i == passes -1) ? k < botcount + 1 : k < botcount;
+                    (i == passes - 1) ? k < botcount + 1 : k < botcount;
                     k++)
-                if (wpid == pid[k]) {
+                if (wpid == pid[k] && k < botcount) {
                     printf("%d (bot #%d)", wpid, k);
                     l = k;
                     foo = true;
