@@ -11,7 +11,7 @@ TARGETS :=
 OBJS :=
 SRC :=
 
-dummy: all
+all:
 
 # include module descriptions
 include $(patsubst %,%/module.mk,$(MODULES))

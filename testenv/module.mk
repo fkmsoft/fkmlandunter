@@ -1,14 +1,10 @@
 DIR := testenv
 TARGETS += $(DIR)/testenv $(DIR)/server $(DIR)/random \
-		   $(DIR)/ret $(DIR)/nserv
+		   $(DIR)/nserv
 TESTENVOBJS = $(DIR)/testenv.o
-RETOBJS = $(DIR)/ret.o
 OBJS += $(TESTENVOBJS) $(RETOBJS)
 
 $(DIR)/testenv: $(TESTENVOBJS)
-	$(CC) $(CFLAGS) -o $@ $^
-
-$(DIR)/ret: $(RETOBJS)
 	$(CC) $(CFLAGS) -o $@ $^
 
 $(DIR)/server: server/server
