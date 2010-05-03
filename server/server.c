@@ -24,18 +24,25 @@
 int main(int argc, char **argv)
 {
     bool debug = false;
-    int i, j, p, pnum = MAX_PLAYERS;
-    while ((i = getopt(argc, argv, "p:d")) != -1) {
+    int i, j, p, pnum = MAX_PLAYERS, games = 1;
+    while ((i = getopt(argc, argv, "l:dg:")) != -1) {
         switch (i) {
-            case 'p':
+            case 'l':
                 pnum = atoi(optarg);
                 break;
             case 'd':
                 debug = true;
+				break;
+			case 'g':
+				games = atoi(optarg);
+				break;
             default:
                 exit(EXIT_FAILURE);
         }
     }
+
+	int g;
+	for (g = 0; g < games; g++) {
     fkml_server *s = init_server(PORT, pnum);
 
     deck *deck_set = create_decks(pnum);
@@ -235,6 +242,7 @@ int main(int argc, char **argv)
 
     fkml_shutdown(s, "thank you, play again");
     /* puts("bye"); */
+	}
 
     return 0;
 }
