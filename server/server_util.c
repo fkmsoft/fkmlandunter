@@ -10,6 +10,9 @@
 #include "server_util.h"
 /* #include "fkml_server.h" */
 
+/* not nice, but... */
+#define debug false
+
 /* returns int array with num numbers between 1 and num */
 int *shuffle(int num)
 {

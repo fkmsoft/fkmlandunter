@@ -52,7 +52,7 @@ int main(int argc, char **argv)
     if (debug)
         printf("Starting server on port %d for %d games\n",
                 port, games);
-    fkmserver *s = fkmserver_init(port, getfd);
+    fkmserver *s = fkmserver_init(port, (void *)getfd);
 
     int i;
     for (i = games; i != 0; i--) {

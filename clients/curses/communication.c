@@ -172,8 +172,10 @@ char *receive_from(FILE *fp)
 {
     char *buffer = calloc(BUF_SIZE, sizeof(char));
     
-    if (fgets(buffer, BUF_SIZE, fp) == NULL)
+    if (fgets(buffer, BUF_SIZE, fp) == NULL) {
+        perror("receive_from");
         return NULL;
+    }
 
     return buffer;
 }

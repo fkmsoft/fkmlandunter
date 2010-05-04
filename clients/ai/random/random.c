@@ -49,8 +49,8 @@ int main(int argc, char **argv) {
 
     int sock = create_sock();
     FILE *fp = fdopen(sock, "a+");
-    if (setvbuf(fp, 0, _IONBF, 0) != 0)
-        perror("setvbuf");
+    /*if (setvbuf(fp, 0, _IONBF, 0) != 0)
+        perror("setvbuf");*/
     if (connect_socket(sock, host, port) == -1) {
         printf("%s not find server\n", name);
         exit(EXIT_FAILURE);
@@ -86,6 +86,7 @@ int main(int argc, char **argv) {
                 printf("%s: Error on receive_from!\n", name);
             play = false;
             points = 113;
+            puts("FUCK");
             continue;
         }
         if (debug)
