@@ -161,7 +161,7 @@ int main(int argc, char **argv) {
                 j++) {
             bool foo = false;
             int l;
-            if (j == 1)
+            if (j == 0)
                 printf("\nPass %04d summary:\n"
                         "------------------\n", i);
             wpid = wait(&status);

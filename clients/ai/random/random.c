@@ -92,7 +92,7 @@ int main(int argc, char **argv) {
         if (debug)
             printf("%s: %s", name, input);
 
-        if (strncmp(input, "TERMINATE", 9) == 0)
+        if (strstr(input, "TERMINATE"))
             play = false;
         else if (strncmp(input, "DECK ", 5) == 0) {
             int card = 0;
