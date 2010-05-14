@@ -1,6 +1,6 @@
 DIR := testenv
 TARGETS += $(DIR)/testenv $(DIR)/server $(DIR)/random \
-		   $(DIR)/nserv
+		   $(DIR)/nserv $(DIR)/sdl_randl
 TESTENVOBJS = $(DIR)/testenv.o
 OBJS += $(TESTENVOBJS) $(RETOBJS)
 
@@ -13,8 +13,11 @@ $(DIR)/server: server/server
 
 $(DIR)/nserv: server/new/server
 	rm -f $@
-	ln -s ../$< $(DIR)/nserv
+	ln -s ../$< $@
 
 $(DIR)/random: clients/ai/random/random
 	rm -f $@
 	ln -s ../$< $(DIR)
+$(DIR)/sdl_randl: clients/sdl/randall
+	rm -f $@
+	ln -s ../$< $@

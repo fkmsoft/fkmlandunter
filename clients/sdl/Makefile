@@ -1,2 +1,2 @@
 all:
-	$(MAKE) -C ../.. clients/sdl/resolve
+	$(MAKE) -C ../.. clients/sdl/resolve clients/sdl/randall
