@@ -8,7 +8,9 @@
 
 - concept & implementation of a new protocol
 
-- concept & implementation of a 'lobby' where people can chat and open new games
+- concept & implementation of a ``lobby'' where people can chat and open new games
+
+- fix ``INSTALL'' instructions (maybe add an install target in the Makefile)
 
 - bug-fixing work on the ncurses client
 
