@@ -89,7 +89,7 @@ int main(int argc, char **argv) {
 
         if (strstr(input, "TERMINATE"))
             play = false;
-        else if ((p = strstr(input, "DECK "))) {
+        if ((p = strstr(input, "DECK "))) {
             int card = 0;
             p += 5;
             while (!card && *p)
@@ -100,7 +100,8 @@ int main(int argc, char **argv) {
                 send_to(sock, "PLAY %d\n", card);
             } else if (!silent)
                 printf("%s not find card in deck\n", name);
-        } else if ((p = strstr(input, "POINTS "))) {
+        }
+        if ((p = strstr(input, "POINTS "))) {
             strtok(p, " ");
             /*strtok(0, " ");*/
             for (i = -1; i < pos; i++)
