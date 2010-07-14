@@ -1,8 +1,13 @@
 #include "gui_util.h"
 
-SDL_Surface *act_border, *pas_border, *name_border,
+#define FONTSIZE (24)
+
+static SDL_Surface *act_border, *pas_border, *name_border,
     *box_lifebelt, *act_lifebelt, *pas_lifebelt,
     *pointsbox, *wlevelbox, *defava;
+
+static TTF_Font *font;
+static SDL_Color font_fg = {0, 0, 0, 255};
 
 SDL_Surface *init_sdl(int w, int h)
 {
@@ -21,6 +26,10 @@ SDL_Surface *init_sdl(int w, int h)
         exit(EXIT_FAILURE);
     }
 
+    if (TTF_Init() == -1) {
+        exit(EXIT_FAILURE);
+    }
+
     atexit(SDL_Quit);
 
     /* load all images */
@@ -34,6 +43,13 @@ SDL_Surface *init_sdl(int w, int h)
     LOAD(WLEVELBOX, wlevelbox)
     LOAD(DEFAVA, defava)
 
+    /* load font */
+    if(!(font = TTF_OpenFont(DEFFONT, FONTSIZE))) {
+        fprintf(stderr, "Could not load file >>%s<<: %s\n", DEFFONT, TTF_GetError());
+	exit(EXIT_FAILURE);
+    };
+    /*cache_glyphs();*/
+
     ckey = SDL_MapRGB(screen->format, 0, 0, 0);
     SDL_SetColorKey(act_lifebelt, SDL_SRCCOLORKEY | SDL_RLEACCEL, ckey);
     SDL_SetColorKey(pas_lifebelt, SDL_SRCCOLORKEY | SDL_RLEACCEL, ckey);
@@ -45,6 +61,7 @@ void create_playerbox(SDL_Surface *s, unsigned x, unsigned y, char *avatar, unsi
 {
     int i, stretch = 2;
     SDL_Rect r;
+    SDL_Surface *txt;
 
     /* draw border */
     r.x = x;
@@ -62,12 +79,33 @@ void create_playerbox(SDL_Surface *s, unsigned x, unsigned y, char *avatar, unsi
     r.x = x + stretch * 77;
     SDL_BlitSurface(wlevelbox, 0, s, &r);
 
+    txt = TTF_RenderText_Blended(font, "Wasser", font_fg);
+    r.x += stretch * 3;
+    r.y += stretch * 34;
+    SDL_BlitSurface(txt, 0, s, &r);
+    r.x -= stretch * 3;
+    r.y -= stretch * 34;
+
     r.y = y + stretch * 55;
     SDL_BlitSurface(pointsbox, 0, s, &r);
+
+    txt = TTF_RenderText_Blended(font, "Punkte", font_fg);
+    r.x += stretch * 4;
+    r.y += stretch * 34;
+    SDL_BlitSurface(txt, 0, s, &r);
+    r.x -= stretch * 4;
+    r.y -= stretch * 34;
 
     r.x = x + stretch * 4;
     r.y = y + stretch * 85;
     SDL_BlitSurface(name_border, 0, s, &r);
+
+    txt = TTF_RenderText_Blended(font, "Guilord", font_fg);
+    r.x += stretch * 2;
+    r.y += stretch * 4;
+    SDL_BlitSurface(txt, 0, s, &r);
+    r.x -= stretch * 2;
+    r.y -= stretch * 4;
 
     r.x += stretch;
     r.y = y + stretch * 105;
@@ -147,8 +185,45 @@ int rm_lifebelt(SDL_Surface *s, unsigned x, unsigned y, unsigned n)
 
     if (n >= 5)
         r.y += stretch * BELTSIZE;
+
     SDL_BlitSurface(pas_lifebelt, 0, s, &r);
 
     return 1;
 }
 
+int set_wlevel(SDL_Surface *s, unsigned x, unsigned y, unsigned n)
+{
+    SDL_Rect r;
+    SDL_Surface *txt;
+    char buf[5];
+    int stretch = 2;
+
+    snprintf(buf, 5, "%i", n);
+    puts(buf);
+    txt = TTF_RenderText_Blended(font, buf, font_fg);
+    if (!txt) puts("?");
+
+    r.x = stretch * 94;
+    r.y = stretch * 18;
+    SDL_BlitSurface(txt, 0, s, &r);
+
+    return n;
+}
+
+int set_points(SDL_Surface *s, unsigned x, unsigned y, int n)
+{
+    SDL_Rect r;
+    SDL_Surface *txt;
+    char buf[5];
+    int stretch = 2;
+
+    snprintf(buf, 5, "%i", n);
+    puts(buf);
+    txt = TTF_RenderText_Blended(font, buf, font_fg);
+    if (!txt) puts("?");
+    r.x = stretch * 94;
+    r.y = stretch * 66;
+    SDL_BlitSurface(txt, 0, s, &r);
+
+    return n;
+}

@@ -13,6 +13,8 @@ int main()
     screen = init_sdl(W, H);
 
     create_playerbox(screen, 0, 0, 0, 10);
+    set_wlevel(screen, 0, 0, 12);
+    set_points(screen, 0, 0, -1);
 
     SDL_UpdateRect(screen, 0, 0, 0, 0);
 

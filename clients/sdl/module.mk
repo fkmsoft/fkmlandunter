@@ -10,7 +10,7 @@ guitesths := $(DIR)/gui_util.h
 guitestdeps := $(guitestobjs) $(guitesths)
 
 sdl_net_cmd := `sdl-config --libs --cflags` -lSDL_net
-sdl_gui_cmd := `sdl-config --libs --cflags` -lSDL_image
+sdl_gui_cmd := `sdl-config --libs --cflags` -lSDL_image -lSDL_ttf
 OBJS += $(RANDALLOBJS) $(guitestobjs)
 
 all:
