@@ -1,10 +1,12 @@
+#include <stdlib.h>
+
 #include "gui_util.h"
 #include "text_util.h"
 
 #define W 800
 #define H 600
 
-int main()
+int main(int argc, char **argv)
 {
     int i;
 
@@ -14,10 +16,10 @@ int main()
 
     char s[] = "hello1234567890";
 
-    screen = init_sdl(W, H);
-    /*
-    screen = init_sdl(1280, 1024);
-    */
+    if (argc == 3)
+        screen = init_sdl(atoi(argv[1]), atoi(argv[2]));
+    else
+        screen = init_sdl(W, H);
 
     create_playerbox(screen, 0, 0, 0, 10);
     set_wlevel(screen, 0, 0, 12);

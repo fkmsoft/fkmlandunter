@@ -3,6 +3,8 @@
 #define FONTSIZE (11)
 #define FONTSIZE2 (15)
 
+#define BUFLEN 1024
+
 static SDL_Surface  
     *act_lifebelt, *pas_lifebelt,
     *defava, *avabox, *hud, *pcard, *table;
@@ -16,6 +18,7 @@ static double hstretch, vstretch;
 SDL_Surface *init_sdl(int w, int h)
 {
     int ckey;
+    char buf[BUFLEN];
     SDL_Surface *screen, *temp;
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -37,9 +40,10 @@ SDL_Surface *init_sdl(int w, int h)
     atexit(SDL_Quit);
 
     /* load macro */
-#define LOAD(a, b) if ((temp = IMG_Load(a))) \
+#define LOAD(a, b) { snprintf(buf, BUFLEN, "%s%d_%d/%s", DATADIR, w, h, a); \
+    if ((temp = IMG_Load(buf))) \
     { b = SDL_DisplayFormat(temp); SDL_FreeSurface(temp); } \
-    else { fprintf(stderr, "Could not load file >>%s<<: %s\n", a, IMG_GetError()); exit(EXIT_FAILURE); }
+    else { fprintf(stderr, "Could not load file >>%s<<: %s\n", a, IMG_GetError()); exit(EXIT_FAILURE); } }
 
     /* load all images */
     LOAD(ACT_LIFEBELT, act_lifebelt)

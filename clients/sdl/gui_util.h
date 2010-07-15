@@ -5,40 +5,39 @@
 #define _ISOC99_SOURCE
 #include <stdio.h>
 
-#define DATADIR "../../data/fkmlu/" "800_600/"
-#define FONTDIR "../../data/fkmlu/"
+#define DATADIR "../../data/fkmlu/"
 
 /* border */
-#define ACT_BORDER (DATADIR "rahmen_aktiv.png")
-#define PAS_BORDER (DATADIR "rahmen_fertig.png")
+#define ACT_BORDER ("rahmen_aktiv.png")
+#define PAS_BORDER ("rahmen_fertig.png")
 
 /* background */
-#define TABLE (DATADIR "tisch.png")
-#define HUD (DATADIR "hud.png")
+#define TABLE ("tisch.png")
+#define HUD ("hud.png")
 
 /* name */
-#define NAME_BORDER (DATADIR "nutzername.png")
+#define NAME_BORDER ("nutzername.png")
 
 /* lifebelt */
-#define BOX_LIFEBELT (DATADIR "kasten.png")
-#define PAS_LIFEBELT (DATADIR "rettungsring_sw.png")
-#define ACT_LIFEBELT (DATADIR "rettungsring.png")
+#define BOX_LIFEBELT ("kasten.png")
+#define PAS_LIFEBELT ("rettungsring_sw.png")
+#define ACT_LIFEBELT ("rettungsring.png")
 
 /* points */
-#define POINTSBOX (DATADIR "punktestand.png")
+#define POINTSBOX ("punktestand.png")
 
 /* water level */
-#define WLEVELBOX (DATADIR "wasserlevel.png")
+#define WLEVELBOX ("wasserlevel.png")
 
 /* standard avatar */
-#define DEFAVA (DATADIR "nutzerbild.png")
-#define AVABOX (DATADIR "nutzerbild_rahmen.png")
+#define DEFAVA ("nutzerbild.png")
+#define AVABOX ("nutzerbild_rahmen.png")
 
 /* cards */
-#define PCARD (DATADIR "punktekarte.png")
+#define PCARD ("punktekarte.png")
 
 /* standard font */
-#define DEFFONT (FONTDIR "TOONISH.ttf")
+#define DEFFONT (DATADIR "TOONISH.ttf")
 
 SDL_Surface *init_sdl(int w, int h);
 
