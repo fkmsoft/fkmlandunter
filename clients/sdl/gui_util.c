@@ -244,13 +244,21 @@ int add_pcard(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned val)
 
     snprintf(buf, 5, "%2i", val);
     txt = TTF_RenderText_Blended(font2, buf, font_fg);
+
     r.x += hstretch * 7;
     r.y += vstretch * 7;
     SDL_BlitSurface(txt, 0, s, &r);
+
     r.y += vstretch * 95;
     SDL_BlitSurface(txt, 0, s, &r);
 
-    return 1;
+    r.x += hstretch * 70;
+    SDL_BlitSurface(txt, 0, s, &r);
+
+    r.y -= vstretch * 95;
+    SDL_BlitSurface(txt, 0, s, &r);
+
+    return val;
 }
 
 

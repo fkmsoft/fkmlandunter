@@ -40,6 +40,7 @@ int main(int argc, char **argv)
 	s[5 + c - '0'] = c;
 	c++;
 	textbox_set(t, s);
+        add_pcard(screen, 0, 0, i, i+1);
 
         SDL_UpdateRect(screen, 0, 0, 0, 0);
 	SDL_Delay(1000);
