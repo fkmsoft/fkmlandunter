@@ -1,9 +1,9 @@
 DIR := clients/sdl
 TARGETS += $(DIR)/randall $(DIR)/gui_test
 
-RANDALLOBJS := $(DIR)/randall.o $(DIR)/sdl_util.o
-RANDALLHS := $(DIR)/sdl_util.h
-RANDALLDEPS := $(RANDALLOBJS) $(RANDALLHS)
+randallobjs := $(DIR)/randall.o $(DIR)/net_util.o
+randallhs := $(DIR)/net_util.h
+randalldeps := $(randallobjs) $(randallhs)
 
 guitestobjs := $(DIR)/gui_test.o $(DIR)/gui_util.o
 guitesths := $(DIR)/gui_util.h
@@ -11,12 +11,12 @@ guitestdeps := $(guitestobjs) $(guitesths)
 
 sdl_net_cmd := `sdl-config --libs --cflags` -lSDL_net
 sdl_gui_cmd := `sdl-config --libs --cflags` -lSDL_image -lSDL_ttf
-OBJS += $(RANDALLOBJS) $(guitestobjs)
+OBJS += $(randallobjs) $(guitestobjs)
 
 all:
 
-$(DIR)/randall: $(RANDALLDEPS)
-	$(CC) $(CFLAGS) $(sdl_net_cmd) -o $@ $(RANDALLOBJS)
+$(DIR)/randall: $(randalldeps)
+	$(CC) $(CFLAGS) $(sdl_net_cmd) -o $@ $(randallobjs)
 
 $(DIR)/gui_test: $(guitestdeps)
 	$(CC) $(CFLAGS) $(sdl_gui_cmd) -o $@ $(guitestobjs)
