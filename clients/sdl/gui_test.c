@@ -1,8 +1,8 @@
 #include "gui_util.h"
 #include "text_util.h"
 
-#define W 1600
-#define H 1200
+#define W 800
+#define H 600
 
 int main()
 {

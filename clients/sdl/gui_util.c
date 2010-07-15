@@ -9,16 +9,14 @@ static SDL_Surface
 
 static TTF_Font *font,*font2;
 static SDL_Color font_fg = {0, 0, 0, 255};
-static SDL_Color font_fg2 = {255, 255, 255, 255};
+/*static SDL_Color font_fg2 = {255, 255, 255, 255};*/
+
+static double hstretch, vstretch;
 
 SDL_Surface *init_sdl(int w, int h)
 {
     int ckey;
     SDL_Surface *screen, *temp;
-
-#define LOAD(a, b) if ((temp = IMG_Load(a))) \
-    { b = SDL_DisplayFormat(temp); SDL_FreeSurface(temp); } \
-    else { fprintf(stderr, "Could not load file >>%s<<: %s\n", a, IMG_GetError()); exit(EXIT_FAILURE); }
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         exit(EXIT_FAILURE);
@@ -32,7 +30,15 @@ SDL_Surface *init_sdl(int w, int h)
         exit(EXIT_FAILURE);
     }
 
+    vstretch = w / 800;
+    hstretch = h / 600;
+
     atexit(SDL_Quit);
+
+    /* load macro */
+#define LOAD(a, b) if ((temp = IMG_Load(a))) \
+    { b = SDL_DisplayFormat(temp); SDL_FreeSurface(temp); } \
+    else { fprintf(stderr, "Could not load file >>%s<<: %s\n", a, IMG_GetError()); exit(EXIT_FAILURE); }
 
     /* load all images */
     LOAD(ACT_LIFEBELT, act_lifebelt)
@@ -52,7 +58,6 @@ SDL_Surface *init_sdl(int w, int h)
         fprintf(stderr, "Could not load file >>%s<<: %s\n", DEFFONT, TTF_GetError());
 	exit(EXIT_FAILURE);
     };
-    /*cache_glyphs();*/
 
     ckey = SDL_MapRGB(screen->format, 0, 0, 0);
     SDL_SetColorKey(act_lifebelt, SDL_SRCCOLORKEY | SDL_RLEACCEL, ckey);
@@ -66,7 +71,7 @@ SDL_Surface *init_sdl(int w, int h)
 
 void create_playerbox(SDL_Surface *s, unsigned x, unsigned y, char *avatar, unsigned lifebelts)
 {
-    int i, stretch = 2;
+    int i;
     SDL_Rect r;
     SDL_Surface *txt;
 
@@ -76,12 +81,12 @@ void create_playerbox(SDL_Surface *s, unsigned x, unsigned y, char *avatar, unsi
 
     SDL_BlitSurface(table, 0, s, &r);
 
-    r.x += stretch*18;
-    r.y = y + stretch * 385;
+    r.x += hstretch * 18;
+    r.y = y + vstretch * 385;
     SDL_BlitSurface(hud, 0, s, &r);
 
-    r.x += stretch * 610;
-    r.y += stretch * 13;
+    r.x += hstretch * 610;
+    r.y += vstretch * 13;
     if (!avatar){        
         SDL_BlitSurface(defava, 0, s, &r);
         SDL_BlitSurface(avabox,0,s,&r);
@@ -91,17 +96,17 @@ void create_playerbox(SDL_Surface *s, unsigned x, unsigned y, char *avatar, unsi
     }
 
     txt = TTF_RenderText_Blended(font, "Wasser", font_fg);
-    r.x += stretch * 77;
-    r.y += stretch * 37;
+    r.x += hstretch * 77;
+    r.y += vstretch * 37;
     SDL_BlitSurface(txt, 0, s, &r);
 
     txt = TTF_RenderText_Blended(font, "Punkte", font_fg);
-    r.x += stretch * 1;
-    r.y += stretch * 50;
+    r.x += hstretch * 1;
+    r.y += vstretch * 50;
     SDL_BlitSurface(txt, 0, s, &r);
     
     txt = TTF_RenderText_Blended(font, "Randall", font_fg);
-    r.x -= stretch * 70;
+    r.x -= hstretch * 70;
     SDL_BlitSurface(txt, 0, s, &r);
     
     for (i = 0; i<12; i++)
@@ -115,19 +120,19 @@ void create_playerbox(SDL_Surface *s, unsigned x, unsigned y, char *avatar, unsi
 
 int set_lifebelts(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned max)
 {
-    int i, j, stretch = 2;
+    int i, j;
     SDL_Rect r;
 
     /* draw lifebelts */
-    r.x = x + stretch * 5;
-    r.y = y + stretch * 106;
+    r.x = x + hstretch * 5;
+    r.y = y + vstretch * 106;
     for (i = j = 0; i < max; j = ++i) {
     #define BELTSIZE 24
         if (i == 5) {
-	    r.x -= stretch * 4 * BELTSIZE;
-	    r.y += stretch * BELTSIZE;
+	    r.x -= hstretch * 4 * BELTSIZE;
+	    r.y += vstretch * BELTSIZE;
 	} else if (i > 0) {
-	    r.x += stretch * BELTSIZE;
+	    r.x += hstretch * BELTSIZE;
 	}
 	if (j >= n)
 	    SDL_BlitSurface(pas_lifebelt, 0, s, &r);
@@ -142,11 +147,10 @@ int set_lifebelts(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned m
 
 int kill_lifebelts(SDL_Surface *s, unsigned x, unsigned y)
 {
-    int stretch = 2;
     SDL_Rect r;
 
-    r.x = x + 4 * stretch;
-    r.y = y + stretch * 105;
+    r.x = x + 4 * hstretch;
+    r.y = y + vstretch * 105;
     /*SDL_BlitSurface(box_lifebelt, 0, s, &r);*/
 
     return 1;
@@ -154,16 +158,15 @@ int kill_lifebelts(SDL_Surface *s, unsigned x, unsigned y)
 
 int add_lifebelt(SDL_Surface *s, unsigned x, unsigned y, unsigned n)
 {
-    int i, j, stretch = 2;
     SDL_Rect r;
 
-    r.x = x + stretch * 628;
-    r.y = y + stretch * 498;
+    r.x = x + hstretch * 628;
+    r.y = y + vstretch * 498;
 
-    r.x += stretch * (n % 5) * BELTSIZE;
+    r.x += hstretch * (n % 5) * BELTSIZE;
 
     if (n >= 5)
-        r.y += stretch * BELTSIZE+4;
+        r.y += vstretch * BELTSIZE+4;
     SDL_BlitSurface(act_lifebelt, 0, s, &r);
 
     return 1;
@@ -171,16 +174,15 @@ int add_lifebelt(SDL_Surface *s, unsigned x, unsigned y, unsigned n)
 
 int rm_lifebelt(SDL_Surface *s, unsigned x, unsigned y, unsigned n)
 {
-    int i, j, stretch = 2;
     SDL_Rect r;
 
-    r.x = x + stretch * 628;
-    r.y = y + stretch * 498;
+    r.x = x + hstretch * 628;
+    r.y = y + vstretch * 498;
 
-    r.x += stretch * (n % 5) * BELTSIZE;
+    r.x += hstretch * (n % 5) * BELTSIZE;
 
     if (n >= 5)
-        r.y += stretch * BELTSIZE+4;
+        r.y += vstretch * BELTSIZE+4;
 
     SDL_BlitSurface(pas_lifebelt, 0, s, &r);
 
@@ -192,15 +194,12 @@ int set_wlevel(SDL_Surface *s, unsigned x, unsigned y, unsigned n)
     SDL_Rect r;
     SDL_Surface *txt;
     char buf[5];
-    int stretch = 2;
 
     snprintf(buf, 5, "%i", n);
-    puts(buf);
     txt = TTF_RenderText_Blended(font2, buf, font_fg);
-    if (!txt) puts("?");
 
-    r.x = stretch * 717;
-    r.y = stretch * 410;
+    r.x = hstretch * 717;
+    r.y = vstretch * 410;
     SDL_BlitSurface(txt, 0, s, &r);
 
     return n;
@@ -211,14 +210,12 @@ int set_points(SDL_Surface *s, unsigned x, unsigned y, int n)
     SDL_Rect r;
     SDL_Surface *txt;
     char buf[5];
-    int stretch = 2;
 
     snprintf(buf, 5, "%i", n);
-    puts(buf);
     txt = TTF_RenderText_Blended(font2, buf, font_fg);
-    if (!txt) puts("?");
-    r.x = stretch * 717;
-    r.y = stretch * 460;
+
+    r.x = hstretch * 717;
+    r.y = vstretch * 460;
     SDL_BlitSurface(txt, 0, s, &r);
 
     return n;
@@ -226,25 +223,24 @@ int set_points(SDL_Surface *s, unsigned x, unsigned y, int n)
 
 int add_pcard(SDL_Surface *s, unsigned x, unsigned y, unsigned n)
 {
-    int i, j, stretch = 2;
     SDL_Rect r;
     SDL_Surface *txt;
 
-    r.x = x + stretch * 220;
-    r.y = y + stretch * 430;
+    r.x = x + hstretch * 220;
+    r.y = y + vstretch * 430;
 
-    r.x += stretch * (n % 13) * (BELTSIZE+2);
+    r.x += hstretch * (n % 13) * (BELTSIZE+2);
 
     /*if (n >= 5)
-        r.y += stretch * BELTSIZE;*/
+        r.y += vstretch * BELTSIZE;*/
 
     SDL_BlitSurface(pcard, 0, s, &r);
 
     txt = TTF_RenderText_Blended(font2, "23", font_fg);
-    r.x += stretch * 7;
-    r.y += stretch * 7;
+    r.x += hstretch * 7;
+    r.y += vstretch * 7;
     SDL_BlitSurface(txt, 0, s, &r);
-    r.y += stretch * 95;
+    r.y += vstretch * 95;
     SDL_BlitSurface(txt, 0, s, &r);
 
     return 1;
