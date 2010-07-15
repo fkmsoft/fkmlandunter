@@ -1,7 +1,7 @@
 #include "gui_util.h"
 
-#define FONTSIZE (22)
-#define FONTSIZE2 (30)
+#define FONTSIZE (11)
+#define FONTSIZE2 (15)
 
 static SDL_Surface  
     *act_lifebelt, *pas_lifebelt,
@@ -30,8 +30,9 @@ SDL_Surface *init_sdl(int w, int h)
         exit(EXIT_FAILURE);
     }
 
-    vstretch = w / 800;
-    hstretch = h / 600;
+    vstretch = w / (float)800;
+    hstretch = h / (float)600;
+    printf("Stretches are %f x %f\n", vstretch, hstretch);
 
     atexit(SDL_Quit);
 
@@ -50,11 +51,11 @@ SDL_Surface *init_sdl(int w, int h)
     LOAD(TABLE, table)
 
     /* load font */
-    if(!(font = TTF_OpenFont(DEFFONT, FONTSIZE))) {
+    if(!(font = TTF_OpenFont(DEFFONT, FONTSIZE * hstretch))) {
         fprintf(stderr, "Could not load file >>%s<<: %s\n", DEFFONT, TTF_GetError());
 	exit(EXIT_FAILURE);
     };
-    if(!(font2 = TTF_OpenFont(DEFFONT, FONTSIZE2))) {
+    if(!(font2 = TTF_OpenFont(DEFFONT, FONTSIZE2 * hstretch))) {
         fprintf(stderr, "Could not load file >>%s<<: %s\n", DEFFONT, TTF_GetError());
 	exit(EXIT_FAILURE);
     };

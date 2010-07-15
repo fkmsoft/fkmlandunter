@@ -5,7 +5,8 @@
 #define _ISOC99_SOURCE
 #include <stdio.h>
 
-#define DATADIR "../../data/fkmlu/"
+#define DATADIR "../../data/fkmlu/" "800_600/"
+#define FONTDIR "../../data/fkmlu/"
 
 /* border */
 #define ACT_BORDER (DATADIR "rahmen_aktiv.png")
@@ -37,7 +38,7 @@
 #define PCARD (DATADIR "punktekarte.png")
 
 /* standard font */
-#define DEFFONT (DATADIR "TOONISH.ttf")
+#define DEFFONT (FONTDIR "TOONISH.ttf")
 
 SDL_Surface *init_sdl(int w, int h);
 

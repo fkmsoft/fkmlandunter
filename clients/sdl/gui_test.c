@@ -15,6 +15,9 @@ int main()
     char s[] = "hello1234567890";
 
     screen = init_sdl(W, H);
+    /*
+    screen = init_sdl(1280, 1024);
+    */
 
     create_playerbox(screen, 0, 0, 0, 10);
     set_wlevel(screen, 0, 0, 12);
