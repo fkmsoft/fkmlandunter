@@ -1,9 +1,10 @@
+#define _ISOC99_SOURCE
+#include <stdio.h>
+#include <sys/stat.h>
+
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_ttf.h>
-
-#define _ISOC99_SOURCE
-#include <stdio.h>
 
 #define DATADIR "../../data/fkmlu/"
 

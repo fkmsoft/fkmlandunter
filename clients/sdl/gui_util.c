@@ -20,6 +20,13 @@ SDL_Surface *init_sdl(int w, int h)
     int ckey;
     char buf[BUFLEN];
     SDL_Surface *screen, *temp;
+    struct stat s_stat;
+
+    snprintf(buf, BUFLEN, "%s%d_%d", DATADIR, w, h);
+    if (stat(buf, &s_stat) == -1 || !S_ISDIR(s_stat.st_mode)) {
+       fprintf(stderr, "Sorry, resolution %dx%d is not supported, yet\n", w, h);
+       exit(EXIT_FAILURE);
+    }
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         exit(EXIT_FAILURE);
