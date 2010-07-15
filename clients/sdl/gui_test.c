@@ -9,12 +9,13 @@
 int main(int argc, char **argv)
 {
     int i;
+    char c = '0';
 
     SDL_Surface *screen;
     SDL_Event event;
     Tbox t;
 
-    char s[] = "hello1234567890";
+    char s[] = "hello\0\0\0\0\0\0\0\0\0\0\0";
 
     if (argc == 3)
         screen = init_sdl(atoi(argv[1]), atoi(argv[2]));
@@ -25,14 +26,15 @@ int main(int argc, char **argv)
     set_wlevel(screen, 0, 0, 12);
     set_points(screen, 0, 0, -1);
 
-    t = create_textbox(screen, getfont(), 400, 0);
+    t = create_textbox(screen, getfont(), 36, 532);
     textbox_set(t, s);
 
     SDL_UpdateRect(screen, 0, 0, 0, 0);
 
     for (i = 9; i; i--) {
     	rm_lifebelt(screen, 0, 0, i);
-	s[i] = 'X';
+	s[5 + c - '0'] = c;
+	c++;
 	textbox_set(t, s);
 
         SDL_UpdateRect(screen, 0, 0, 0, 0);

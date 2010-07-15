@@ -8,7 +8,7 @@ struct tbox {
   unsigned y;
 };
 
-static SDL_Color font_fg = {0, 124, 0, 255};
+static SDL_Color font_fg = {0, 0, 0, 255};
 
 Tbox create_textbox(SDL_Surface *s, TTF_Font *font, unsigned x, unsigned y)
 {
@@ -16,8 +16,8 @@ Tbox create_textbox(SDL_Surface *s, TTF_Font *font, unsigned x, unsigned y)
   t->s = 0;
   t->screen = s;
   t->font = font;
-  t->x = x;
-  t->y = y;
+  t->x = hstretch * x;
+  t->y = vstretch * y;
 
   return t;
 }

@@ -1,6 +1,8 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_ttf.h>
 
+extern double hstretch, vstretch;
+
 typedef struct tbox *Tbox;
 
 Tbox create_textbox(SDL_Surface *s, TTF_Font *font, unsigned x, unsigned y);

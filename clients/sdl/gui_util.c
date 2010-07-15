@@ -13,7 +13,7 @@ static TTF_Font *font,*font2;
 static SDL_Color font_fg = {0, 0, 0, 255};
 /*static SDL_Color font_fg2 = {255, 255, 255, 255};*/
 
-static double hstretch, vstretch;
+double hstretch, vstretch;
 
 SDL_Surface *init_sdl(int w, int h)
 {
