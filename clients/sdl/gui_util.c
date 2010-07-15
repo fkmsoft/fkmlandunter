@@ -3,9 +3,9 @@
 #define FONTSIZE (22)
 #define FONTSIZE2 (30)
 
-static SDL_Surface *act_border, *pas_border, *name_border,
-    *box_lifebelt, *act_lifebelt, *pas_lifebelt,
-    *pointsbox, *wlevelbox, *defava, *avabox, *hud, *pcard, *table;
+static SDL_Surface  
+    *act_lifebelt, *pas_lifebelt,
+    *defava, *avabox, *hud, *pcard, *table;
 
 static TTF_Font *font,*font2;
 static SDL_Color font_fg = {0, 0, 0, 255};
@@ -35,8 +35,6 @@ SDL_Surface *init_sdl(int w, int h)
     atexit(SDL_Quit);
 
     /* load all images */
-    LOAD(ACT_BORDER, act_border)
-    LOAD(PAS_BORDER, pas_border)
     LOAD(ACT_LIFEBELT, act_lifebelt)
     LOAD(PAS_LIFEBELT, pas_lifebelt)
     LOAD(DEFAVA, defava)
@@ -149,7 +147,7 @@ int kill_lifebelts(SDL_Surface *s, unsigned x, unsigned y)
 
     r.x = x + 4 * stretch;
     r.y = y + stretch * 105;
-    SDL_BlitSurface(box_lifebelt, 0, s, &r);
+    /*SDL_BlitSurface(box_lifebelt, 0, s, &r);*/
 
     return 1;
 }
