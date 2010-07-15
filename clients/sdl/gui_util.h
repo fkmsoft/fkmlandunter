@@ -8,6 +8,10 @@
 #define ACT_BORDER (DATADIR "rahmen_aktiv.png")
 #define PAS_BORDER (DATADIR "rahmen_fertig.png")
 
+/* background */
+#define TABLE (DATADIR "tisch.png")
+#define HUD (DATADIR "hud.png")
+
 /* name */
 #define NAME_BORDER (DATADIR "nutzername.png")
 
@@ -24,6 +28,10 @@
 
 /* standard avatar */
 #define DEFAVA (DATADIR "nutzerbild.png")
+#define AVABOX (DATADIR "nutzerbild_rahmen.png")
+
+/* cards */
+#define PCARD (DATADIR "punktekarte.png")
 
 /* standard font */
 #define DEFFONT (DATADIR "TOONISH.ttf")
@@ -40,3 +48,5 @@ int rm_lifebelt(SDL_Surface *s, unsigned x, unsigned y, unsigned n);
 
 int set_wlevel(SDL_Surface *s, unsigned x, unsigned y, unsigned n);
 int set_points(SDL_Surface *s, unsigned x, unsigned y, int n);
+
+int add_pcard(SDL_Surface *s, unsigned x, unsigned y, unsigned n);
