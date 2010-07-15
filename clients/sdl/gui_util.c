@@ -121,13 +121,9 @@ void create_playerbox(SDL_Surface *s, unsigned x, unsigned y, char *avatar, unsi
     r.x -= hstretch * 70;
     SDL_BlitSurface(txt, 0, s, &r);
     
-    for (i = 0; i<12; i++)
-    add_pcard(s,x,y,i);
-
     /* draw lifebelts */
-    /* set_lifebelts(s, x, y, lifebelts, lifebelts); */
     for (i = 0; i < lifebelts; i++)
-       add_lifebelt(s, x, y, i);
+        add_lifebelt(s, x, y, i);
 }
 
 int set_lifebelts(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned max)
@@ -233,22 +229,21 @@ int set_points(SDL_Surface *s, unsigned x, unsigned y, int n)
     return n;
 }
 
-int add_pcard(SDL_Surface *s, unsigned x, unsigned y, unsigned n)
+int add_pcard(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned val)
 {
     SDL_Rect r;
     SDL_Surface *txt;
+    char buf[3];
 
     r.x = x + hstretch * 220;
     r.y = y + vstretch * 430;
 
-    r.x += hstretch * (n % 13) * (BELTSIZE+2);
-
-    /*if (n >= 5)
-        r.y += vstretch * BELTSIZE;*/
+    r.x += hstretch * n * 25;
 
     SDL_BlitSurface(pcard, 0, s, &r);
 
-    txt = TTF_RenderText_Blended(font2, "23", font_fg);
+    snprintf(buf, 5, "%2i", val);
+    txt = TTF_RenderText_Blended(font2, buf, font_fg);
     r.x += hstretch * 7;
     r.y += vstretch * 7;
     SDL_BlitSurface(txt, 0, s, &r);

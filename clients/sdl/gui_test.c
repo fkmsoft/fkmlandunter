@@ -23,6 +23,10 @@ int main(int argc, char **argv)
         screen = init_sdl(W, H);
 
     create_playerbox(screen, 0, 0, 0, 10);
+
+    for (i = 0; i < 12; i++)
+       add_pcard(screen, 0, 0, i, i+1);
+
     set_wlevel(screen, 0, 0, 12);
     set_points(screen, 0, 0, -1);
 
