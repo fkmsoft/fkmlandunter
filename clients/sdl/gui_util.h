@@ -50,3 +50,4 @@ int set_wlevel(SDL_Surface *s, unsigned x, unsigned y, unsigned n);
 int set_points(SDL_Surface *s, unsigned x, unsigned y, int n);
 
 int add_pcard(SDL_Surface *s, unsigned x, unsigned y, unsigned n);
+TTF_Font *getfont(void);

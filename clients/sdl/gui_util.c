@@ -253,3 +253,7 @@ int add_pcard(SDL_Surface *s, unsigned x, unsigned y, unsigned n)
 }
 
 
+TTF_Font *getfont(void)
+{
+  return font;
+}

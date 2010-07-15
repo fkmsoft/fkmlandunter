@@ -8,7 +8,7 @@
 #include <stdbool.h>
 #include <getopt.h>
 
-#include "sdl_util.h"
+#include "net_util.h"
 
 #define DEFPORT (1337)
 #define DEFNAME ("Randall")

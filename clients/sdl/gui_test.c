@@ -1,4 +1,5 @@
 #include "gui_util.h"
+#include "text_util.h"
 
 #define W 1600
 #define H 1200
@@ -9,6 +10,9 @@ int main()
 
     SDL_Surface *screen;
     SDL_Event event;
+    Tbox t;
+
+    char s[] = "hello1234567890";
 
     screen = init_sdl(W, H);
 
@@ -16,11 +20,16 @@ int main()
     set_wlevel(screen, 0, 0, 12);
     set_points(screen, 0, 0, -1);
 
+    t = create_textbox(screen, getfont(), 400, 0);
+    textbox_set(t, s);
+
     SDL_UpdateRect(screen, 0, 0, 0, 0);
 
     for (i = 9; i; i--) {
     	rm_lifebelt(screen, 0, 0, i);
-	printf("%d lifebelts\n", i);
+	s[i] = 'X';
+	textbox_set(t, s);
+
         SDL_UpdateRect(screen, 0, 0, 0, 0);
 	SDL_Delay(1000);
     }

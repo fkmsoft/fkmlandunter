@@ -1,4 +1,4 @@
-#include "sdl_util.h"
+#include "net_util.h"
 
 void init_sdl()
 {
