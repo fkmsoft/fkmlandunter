@@ -40,3 +40,5 @@ int rm_lifebelt(SDL_Surface *s, unsigned x, unsigned y, unsigned n);
 
 int set_wlevel(SDL_Surface *s, unsigned x, unsigned y, unsigned n);
 int set_points(SDL_Surface *s, unsigned x, unsigned y, int n);
+
+TTF_Font *getfont(void);

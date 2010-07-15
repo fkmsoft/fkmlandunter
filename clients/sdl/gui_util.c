@@ -227,3 +227,8 @@ int set_points(SDL_Surface *s, unsigned x, unsigned y, int n)
 
     return n;
 }
+
+TTF_Font *getfont(void)
+{
+  return font;
+}

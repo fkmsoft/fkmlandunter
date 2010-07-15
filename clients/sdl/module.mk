@@ -5,8 +5,8 @@ randallobjs := $(DIR)/randall.o $(DIR)/net_util.o
 randallhs := $(DIR)/net_util.h
 randalldeps := $(randallobjs) $(randallhs)
 
-guitestobjs := $(DIR)/gui_test.o $(DIR)/gui_util.o
-guitesths := $(DIR)/gui_util.h
+guitestobjs := $(DIR)/gui_test.o $(DIR)/gui_util.o $(DIR)/text_util.o
+guitesths := $(DIR)/gui_util.h $(DIR)/text_util.h
 guitestdeps := $(guitestobjs) $(guitesths)
 
 sdl_net_cmd := `sdl-config --libs --cflags` -lSDL_net
