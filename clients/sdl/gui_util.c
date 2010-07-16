@@ -60,6 +60,7 @@ SDL_Surface *init_sdl(int w, int h)
     LOAD(HUD, hud)
     LOAD(PCARD, pcard)
     LOAD(TABLE, table)
+#undef LOAD
 
     /* load font */
     if(!(font = TTF_OpenFont(DEFFONT, FONTSIZE * hstretch))) {
@@ -135,7 +136,7 @@ int set_lifebelts(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned m
     r.x = x + hstretch * 5;
     r.y = y + vstretch * 106;
     for (i = j = 0; i < max; j = ++i) {
-    #define BELTSIZE 24
+#define BELTSIZE 24
         if (i == 5) {
 	    r.x -= hstretch * 4 * BELTSIZE;
 	    r.y += vstretch * BELTSIZE;
@@ -153,6 +154,7 @@ int set_lifebelts(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned m
     return n;
 }
 
+#if 0
 int kill_lifebelts(SDL_Surface *s, unsigned x, unsigned y)
 {
     SDL_Rect r;
@@ -163,6 +165,7 @@ int kill_lifebelts(SDL_Surface *s, unsigned x, unsigned y)
 
     return 1;
 }
+#endif
 
 int add_lifebelt(SDL_Surface *s, unsigned x, unsigned y, unsigned n)
 {
@@ -191,6 +194,7 @@ int rm_lifebelt(SDL_Surface *s, unsigned x, unsigned y, unsigned n)
 
     if (n >= 5)
         r.y += vstretch * BELTSIZE+4;
+#undef BELTSIZE
 
     SDL_BlitSurface(pas_lifebelt, 0, s, &r);
 

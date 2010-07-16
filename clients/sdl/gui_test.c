@@ -8,7 +8,7 @@
 
 int main(int argc, char **argv)
 {
-    int i;
+    int i, k;
     char c = '0';
 
     SDL_Surface *screen;
@@ -40,17 +40,14 @@ int main(int argc, char **argv)
 	s[5 + c - '0'] = c;
 	c++;
 	textbox_set(t, s);
-        add_pcard(screen, 0, 0, i, i+1);
+	k = (i % 3 + i % 5) % 12;
+        add_pcard(screen, 0, 0, k, k + 1);
 
         SDL_UpdateRect(screen, 0, 0, 0, 0);
 	SDL_Delay(1000);
     }
 
     do { SDL_PollEvent(&event); } while (event.type != SDL_KEYDOWN);
-
-    kill_lifebelts(screen, 0, 0);
-    SDL_UpdateRect(screen, 0, 0, 0, 0);
-    SDL_Delay(1000);
 
     return 0;
 }

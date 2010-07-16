@@ -46,7 +46,6 @@ void create_playerbox(SDL_Surface *s, unsigned x, unsigned y, char *avatar, unsi
 
 int set_lifebelts(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned max);
 
-int kill_lifebelts(SDL_Surface *s, unsigned x, unsigned y);
 int add_lifebelt(SDL_Surface *s, unsigned x, unsigned y, unsigned n);
 int rm_lifebelt(SDL_Surface *s, unsigned x, unsigned y, unsigned n);
 
