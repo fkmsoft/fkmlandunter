@@ -43,13 +43,16 @@ gamestr *create_game()
     /* creating villain(s) - later in parse_start */
     game->villain = NULL;
 
+    /* we don't know yet how may tabs we'll need */
+    game->tabnum = 0;
+
     return game;
 }
 
 /* initialise gamestr->villains from string s */
 void parse_start(gamestr *game, char *s)
 {
-    int i, j;
+    int i, j, maxt;
 
     sscanf(s, "START %d", &game->count);
 
@@ -63,14 +66,30 @@ void parse_start(gamestr *game, char *s)
         for (j = 0; j < 12; j++)
             v[i].weathercards[j] = 0;
         v[i].lifebelts = 0;
+        v[i].tabnum = 0;
     }
 
     /* skipping first two items */
     strtok(s, " ");
     strtok(NULL, " ");
     
-    for (i = 0; i < game->count; i++)
+    maxt = 0;
+    for (i = 0; i < game->count; i++) {
         v[i].name = strtok(NULL, " ");
+        v[i].tabnum = strlen(v[i].name) / TABSIZE;
+
+        if (v[i].tabnum > maxt)
+            maxt = v[i].tabnum;
+    }
+
+    for (i = 0; i < game->count; i++) {
+        if (v[i].tabnum == maxt)
+            v[i].tabnum = 1;
+        else
+            v[i].tabnum = 1 + maxt - v[i].tabnum;
+    }
+    game->tabnum = 1 + maxt;
+
     /* freeing last char from newline */
     v[game->count-1].name[strlen(v[game->count-1].name) - 1] = '\0';
 

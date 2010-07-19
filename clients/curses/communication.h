@@ -20,6 +20,7 @@
 
 #include <poll.h>
 
+#define TABSIZE     (8)
 #define MAXNICK     (30)
 #define BUF_SIZE    (1024)
 #define max(A,B)    ((A) > (B) ? (A) : (B))
@@ -32,6 +33,7 @@ typedef struct {
     char *name;
     int weathercards[12];
     int lifebelts;
+    int tabnum;
 } player;
 
 typedef struct {
@@ -44,6 +46,7 @@ typedef struct {
     bool message;
     char *msg_from;
     char *msg_data;
+    int tabnum;
 } gamestr;
 
 /* GAMEPLAY */
