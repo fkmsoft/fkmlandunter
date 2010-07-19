@@ -1,3 +1,4 @@
+/* for snprintf */
 #define _ISOC99_SOURCE
 #include <stdio.h>
 #include <sys/stat.h>

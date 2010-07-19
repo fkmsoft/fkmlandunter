@@ -1,7 +1,10 @@
-#include <SDL/SDL.h>
-#include <SDL/SDL_net.h>
+/* for vsnprintf */
+#define _ISOC99_SOURCE
 #include <stdio.h>
 #include <stdarg.h>
+
+#include <SDL/SDL.h>
+#include <SDL/SDL_net.h>
 
 #define MAXBUF (1024)
 
