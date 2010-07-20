@@ -2,15 +2,16 @@
 
 #define FONTSIZE (11)
 #define FONTSIZE2 (15)
+#define FONTSIZE3 (36)
 
 #define BUFLEN 1024
 #define DEBUG 0
 
 static SDL_Surface  
     *act_lifebelt, *pas_lifebelt, *act_border,
-    *defava, *avabox, *hud, *pcard, *table;
+    *defava, *avabox, *hud, *pcard, *wcard, *table;
 
-static TTF_Font *font,*font2;
+static TTF_Font *font, *font2, *font3;
 static SDL_Color font_fg = {0, 0, 0, 255};
 /*static SDL_Color font_fg2 = {255, 255, 255, 255};*/
 
@@ -63,18 +64,18 @@ SDL_Surface *init_sdl(int w, int h)
     LOAD(AVABOX, avabox)
     LOAD(HUD, hud)
     LOAD(PCARD, pcard)
+    LOAD(WCARD, wcard)
     LOAD(TABLE, table)
 #undef LOAD
 
     /* load font */
-    if(!(font = TTF_OpenFont(DEFFONT, FONTSIZE * hstretch))) {
-        fprintf(stderr, "Could not load file >>%s<<: %s\n", DEFFONT, TTF_GetError());
-	exit(EXIT_FAILURE);
-    };
-    if(!(font2 = TTF_OpenFont(DEFFONT, FONTSIZE2 * hstretch))) {
-        fprintf(stderr, "Could not load file >>%s<<: %s\n", DEFFONT, TTF_GetError());
-	exit(EXIT_FAILURE);
-    };
+#define LOAD(a, b) { if(!(a = TTF_OpenFont(DEFFONT, b * hstretch))) \
+    { fprintf(stderr, "Could not load file >>%s<<: %s\n", DEFFONT, TTF_GetError()); exit(EXIT_FAILURE); } }
+
+    LOAD(font, FONTSIZE)
+    LOAD(font2, FONTSIZE2)
+    LOAD(font3, FONTSIZE3)
+#undef LOAD
 
     ckey = SDL_MapRGB(screen->format, 0, 0, 0);
     SDL_SetColorKey(act_lifebelt, SDL_SRCCOLORKEY | SDL_RLEACCEL, ckey);
@@ -282,6 +283,28 @@ int add_pcard(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned val)
     return val;
 }
 
+int add_wcard(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned val)
+{
+    SDL_Rect r;
+    SDL_Surface *txt;
+    char buf[3];
+
+    r.x = x + hstretch * 320;
+    r.y = y + vstretch * 230;
+
+    r.x += hstretch * n * 100;
+
+    SDL_BlitSurface(wcard, 0, s, &r);
+
+    snprintf(buf, 5, "%2i", val);
+    txt = TTF_RenderText_Blended(font3, buf, font_fg);
+
+    r.x += hstretch * 40;
+    r.y += vstretch * 40;
+    SDL_BlitSurface(txt, 0, s, &r);
+
+    return val;
+}
 
 TTF_Font *getfont(void)
 {

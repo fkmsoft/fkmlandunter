@@ -45,6 +45,7 @@
 
 /* cards */
 #define PCARD ("punktekarte.png")
+#define WCARD ("wasserkarte.png")
 
 /* standard font */
 #define DEFFONT (DATADIR "TOONISH.ttf")
@@ -65,6 +66,8 @@ int set_wlevel(SDL_Surface *s, unsigned x, unsigned y, unsigned n);
 int set_points(SDL_Surface *s, unsigned x, unsigned y, int n);
 
 int add_pcard(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned val);
+int add_wcard(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned val);
+
 TTF_Font *getfont(void);
 
 #endif /* FKML_GUI_UTIL_H */

@@ -138,6 +138,8 @@ int main(int argc, char **argv) {
             set_wlevel(screen, hs * pbox_x, vs * pbox_y, g->villain[pos].water_level);
             set_points(screen, hs * pbox_x, vs * pbox_y, g->villain[pos].points);
             set_lifebelts(screen, hs * pbox_x, vs *pbox_y, g->villain[pos].lifebelts, 10);
+            add_wcard(screen, 0, 0, 0, g->w_card[0]);
+            add_wcard(screen, 0, 0, 1, g->w_card[1]);
 
             x = 50 * hstr;
             y = 0;
