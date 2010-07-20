@@ -6,11 +6,11 @@
 #define BUFLEN 1024
 
 static SDL_Surface  
-    *act_lifebelt, *pas_lifebelt,
+    *act_lifebelt, *pas_lifebelt, *act_border,
     *defava, *avabox, *hud, *pcard, *table;
 
 static TTF_Font *font,*font2;
-static SDL_Color font_fg = {0, 122, 0, 255};
+static SDL_Color font_fg = {0, 0, 0, 255};
 /*static SDL_Color font_fg2 = {255, 255, 255, 255};*/
 
 double hstretch, vstretch;
@@ -55,6 +55,7 @@ SDL_Surface *init_sdl(int w, int h)
     /* load all images */
     LOAD(ACT_LIFEBELT, act_lifebelt)
     LOAD(PAS_LIFEBELT, pas_lifebelt)
+    LOAD(ACT_BORDER, act_border)
     LOAD(DEFAVA, defava)
     LOAD(AVABOX, avabox)
     LOAD(HUD, hud)
@@ -105,13 +106,16 @@ void create_playerbox(SDL_Surface *s, char *name, unsigned x, unsigned y, char *
     r.x = x;
     r.y = y;
 
-    SDL_BlitSurface(avabox, 0, s, &r);
+    SDL_BlitSurface(act_border, 0, s, &r);
 
+    r.x += hstretch * 5;
+    r.y += vstretch * 5;
     if (!avatar) {
         SDL_BlitSurface(defava, 0, s, &r);
     } else {
         /* FIXME: load real ava */
     }
+    SDL_BlitSurface(avabox, 0, s, &r);
 
     txt = TTF_RenderText_Blended(font, "Wasser", font_fg);
     r.x += hstretch * 77;
@@ -179,8 +183,8 @@ int add_lifebelt(SDL_Surface *s, unsigned x, unsigned y, unsigned n)
 {
     SDL_Rect r;
 
-    r.x = x;
-    r.y = y + vstretch * 100;
+    r.x = x + hstretch * 5;
+    r.y = y + vstretch * 105;
 
     r.x += hstretch * (n % 5) * BELTSIZE;
 
@@ -195,8 +199,8 @@ int rm_lifebelt(SDL_Surface *s, unsigned x, unsigned y, unsigned n)
 {
     SDL_Rect r;
 
-    r.x = x;
-    r.y = y + vstretch * 100;
+    r.x = x + hstretch * 5;
+    r.y = y + vstretch * 105;
 
     r.x += hstretch * (n % 5) * BELTSIZE;
 

@@ -7,6 +7,9 @@
 #define H 600
 #define NAME "Guilord"
 
+#define PBOX_X 623
+#define PBOX_Y 393
+
 int main(int argc, char **argv)
 {
     int i, k;
@@ -29,7 +32,7 @@ int main(int argc, char **argv)
     }
 
     draw_hud(screen, 0, 0);
-    create_playerbox(screen, NAME, hs * 628, vs * 398, 0, 10);
+    create_playerbox(screen, NAME, hs * PBOX_X, vs * PBOX_Y, 0, 10);
 
     for (i = 0; i < 12; i++)
        add_pcard(screen, 0, 0, i, i+1);
@@ -43,7 +46,7 @@ int main(int argc, char **argv)
     SDL_UpdateRect(screen, 0, 0, 0, 0);
 
     for (i = 9; i; i--) {
-    	rm_lifebelt(screen, hs * 628, vs * 398, i);
+    	rm_lifebelt(screen, hs * PBOX_X, vs * PBOX_Y, i);
 	s[5 + c - '0'] = c;
 	c++;
 	textbox_set(t, s);
