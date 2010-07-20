@@ -5,6 +5,7 @@
 
 #define W 800
 #define H 600
+#define NAME "Guilord"
 
 int main(int argc, char **argv)
 {
@@ -22,7 +23,7 @@ int main(int argc, char **argv)
     else
         screen = init_sdl(W, H);
 
-    create_playerbox(screen, 0, 0, 0, 10);
+    create_playerbox(screen, NAME, 0, 0, 0, 10);
 
     for (i = 0; i < 12; i++)
        add_pcard(screen, 0, 0, i, i+1);
@@ -51,3 +52,5 @@ int main(int argc, char **argv)
 
     return 0;
 }
+
+/* vim: set sw=4 ts=4 et fdm=syntax: */

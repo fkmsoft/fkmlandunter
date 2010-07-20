@@ -20,6 +20,7 @@ SDL_Surface *init_sdl(int w, int h)
     int ckey;
     char buf[BUFLEN];
     SDL_Surface *screen, *temp;
+    SDL_Rect r;
     struct stat s_stat;
 
     snprintf(buf, BUFLEN, "%s%d_%d", DATADIR, w, h);
@@ -79,10 +80,18 @@ SDL_Surface *init_sdl(int w, int h)
     SDL_SetColorKey(hud, SDL_SRCCOLORKEY | SDL_RLEACCEL, ckey);
     SDL_SetColorKey(table, SDL_SRCCOLORKEY | SDL_RLEACCEL, ckey);
 
+    r.x = 0;
+    r.y = 0;
+    SDL_BlitSurface(table, 0, screen, &r);
+
+    r.x += hstretch * 18;
+    r.y = vstretch * 385;
+    SDL_BlitSurface(hud, 0, screen, &r);
+
     return screen;
 }
 
-void create_playerbox(SDL_Surface *s, unsigned x, unsigned y, char *avatar, unsigned lifebelts)
+void create_playerbox(SDL_Surface *s, char *name, unsigned x, unsigned y, char *avatar, unsigned lifebelts)
 {
     int i;
     SDL_Rect r;
@@ -92,17 +101,11 @@ void create_playerbox(SDL_Surface *s, unsigned x, unsigned y, char *avatar, unsi
     r.x = x;
     r.y = y;
 
-    SDL_BlitSurface(table, 0, s, &r);
-
-    r.x += hstretch * 18;
-    r.y = y + vstretch * 385;
-    SDL_BlitSurface(hud, 0, s, &r);
-
-    r.x += hstretch * 610;
-    r.y += vstretch * 13;
-    if (!avatar){        
+    r.x += hstretch * 628;
+    r.y += vstretch * 398;
+    SDL_BlitSurface(avabox,0,s,&r);
+    if (!avatar) {
         SDL_BlitSurface(defava, 0, s, &r);
-        SDL_BlitSurface(avabox,0,s,&r);
     }
     else {
         /* FIXME: load real ava */
@@ -118,7 +121,7 @@ void create_playerbox(SDL_Surface *s, unsigned x, unsigned y, char *avatar, unsi
     r.y += vstretch * 50;
     SDL_BlitSurface(txt, 0, s, &r);
     
-    txt = TTF_RenderText_Blended(font, "Randall", font_fg);
+    txt = TTF_RenderText_Blended(font, name, font_fg);
     r.x -= hstretch * 70;
     SDL_BlitSurface(txt, 0, s, &r);
     
