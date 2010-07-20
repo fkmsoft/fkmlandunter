@@ -11,6 +11,7 @@ int main(int argc, char **argv)
 {
     int i, k;
     char c = '0';
+    double hs, vs;
 
     SDL_Surface *screen;
     SDL_Event event;
@@ -18,12 +19,16 @@ int main(int argc, char **argv)
 
     char s[] = "hello\0\0\0\0\0\0\0\0\0\0\0";
 
-    if (argc == 3)
+    if (argc == 3) {
         screen = init_sdl(atoi(argv[1]), atoi(argv[2]));
-    else
+        hs = atoi(argv[1]) / (float)W;
+        vs = atoi(argv[2]) / (float)H;
+    } else {
         screen = init_sdl(W, H);
+        hs = vs = 1.0;
+    }
 
-    create_playerbox(screen, NAME, 0, 0, 0, 10);
+    create_playerbox(screen, NAME, hs * 628, vs * 398, 0, 10);
 
     for (i = 0; i < 12; i++)
        add_pcard(screen, 0, 0, i, i+1);
@@ -37,7 +42,7 @@ int main(int argc, char **argv)
     SDL_UpdateRect(screen, 0, 0, 0, 0);
 
     for (i = 9; i; i--) {
-    	rm_lifebelt(screen, 0, 0, i);
+    	rm_lifebelt(screen, hs * 628, vs * 398, i);
 	s[5 + c - '0'] = c;
 	c++;
 	textbox_set(t, s);

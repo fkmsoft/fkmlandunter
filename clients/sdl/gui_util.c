@@ -101,15 +101,12 @@ void create_playerbox(SDL_Surface *s, char *name, unsigned x, unsigned y, char *
     r.x = x;
     r.y = y;
 
-    r.x += hstretch * 628;
-    r.y += vstretch * 398;
-    SDL_BlitSurface(avabox,0,s,&r);
-    if (!avatar) {
+    SDL_BlitSurface(avabox, 0, s, &r);
+
+    if (!avatar)
         SDL_BlitSurface(defava, 0, s, &r);
-    }
-    else {
+    else
         /* FIXME: load real ava */
-    }
 
     txt = TTF_RenderText_Blended(font, "Wasser", font_fg);
     r.x += hstretch * 77;
@@ -174,8 +171,8 @@ int add_lifebelt(SDL_Surface *s, unsigned x, unsigned y, unsigned n)
 {
     SDL_Rect r;
 
-    r.x = x + hstretch * 628;
-    r.y = y + vstretch * 498;
+    r.x = x;
+    r.y = y + vstretch * 100;
 
     r.x += hstretch * (n % 5) * BELTSIZE;
 
@@ -190,8 +187,8 @@ int rm_lifebelt(SDL_Surface *s, unsigned x, unsigned y, unsigned n)
 {
     SDL_Rect r;
 
-    r.x = x + hstretch * 628;
-    r.y = y + vstretch * 498;
+    r.x = x;
+    r.y = y + vstretch * 100;
 
     r.x += hstretch * (n % 5) * BELTSIZE;
 
@@ -273,3 +270,5 @@ TTF_Font *getfont(void)
 {
   return font;
 }
+
+/* vim: set sw=4 ts=4 et fdm=syntax: */
