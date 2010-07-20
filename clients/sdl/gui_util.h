@@ -51,6 +51,7 @@
 
 SDL_Surface *init_sdl(int w, int h);
 
+void draw_hud(SDL_Surface *s, unsigned x, unsigned y);
 void create_playerbox(SDL_Surface *s, char *name, unsigned x, unsigned y, char *avatar, unsigned lifebelts);
 
 int set_lifebelts(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned max);

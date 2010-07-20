@@ -28,6 +28,7 @@ int main(int argc, char **argv)
         hs = vs = 1.0;
     }
 
+    draw_hud(screen, 0, 0);
     create_playerbox(screen, NAME, hs * 628, vs * 398, 0, 10);
 
     for (i = 0; i < 12; i++)

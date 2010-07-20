@@ -1,3 +1,11 @@
+/* net_util.h
+ *
+ * (c) 2010, Fkmsoft
+ */
+
+#ifndef FKML_NET_UTIL_H
+#define FKML_NET_UTIL_H
+
 /* for vsnprintf */
 #define _ISOC99_SOURCE
 #include <stdio.h>
@@ -9,10 +17,12 @@
 #define MAXBUF (1024)
 
 
-void init_sdl();
+void net_init_sdl();
 IPaddress compute_address (char *host, Uint16 port);
 
-void send_to(TCPsocket sock, char *fmt, ...);
-char *receive_from(TCPsocket sock);
+void sdl_send_to(TCPsocket sock, char *fmt, ...);
+char *sdl_receive_from(TCPsocket sock);
+
+#endif /* FKML_NET_UTIL_H */
 
 /* vim: set sw=4 ts=4 et fdm=syntax: */

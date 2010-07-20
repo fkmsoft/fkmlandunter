@@ -1,6 +1,6 @@
 #include "net_util.h"
 
-void init_sdl()
+void net_init_sdl()
 {
     if (SDL_Init(SDL_INIT_EVENTTHREAD) < 0)
         exit(EXIT_FAILURE);
@@ -25,7 +25,7 @@ IPaddress compute_address (char *host, Uint16 port)
     return addr;
 }
 
-void send_to(TCPsocket sock, char *fmt, ...)
+void sdl_send_to(TCPsocket sock, char *fmt, ...)
 {
     char buf[MAXBUF];
     va_list args;
@@ -40,7 +40,7 @@ void send_to(TCPsocket sock, char *fmt, ...)
     va_end(args);
 }
 
-char *receive_from(TCPsocket sock)
+char *sdl_receive_from(TCPsocket sock)
 {
     char *buffer = calloc(MAXBUF, sizeof(char));
     

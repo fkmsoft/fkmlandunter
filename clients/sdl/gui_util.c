@@ -10,7 +10,7 @@ static SDL_Surface
     *defava, *avabox, *hud, *pcard, *table;
 
 static TTF_Font *font,*font2;
-static SDL_Color font_fg = {0, 0, 0, 255};
+static SDL_Color font_fg = {0, 122, 0, 255};
 /*static SDL_Color font_fg2 = {255, 255, 255, 255};*/
 
 double hstretch, vstretch;
@@ -20,7 +20,6 @@ SDL_Surface *init_sdl(int w, int h)
     int ckey;
     char buf[BUFLEN];
     SDL_Surface *screen, *temp;
-    SDL_Rect r;
     struct stat s_stat;
 
     snprintf(buf, BUFLEN, "%s%d_%d", DATADIR, w, h);
@@ -80,15 +79,20 @@ SDL_Surface *init_sdl(int w, int h)
     SDL_SetColorKey(hud, SDL_SRCCOLORKEY | SDL_RLEACCEL, ckey);
     SDL_SetColorKey(table, SDL_SRCCOLORKEY | SDL_RLEACCEL, ckey);
 
+    return screen;
+}
+
+void draw_hud(SDL_Surface *s, unsigned x, unsigned y)
+{
+    SDL_Rect r;
+
     r.x = 0;
     r.y = 0;
-    SDL_BlitSurface(table, 0, screen, &r);
+    SDL_BlitSurface(table, 0, s, &r);
 
     r.x += hstretch * 18;
     r.y = vstretch * 385;
-    SDL_BlitSurface(hud, 0, screen, &r);
-
-    return screen;
+    SDL_BlitSurface(hud, 0, s, &r);
 }
 
 void create_playerbox(SDL_Surface *s, char *name, unsigned x, unsigned y, char *avatar, unsigned lifebelts)
@@ -103,24 +107,28 @@ void create_playerbox(SDL_Surface *s, char *name, unsigned x, unsigned y, char *
 
     SDL_BlitSurface(avabox, 0, s, &r);
 
-    if (!avatar)
+    if (!avatar) {
         SDL_BlitSurface(defava, 0, s, &r);
-    else
+    } else {
         /* FIXME: load real ava */
+    }
 
     txt = TTF_RenderText_Blended(font, "Wasser", font_fg);
     r.x += hstretch * 77;
     r.y += vstretch * 37;
     SDL_BlitSurface(txt, 0, s, &r);
+    SDL_FreeSurface(txt);
 
     txt = TTF_RenderText_Blended(font, "Punkte", font_fg);
     r.x += hstretch * 1;
     r.y += vstretch * 50;
     SDL_BlitSurface(txt, 0, s, &r);
+    SDL_FreeSurface(txt);
     
     txt = TTF_RenderText_Blended(font, name, font_fg);
     r.x -= hstretch * 70;
     SDL_BlitSurface(txt, 0, s, &r);
+    SDL_FreeSurface(txt);
     
     /* draw lifebelts */
     for (i = 0; i < lifebelts; i++)
