@@ -14,11 +14,12 @@
 
 #define W 800
 #define H 600
-#define BUFL 512
 #define DEFPORT (1337)
 #define DEFNAME ("Randall")
 #define GUINAME ("Guilord")
 #define DEFHOST ("127.0.0.1")
+
+#define BUFL 512
 
 int main(int argc, char **argv) {
     bool debug = false, silent = false, gui = false;
@@ -71,7 +72,7 @@ int main(int argc, char **argv) {
 
         screen = init_sdl(w, h);
         draw_hud(screen, 0, 0);
-        create_playerbox(screen, name, hs * 628, vs * 398, 0, 0);
+        create_playerbox(screen, name, hs * pbox_x, vs * pbox_y, 0, 0);
         set_wlevel(screen, 0, 0, 0);
         set_points(screen, 0, 0, 0);
         SDL_UpdateRect(screen, 0, 0, 0, 0);
@@ -121,7 +122,7 @@ int main(int argc, char **argv) {
                 if (debug)
                     fprintf(stderr, "Have pos %d\n", pos);
             } else {
-                create_playerbox(screen, g->villain->name, x, y, 0, 0);
+                create_playerbox(screen, g->villain[i].name, x, y, 0, 0);
                 x += 200 * hstr;
             }
         }
@@ -131,6 +132,32 @@ int main(int argc, char **argv) {
 
     bool play = true;
     while (play) {
+        if (gui) {
+            draw_hud(screen, 0, 0);
+            create_playerbox(screen, name, hs * pbox_x, vs * pbox_y, 0, 0);
+            set_wlevel(screen, hs * pbox_x, vs * pbox_y, g->villain[pos].water_level);
+            set_points(screen, hs * pbox_x, vs * pbox_y, g->villain[pos].points);
+            set_lifebelts(screen, hs * pbox_x, vs *pbox_y, g->villain[pos].lifebelts, 10);
+
+            x = 50 * hstr;
+            y = 0;
+            for (i = 0; i < g->count; i++) {
+                if (i != pos) {
+                    create_playerbox(screen, g->villain[i].name, x, y, 0, 0);
+                    set_wlevel(screen, x, y, g->villain[i].water_level);
+                    set_points(screen, x, y, g->villain[i].points);
+                    set_lifebelts(screen, x, y, g->villain[i].lifebelts, 10);
+                    x += 200 * hstr;
+                }
+            }
+
+            for (i = 0; i < 12; i++)
+                if (g->player.weathercards[i])
+                    add_pcard(screen, 0, 0, i, g->player.weathercards[i]);
+
+            SDL_UpdateRect(screen, 0, 0, 0, 0);
+        }
+
         if (!input) {
             if ((input = sdl_receive_from(sock)) == 0) {
                 if (!silent || debug)
@@ -171,21 +198,11 @@ int main(int argc, char **argv) {
                 printf("%s has points %d\n", name, points);
         }
 
-        /*
-        if (pos < 0) {
-            if (debug)
-                printf("%s: searching it for pos: %s\n", name, input);
-            pos++;
-            p = strstr(input, "START ");
-            strtok(p, " "); 
-            strtok(0, " "); 
-            while (strncmp(strtok(0, " "), name, strlen(name)) != 0) {
-                pos++;
-            }
-            if (!silent)
-                printf("%s has pos %d\n", name, pos);
+        for (p = input; (p - 1) && *p; p = strchr(p, '\n') + 1) {
+            strncpy(buf, p, BUFL);
+            parse_cmd(g, buf);
         }
-        */
+
         free (input);
         input = 0;
     }

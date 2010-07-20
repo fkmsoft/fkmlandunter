@@ -49,6 +49,8 @@
 /* standard font */
 #define DEFFONT (DATADIR "TOONISH.ttf")
 
+extern const int pbox_x, pbox_y;
+
 SDL_Surface *init_sdl(int w, int h);
 
 void draw_hud(SDL_Surface *s, unsigned x, unsigned y);

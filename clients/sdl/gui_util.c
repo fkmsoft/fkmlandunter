@@ -15,6 +15,8 @@ static SDL_Color font_fg = {0, 0, 0, 255};
 
 double hstretch, vstretch;
 
+const int pbox_x = 623, pbox_y = 393;
+
 SDL_Surface *init_sdl(int w, int h)
 {
     int ckey;
@@ -129,6 +131,7 @@ void create_playerbox(SDL_Surface *s, char *name, unsigned x, unsigned y, char *
     SDL_BlitSurface(txt, 0, s, &r);
     SDL_FreeSurface(txt);
     
+    if (!name) name = "DUMMY";
     txt = TTF_RenderText_Blended(font, name, font_fg);
     r.x -= hstretch * 70;
     SDL_BlitSurface(txt, 0, s, &r);
@@ -222,8 +225,8 @@ int set_wlevel(SDL_Surface *s, unsigned x, unsigned y, unsigned n)
     snprintf(buf, 5, "%i", n);
     txt = TTF_RenderText_Blended(font2, buf, font_fg);
 
-    r.x = hstretch * 717;
-    r.y = vstretch * 410;
+    r.x = x + hstretch * 94;
+    r.y = y + vstretch * 17;
     SDL_BlitSurface(txt, 0, s, &r);
 
     return n;
@@ -238,8 +241,8 @@ int set_points(SDL_Surface *s, unsigned x, unsigned y, int n)
     snprintf(buf, 5, "%i", n);
     txt = TTF_RenderText_Blended(font2, buf, font_fg);
 
-    r.x = hstretch * 717;
-    r.y = vstretch * 460;
+    r.x = x + hstretch * 94;
+    r.y = y + vstretch * 67;
     SDL_BlitSurface(txt, 0, s, &r);
 
     return n;
