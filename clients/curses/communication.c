@@ -73,9 +73,12 @@ void parse_start(gamestr *game, char *s)
     strtok(s, " ");
     strtok(NULL, " ");
     
-    maxt = 0;
+    maxt = 0; char *p;
     for (i = 0; i < game->count; i++) {
-        v[i].name = strtok(NULL, " ");
+        p = strtok(NULL, " ");
+        v[i].name = malloc(strlen(p) + 1);
+        strcpy(v[i].name, p);
+
         v[i].tabnum = strlen(v[i].name) / TABSIZE;
 
         if (v[i].tabnum > maxt)

@@ -4,6 +4,7 @@
 #define FONTSIZE2 (15)
 
 #define BUFLEN 1024
+#define DEBUG 0
 
 static SDL_Surface  
     *act_lifebelt, *pas_lifebelt, *act_border,
@@ -164,7 +165,8 @@ int set_lifebelts(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned m
 	    SDL_BlitSurface(act_lifebelt, 0, s, &r);
     }
 
-    printf("Drawing %d/%d lifebelts done\n", n, max);
+    if (DEBUG)
+        printf("Drawing %d/%d lifebelts done\n", n, max);
 
     return n;
 }

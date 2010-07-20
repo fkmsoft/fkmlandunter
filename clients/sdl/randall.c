@@ -200,6 +200,9 @@ int main(int argc, char **argv) {
 
         for (p = input; (p - 1) && *p; p = strchr(p, '\n') + 1) {
             strncpy(buf, p, BUFL);
+            buf[BUFL - 1] = 0;
+            if (debug)
+                printf("Fed the parser with: >>%s<<\n", buf);
             parse_cmd(g, buf);
         }
 
