@@ -7,12 +7,10 @@
 
 #include "fkmlandunter.h"
 
-void set_alive(fkmserver *s, int playerlimit);
-void set_notplayed(fkmserver *s, int playerlimit);
-void set_wlevel(fkmserver *s, int p, int level);
-int get_wlevel(fkmserver *s, int p);
-void rm_wcard(fkmserver *s, int p, int card);
-int rm_lifebelt(fkmserver *s, int p);
+static void set_alive(fkmserver *s, int playerlimit);
+static void set_notplayed(fkmserver *s, int playerlimit);
+static void set_wlevel(fkmserver *s, int p, int level);
+static void rm_wcard(fkmserver *s, int p, int card);
 
 bool fkmlandunter_play(fkmserver *s, int playerlimit)
 {
@@ -198,19 +196,20 @@ bool fkmlandunter_play(fkmserver *s, int playerlimit)
     return true;
 }
 
-void set_alive(fkmserver *s, int pnum)
+static void set_alive(fkmserver *s, int pnum)
 {
     int i;
     player *p;
     for (i = 0; i < pnum; i++) {
         p = fkmserver_getc(s, i);
         p->dead = false;
+		p->water_level = 0;
     }
 
     return;
 }
 
-void set_notplayed(fkmserver *s, int pnum)
+static void set_notplayed(fkmserver *s, int pnum)
 {
     int i;
     player *p;
@@ -222,7 +221,7 @@ void set_notplayed(fkmserver *s, int pnum)
     return;
 }
 
-void set_wlevel(fkmserver *s, int p, int level)
+static void set_wlevel(fkmserver *s, int p, int level)
 {
     player *pl = fkmserver_getc(s, p);
     pl->water_level = level;
@@ -230,13 +229,7 @@ void set_wlevel(fkmserver *s, int p, int level)
     return;
 }
 
-int get_wlevel(fkmserver *s, int p)
-{
-    player *pl = fkmserver_getc(s, p);
-    return pl->water_level;
-}
-
-void rm_wcard(fkmserver *s, int p, int card)
+static void rm_wcard(fkmserver *s, int p, int card)
 {
     int i = 0;
     player *pl = fkmserver_getc(s, p);

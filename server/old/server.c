@@ -124,8 +124,12 @@ int main(int argc, char **argv)
         int alive = s->connected;
         for (p = 0; p < s->connected; p++) {
             s->players[p].dead = false;
+
             /* and tell them about the new round */
             /* show_startmsg(s, p); DONt */
+
+            /* and reset their waterlevel */
+            s->players[p].water_level = 0;
         }
 
         /* This loop lasts one move */    
