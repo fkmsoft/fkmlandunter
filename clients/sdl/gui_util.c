@@ -8,7 +8,7 @@
 #define DEBUG 0
 
 static SDL_Surface  
-    *act_lifebelt, *pas_lifebelt, *act_border,
+    *act_lifebelt, *pas_lifebelt, *act_border, *drownava,
     *defava, *avabox, *hud, *pcard, *wcard, *table;
 
 static TTF_Font *font, *font2, *font3;
@@ -61,6 +61,7 @@ SDL_Surface *init_sdl(int w, int h)
     LOAD(PAS_LIFEBELT, pas_lifebelt)
     LOAD(ACT_BORDER, act_border)
     LOAD(DEFAVA, defava)
+    LOAD(DROWNAVA, drownava)
     LOAD(AVABOX, avabox)
     LOAD(HUD, hud)
     LOAD(PCARD, pcard)
@@ -100,7 +101,7 @@ void draw_hud(SDL_Surface *s, unsigned x, unsigned y)
     SDL_BlitSurface(hud, 0, s, &r);
 }
 
-void create_playerbox(SDL_Surface *s, char *name, unsigned x, unsigned y, char *avatar, unsigned lifebelts)
+void create_playerbox(SDL_Surface *s, char *name, int x, int y, char *avatar, int lifebelts, bool dead)
 {
     int i;
     SDL_Rect r;
@@ -114,7 +115,9 @@ void create_playerbox(SDL_Surface *s, char *name, unsigned x, unsigned y, char *
 
     r.x += hstretch * 5;
     r.y += vstretch * 5;
-    if (!avatar) {
+    if (dead) {
+        SDL_BlitSurface(drownava, 0, s, &r);
+    } else if (!avatar) {
         SDL_BlitSurface(defava, 0, s, &r);
     } else {
         /* FIXME: load real ava */

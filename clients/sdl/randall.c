@@ -21,6 +21,8 @@
 
 #define BUFL 512
 
+static void render(SDL_Surface *screen, gamestr *g, char *name, int pos, double hs, double vs);
+
 int main(int argc, char **argv) {
     bool debug = false, silent = false, gui = false, interactive = false;
     char *name = DEFNAME, *host = DEFHOST;
@@ -76,7 +78,7 @@ int main(int argc, char **argv) {
 
         screen = init_sdl(w, h);
         draw_hud(screen, 0, 0);
-        create_playerbox(screen, name, hs * pbox_x, vs * pbox_y, 0, 0);
+        create_playerbox(screen, name, hs * pbox_x, vs * pbox_y, 0, 0, false);
         set_wlevel(screen, 0, 0, 0);
         set_points(screen, 0, 0, 0);
         SDL_UpdateRect(screen, 0, 0, 0, 0);
@@ -101,7 +103,6 @@ int main(int argc, char **argv) {
 
     /* for gui */
     int x, y;
-    double hstr, vstr;
 
     /* position */
     do {
@@ -113,12 +114,10 @@ int main(int argc, char **argv) {
     } while ( !((p = strstr(input, "START ")) && (p == input || *(p - 1) == '\n')) );
 
     if (gui) {
-        hstr = w / W;
-        vstr = h / H;
         strncpy(buf, p, BUFL);
         parse_start(g, buf);
 
-        x = 50 * hstr;
+        x = 50 * hs;
         y = 0;
         for (i = 0; i < g->count; i++) {
             if (strcmp(g->villain[i].name, name) == 0) {
@@ -128,8 +127,8 @@ int main(int argc, char **argv) {
             } else {
                 if (debug)
                     printf("Have opponent %s\n", g->villain[i].name);
-                create_playerbox(screen, g->villain[i].name, x, y, 0, 0);
-                x += 200 * hstr;
+                create_playerbox(screen, g->villain[i].name, x, y, 0, 0, false);
+                x += 200 * hs;
             }
         }
 
@@ -139,33 +138,8 @@ int main(int argc, char **argv) {
     SDL_Event ev;
     bool play = true;
     while (play) {
-        if (gui) {
-            draw_hud(screen, 0, 0);
-            create_playerbox(screen, name, hs * pbox_x, vs * pbox_y, 0, 0);
-            set_wlevel(screen, hs * pbox_x, vs * pbox_y, g->villain[pos].water_level);
-            set_points(screen, hs * pbox_x, vs * pbox_y, g->villain[pos].points);
-            set_lifebelts(screen, hs * pbox_x, vs *pbox_y, g->villain[pos].lifebelts, 10);
-            add_wcard(screen, 0, 0, 0, g->w_card[0]);
-            add_wcard(screen, 0, 0, 1, g->w_card[1]);
-
-            x = 50 * hstr;
-            y = 0;
-            for (i = 0; i < g->count; i++) {
-                if (i != pos) {
-                    create_playerbox(screen, g->villain[i].name, x, y, 0, 0);
-                    set_wlevel(screen, x, y, g->villain[i].water_level);
-                    set_points(screen, x, y, g->villain[i].points);
-                    set_lifebelts(screen, x, y, g->villain[i].lifebelts, 10);
-                    x += 200 * hstr;
-                }
-            }
-
-            for (i = 0; i < 12; i++)
-                if (g->player.weathercards[i])
-                    add_pcard(screen, 0, 0, i, g->player.weathercards[i]);
-
-            SDL_UpdateRect(screen, 0, 0, 0, 0);
-        }
+        if (gui)
+            render(screen, g, name, pos, hs, vs);
 
         if (!input) {
             if ((input = sdl_receive_from(sock, debug)) == 0) {
@@ -226,6 +200,41 @@ int main(int argc, char **argv) {
         printf("%s has finish %d.\n", name, points);
 
     exit(points);
+}
+
+static void render(SDL_Surface *screen, gamestr *g, char *name, int pos, double hs, double vs)
+{
+    int x, y, i;
+    player p;
+
+    draw_hud(screen, 0, 0);
+
+    p = g->villain[pos];
+    create_playerbox(screen, name, hs * pbox_x, vs * pbox_y, 0, 0, p.dead);
+    set_wlevel(screen, hs * pbox_x, vs * pbox_y, p.water_level);
+    set_points(screen, hs * pbox_x, vs * pbox_y, p.points);
+    set_lifebelts(screen, hs * pbox_x, vs *pbox_y, p.lifebelts, 10);
+    add_wcard(screen, 0, 0, 0, g->w_card[0]);
+    add_wcard(screen, 0, 0, 1, g->w_card[1]);
+
+    x = 50 * hs;
+    y = 0;
+    for (i = 0; i < g->count; i++) {
+        if (i != pos) {
+            p = g->villain[i];
+            create_playerbox(screen, p.name, x, y, 0, 0, p.dead);
+            set_wlevel(screen, x, y, p.water_level);
+            set_points(screen, x, y, p.points);
+            set_lifebelts(screen, x, y, g->villain[i].lifebelts, 10);
+            x += 200 * hs;
+        }
+    }
+
+    for (i = 0; i < 12; i++)
+        if (g->player.weathercards[i])
+            add_pcard(screen, 0, 0, i, g->player.weathercards[i]);
+
+    SDL_UpdateRect(screen, 0, 0, 0, 0);
 }
 
 /* vim: set sw=4 ts=4 et fdm=syntax: */

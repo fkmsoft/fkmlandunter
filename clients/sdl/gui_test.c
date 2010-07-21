@@ -29,7 +29,7 @@ int main(int argc, char **argv)
     }
 
     draw_hud(screen, 0, 0);
-    create_playerbox(screen, NAME, hs * pbox_x, vs * pbox_y, 0, 10);
+    create_playerbox(screen, NAME, hs * pbox_x, vs * pbox_y, 0, 10, true);
 
     add_wcard(screen, 0, 0, 0, 5);
     add_wcard(screen, 0, 0, 1, 5);

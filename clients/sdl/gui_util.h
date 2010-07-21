@@ -10,6 +10,7 @@
 #define _ISOC99_SOURCE
 #include <stdio.h>
 #include <sys/stat.h>
+#include <stdbool.h>
 
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
@@ -41,6 +42,7 @@
 
 /* standard avatar */
 #define DEFAVA ("nutzerbild.png")
+#define DROWNAVA ("nutzerbild_d.png")
 #define AVABOX ("nutzerbild_rahmen.png")
 
 /* cards */
@@ -55,7 +57,7 @@ extern const int pbox_x, pbox_y;
 SDL_Surface *init_sdl(int w, int h);
 
 void draw_hud(SDL_Surface *s, unsigned x, unsigned y);
-void create_playerbox(SDL_Surface *s, char *name, unsigned x, unsigned y, char *avatar, unsigned lifebelts);
+void create_playerbox(SDL_Surface *s, char *name, int x, int y, char *avatar, int lifebelts, bool dead);
 
 int set_lifebelts(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned max);
 
