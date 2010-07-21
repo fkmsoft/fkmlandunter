@@ -22,11 +22,11 @@
 #define BUFL 512
 
 int main(int argc, char **argv) {
-    bool debug = false, silent = false, gui = false;
+    bool debug = false, silent = false, gui = false, interactive = false;
     char *name = DEFNAME, *host = DEFHOST;
     int opt, port = DEFPORT, w = W, h = H;
 
-    while ((opt = getopt(argc, argv, "n:p:h:dsgr:")) != -1) {
+    while ((opt = getopt(argc, argv, "n:p:h:dsgr:i")) != -1) {
         switch (opt) {
         case 'n':
             name = optarg;
@@ -49,7 +49,11 @@ int main(int argc, char **argv) {
         case 'r':
             w = atoi(optarg);
             h = atoi(strchr(optarg, 'x') + 1);
-            printf("have %dx%d\n", w, h);
+            if (debug)
+                printf("have %dx%d\n", w, h);
+            break;
+        case 'i':
+            interactive = true;
             break;
         default:
             printf("Usage: %s [-n name] [-h host] [-p port]\n", name);
@@ -103,7 +107,7 @@ int main(int argc, char **argv) {
     do {
         if (input)
             free(input);
-        input = sdl_receive_from(sock);
+        input = sdl_receive_from(sock, debug);
         if (debug)
             printf("%s: %s", name, input);
     } while ( !((p = strstr(input, "START ")) && (p == input || *(p - 1) == '\n')) );
@@ -117,11 +121,13 @@ int main(int argc, char **argv) {
         x = 50 * hstr;
         y = 0;
         for (i = 0; i < g->count; i++) {
-            if (strcmp(g->villain->name, name) == 0) {
+            if (strcmp(g->villain[i].name, name) == 0) {
                 pos = i;
                 if (debug)
-                    fprintf(stderr, "Have pos %d\n", pos);
+                    printf("Have pos %d\n", pos);
             } else {
+                if (debug)
+                    printf("Have opponent %s\n", g->villain[i].name);
                 create_playerbox(screen, g->villain[i].name, x, y, 0, 0);
                 x += 200 * hstr;
             }
@@ -130,6 +136,7 @@ int main(int argc, char **argv) {
         SDL_UpdateRect(screen, 0, 0, 0, 0);
     }
 
+    SDL_Event ev;
     bool play = true;
     while (play) {
         if (gui) {
@@ -161,7 +168,7 @@ int main(int argc, char **argv) {
         }
 
         if (!input) {
-            if ((input = sdl_receive_from(sock)) == 0) {
+            if ((input = sdl_receive_from(sock, debug)) == 0) {
                 if (!silent || debug)
                     printf("%s: Error on sdl_receive_from!\n", name);
                 play = false;
@@ -188,14 +195,16 @@ int main(int argc, char **argv) {
                 if (!silent)
                     printf("%s has play %d\n", name, card);
                 sdl_send_to(sock, "PLAY %d\n", card);
+
+                if (interactive)
+                    do { SDL_PollEvent(&ev); } while (ev.type != SDL_KEYDOWN);
             } else if (!silent)
                 printf("%s not find card in deck\n", name);
         }
         if ((p = strstr(input, "POINTS "))) {
-            strtok(p, " ");
-            /*strtok(0, " ");*/
+            p = strchr(p, ' ');
             for (i = -1; i < pos; i++)
-                points = atoi(strtok(NULL, " "));
+                points = atoi(p = strchr(p, ' '));
             if (!silent)
                 printf("%s has points %d\n", name, points);
         }

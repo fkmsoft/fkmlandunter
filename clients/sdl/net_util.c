@@ -40,14 +40,18 @@ void sdl_send_to(TCPsocket sock, char *fmt, ...)
     va_end(args);
 }
 
-char *sdl_receive_from(TCPsocket sock)
+char *sdl_receive_from(TCPsocket sock, bool debug)
 {
+    int c;
     char *buffer = calloc(MAXBUF, sizeof(char));
     
-    if (SDLNet_TCP_Recv(sock, buffer, MAXBUF) < 1) {
+    if ((c = SDLNet_TCP_Recv(sock, buffer, MAXBUF)) < 1) {
         printf("receive_from: %s\n", SDLNet_GetError());
         return NULL;
     }
+
+    if (debug && c == MAXBUF)
+        printf("Buffr full: %s\n", buffer);
 
     return buffer;
 }

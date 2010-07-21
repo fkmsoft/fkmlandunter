@@ -10,6 +10,7 @@
 #define _ISOC99_SOURCE
 #include <stdio.h>
 #include <stdarg.h>
+#include <stdbool.h>
 
 #include <SDL/SDL.h>
 #include <SDL/SDL_net.h>
@@ -21,7 +22,7 @@ void net_init_sdl();
 IPaddress compute_address (char *host, Uint16 port);
 
 void sdl_send_to(TCPsocket sock, char *fmt, ...);
-char *sdl_receive_from(TCPsocket sock);
+char *sdl_receive_from(TCPsocket sock, bool debug);
 
 #endif /* FKML_NET_UTIL_H */
 
