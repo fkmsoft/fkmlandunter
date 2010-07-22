@@ -211,7 +211,7 @@ void kill_chldrn(void) {
 }
 
 void kill_children(int s) {
-    printf("killig children (sig %d)\n", s);
+    printf("killing children (sig %d)\n", s);
     killpg(getpgrp(), SIGKILL);
 }
 

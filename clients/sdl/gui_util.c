@@ -387,4 +387,53 @@ TTF_Font *getfont(void)
   return font;
 }
 
+void render(SDL_Surface *s, gamestr *g, int pos, int *startbelts)
+{
+    int x, y, i, j;
+    player p;
+
+    draw_background(s, 0, 0);
+
+    p = g->villain[pos];
+    add_pcard_played(s, 0, 0, -1, p.played);
+    draw_hud(s, 0, 0);
+
+    create_playerbox(s, p.name, hstretch * pbox_x, vstretch * pbox_y, 0, 0, p.dead);
+    set_points(s, hstretch * pbox_x, vstretch * pbox_y, p.points);
+    if (p.dead) {
+        set_lifebelts(s, hstretch * pbox_x, vstretch *pbox_y, 0, startbelts[pos]);
+    } else {
+        set_lifebelts(s, hstretch * pbox_x, vstretch *pbox_y, p.lifebelts, startbelts[pos]);
+        set_wlevel(s, hstretch * pbox_x, vstretch * pbox_y, p.water_level);
+    }
+
+    add_wcard(s, 0, 0, 0, g->w_card[0]);
+    add_wcard(s, 0, 0, 1, g->w_card[1]);
+
+    x = 50 * hstretch;
+    y = 10 * vstretch;
+    j = 0;
+    for (i = 0; i < g->count; i++) {
+        if (i != pos) {
+            p = g->villain[i];
+            create_playerbox(s, p.name, x, y, 0, 0, p.dead);
+            set_points(s, x, y, p.points);
+
+            if (p.dead) {
+                set_lifebelts(s, x, y, 0, startbelts[i]);
+            } else {
+                set_lifebelts(s, x, y, p.lifebelts, startbelts[i]);
+                set_wlevel(s, x, y, p.water_level);
+            }
+
+            x += 200 * hstretch;
+            add_pcard_played(s, 0, 0, j++, p.played);
+        }
+    }
+
+    for (i = 0; i < 12; i++)
+        if (g->player.weathercards[i])
+            add_pcard(s, 0, 0, i, g->player.weathercards[i]);
+}
+
 /* vim: set sw=4 ts=4 et fdm=syntax: */

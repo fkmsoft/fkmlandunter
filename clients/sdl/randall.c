@@ -10,7 +10,6 @@
 
 #include "net_util.h"
 #include "gui_util.h"
-#include "../curses/communication.h"
 
 #define W 800
 #define H 600
@@ -20,8 +19,6 @@
 #define DEFHOST ("127.0.0.1")
 
 #define BUFL 512
-
-static void render(SDL_Surface *screen, gamestr *g, char *name, int pos, double hs, double vs, int *startbelts);
 
 int main(int argc, char **argv) {
     bool debug = false, silent = false, gui = false, interactive = false;
@@ -179,7 +176,8 @@ int main(int argc, char **argv) {
                     printf("Assigned startbelts: %d %d\n", startbelts[0], startbelts[1]);
             }
 
-            render(screen, g, name, pos, hs, vs, startbelts);
+            render(screen, g, pos, startbelts);
+            SDL_UpdateRect(screen, 0, 0, 0, 0);
         }
 
         for (in = input; in != (char *)1; in = strchr(in, '\n') + 1) {
@@ -248,57 +246,6 @@ int main(int argc, char **argv) {
         printf("%s has finish %d.\n", name, points);
 
     exit(points);
-}
-
-static void render(SDL_Surface *screen, gamestr *g, char *name, int pos, double hs, double vs, int *startbelts)
-{
-    int x, y, i, j;
-    player p;
-
-    draw_background(screen, 0, 0);
-
-    p = g->villain[pos];
-    add_pcard_played(screen, 0, 0, -1, p.played);
-    draw_hud(screen, 0, 0);
-
-    create_playerbox(screen, name, hs * pbox_x, vs * pbox_y, 0, 0, p.dead);
-    set_points(screen, hs * pbox_x, vs * pbox_y, p.points);
-    if (p.dead) {
-        set_lifebelts(screen, hs * pbox_x, vs *pbox_y, 0, startbelts[pos]);
-    } else {
-        set_lifebelts(screen, hs * pbox_x, vs *pbox_y, p.lifebelts, startbelts[pos]);
-        set_wlevel(screen, hs * pbox_x, vs * pbox_y, p.water_level);
-    }
-
-    add_wcard(screen, 0, 0, 0, g->w_card[0]);
-    add_wcard(screen, 0, 0, 1, g->w_card[1]);
-
-    x = 50 * hs;
-    y = 10 * vs;
-    j = 0;
-    for (i = 0; i < g->count; i++) {
-        if (i != pos) {
-            p = g->villain[i];
-            create_playerbox(screen, p.name, x, y, 0, 0, p.dead);
-            set_points(screen, x, y, p.points);
-
-            if (p.dead) {
-                set_lifebelts(screen, x, y, 0, startbelts[i]);
-            } else {
-                set_lifebelts(screen, x, y, p.lifebelts, startbelts[i]);
-                set_wlevel(screen, x, y, p.water_level);
-            }
-
-            x += 200 * hs;
-            add_pcard_played(screen, 0, 0, j++, p.played);
-        }
-    }
-
-    for (i = 0; i < 12; i++)
-        if (g->player.weathercards[i])
-            add_pcard(screen, 0, 0, i, g->player.weathercards[i]);
-
-    SDL_UpdateRect(screen, 0, 0, 0, 0);
 }
 
 /* vim: set sw=4 ts=4 et fdm=syntax: */

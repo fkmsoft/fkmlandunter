@@ -15,7 +15,7 @@
 #include <unistd.h>
 
 #include "interface.h"
-#include "communication.h"
+#include "../communication.h"
 
 #define BUF_SIZE    (1024)
 #define MAXNICK     (30)

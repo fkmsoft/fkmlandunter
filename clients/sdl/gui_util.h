@@ -16,6 +16,8 @@
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_ttf.h>
 
+#include "../communication.h"
+
 #define DATADIR "../../data/fkmlu/"
 
 /* border */
@@ -74,6 +76,8 @@ int add_wcard(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned val);
 int add_pcard_played(SDL_Surface *s, unsigned x, unsigned y, int n, int val);
 
 TTF_Font *getfont(void);
+
+void render(SDL_Surface *s, gamestr *g, int pos, int *startbelts);
 
 #endif /* FKML_GUI_UTIL_H */
 
