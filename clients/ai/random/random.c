@@ -85,8 +85,6 @@ int main(int argc, char **argv) {
             if (!silent || debug)
                 printf("%s: Error on receive_from!\n", name);
             play = false;
-            points = 113;
-            puts("FUCK");
             continue;
         }
         if (debug)
