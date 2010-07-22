@@ -28,14 +28,20 @@ int main(int argc, char **argv)
         hs = vs = 1.0;
     }
 
-    draw_hud(screen, 0, 0);
-    create_playerbox(screen, NAME, hs * pbox_x, vs * pbox_y, 0, 10, true);
+    draw_background(screen, 0, 0);
 
-    add_wcard(screen, 0, 0, 0, 5);
-    add_wcard(screen, 0, 0, 1, 5);
+    for (i = -1; i < 4; i++)
+        add_pcard_played(screen, 0, 0, i, i + 5);
+
+    draw_hud(screen, 0, 0);
+
+    create_playerbox(screen, NAME, hs * pbox_x, vs * pbox_y, 0, 10, true);
 
     for (i = 0; i < 12; i++)
        add_pcard(screen, 0, 0, i, i+1);
+
+    add_wcard(screen, 0, 0, 0, 5);
+    add_wcard(screen, 0, 0, 1, 5);
 
     set_wlevel(screen, hs * pbox_x, vs * pbox_y, 12);
     set_points(screen, hs * pbox_x, vs * pbox_y, -1);

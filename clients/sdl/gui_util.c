@@ -84,20 +84,27 @@ SDL_Surface *init_sdl(int w, int h)
     SDL_SetColorKey(avabox, SDL_SRCCOLORKEY | SDL_RLEACCEL, ckey);
     SDL_SetColorKey(hud, SDL_SRCCOLORKEY | SDL_RLEACCEL, ckey);
     SDL_SetColorKey(table, SDL_SRCCOLORKEY | SDL_RLEACCEL, ckey);
+    SDL_SetColorKey(pcard, SDL_SRCCOLORKEY | SDL_RLEACCEL, ckey);
+    SDL_SetColorKey(wcard, SDL_SRCCOLORKEY | SDL_RLEACCEL, ckey);
 
     return screen;
+}
+
+void draw_background(SDL_Surface *s, unsigned x, unsigned y)
+{
+    SDL_Rect r;
+
+    r.x = x;
+    r.y = y;
+    SDL_BlitSurface(table, 0, s, &r);
 }
 
 void draw_hud(SDL_Surface *s, unsigned x, unsigned y)
 {
     SDL_Rect r;
 
-    r.x = 0;
-    r.y = 0;
-    SDL_BlitSurface(table, 0, s, &r);
-
-    r.x += hstretch * 18;
-    r.y = vstretch * 385;
+    r.x = x + hstretch * 18;
+    r.y = y + vstretch * 385;
     SDL_BlitSurface(hud, 0, s, &r);
 }
 
@@ -234,6 +241,7 @@ int set_wlevel(SDL_Surface *s, unsigned x, unsigned y, unsigned n)
     r.x = x + hstretch * 94;
     r.y = y + vstretch * 17;
     SDL_BlitSurface(txt, 0, s, &r);
+    SDL_FreeSurface(txt);
 
     return n;
 }
@@ -250,6 +258,7 @@ int set_points(SDL_Surface *s, unsigned x, unsigned y, int n)
     r.x = x + hstretch * 94;
     r.y = y + vstretch * 67;
     SDL_BlitSurface(txt, 0, s, &r);
+    SDL_FreeSurface(txt);
 
     return n;
 }
@@ -282,6 +291,7 @@ int add_pcard(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned val)
 
     r.y -= vstretch * 95;
     SDL_BlitSurface(txt, 0, s, &r);
+    SDL_FreeSurface(txt);
 
     return val;
 }
@@ -305,6 +315,61 @@ int add_wcard(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned val)
     r.x += hstretch * 40;
     r.y += vstretch * 40;
     SDL_BlitSurface(txt, 0, s, &r);
+    SDL_FreeSurface(txt);
+
+    return val;
+}
+
+int add_pcard_played(SDL_Surface *s, unsigned x, unsigned y, int n, int val)
+{
+    SDL_Rect r;
+    SDL_Surface *txt;
+    char buf[5];
+
+    r.x = x;
+    r.y = y;
+
+    switch(n) {
+    case -1: /* the player */
+        r.x += hstretch * 540;
+        r.y += vstretch * 320;
+        break;
+    case 0: /* the opponents */
+        r.x += hstretch * 50;
+        r.y += vstretch * 200;
+        break;
+    case 1:
+        r.x += hstretch * 260;
+        r.y += vstretch * 100;
+        break;
+    case 2:
+        r.x += hstretch * 490;
+        r.y += vstretch * 100;
+        break;
+    case 3:
+        r.x += hstretch * 650;
+        r.y += vstretch * 200;
+        break;
+    }
+
+    SDL_BlitSurface(pcard, 0, s, &r);
+
+    snprintf(buf, 5, "%2i", val);
+    txt = TTF_RenderText_Blended(font2, buf, font_fg);
+
+    r.x += hstretch * 7;
+    r.y += vstretch * 7;
+    SDL_BlitSurface(txt, 0, s, &r);
+
+    r.y += vstretch * 95;
+    SDL_BlitSurface(txt, 0, s, &r);
+
+    r.x += hstretch * 70;
+    SDL_BlitSurface(txt, 0, s, &r);
+
+    r.y -= vstretch * 95;
+    SDL_BlitSurface(txt, 0, s, &r);
+    SDL_FreeSurface(txt);
 
     return val;
 }
