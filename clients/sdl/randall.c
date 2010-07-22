@@ -49,16 +49,18 @@ int main(int argc, char **argv) {
             gui = true;
             break;
         case 'r':
+            gui = true;
             w = atoi(optarg);
             h = atoi(strchr(optarg, 'x') + 1);
             if (debug)
                 printf("have %dx%d\n", w, h);
             break;
         case 'i':
+            gui = true;
             interactive = true;
             break;
         default:
-            printf("Usage: %s [-n name] [-h host] [-p port]\n", name);
+            printf("Usage: %s [-d] [-s] [-g] [-i] [-n name] [-h host] [-p port] [-r 800x600]\n", name);
             exit(EXIT_FAILURE);
         }
     }
@@ -139,7 +141,9 @@ int main(int argc, char **argv) {
     }
 
     SDL_Event ev;
-    bool play = true;
+    bool play = true, drowned = false;
+    int card = 0;
+    char *in;
     while (play) {
         if (gui)
             render(screen, g, name, pos, hs, vs);
@@ -161,35 +165,54 @@ int main(int argc, char **argv) {
         if (debug)
             printf("%s: %s", name, input);
 
-        if (strstr(input, "TERMINATE"))
-            play = false;
-        if ((p = strstr(input, "DECK "))) {
-            int card = 0;
-            p += 5;
-            while (!card && *p)
-                card = atoi(p++);
-            if (card) {
+        for (in = input; in != (char *)1; in = strchr(in, '\n') + 1) {
+            if (!strncmp(in, "TERMINATE", 9)) {
+                play = false;
                 if (!silent)
-                    printf("%s has play %d\n", name, card);
-                sdl_send_to(sock, "PLAY %d\n", card);
+                    printf("%s good-bye\n", name);
+            } else if (!strncmp(in, "DECK ", 5)) {
+                p = in + 5;
+                card = 0;
+                while (!card && *p)
+                    card = atoi(p++);
 
-                if (interactive)
-                    do { SDL_PollEvent(&ev); } while (ev.type != SDL_KEYDOWN);
-            } else if (!silent)
-                printf("%s not find card in deck\n", name);
-        }
-        if ((p = strstr(input, "POINTS "))) {
-            p = strchr(p, ' ');
-            for (i = -1; i < pos; i++)
-                points = atoi(p = strchr(p, ' '));
-            if (!silent)
-                printf("%s has points %d\n", name, points);
+                if (!silent && !card)
+                    printf("%s not find card in deck\n", name);
+            } else if (!strncmp(in, "RINGS ", 6)) {
+                p = strchr(in, ' ');
+                for (i = -1; i < pos; i++)
+                    drowned = (atoi(p = strchr(p, ' ') + 1) == -1);
+
+                if (!silent && drowned) {
+                    printf("%s drown\n", name);
+                } else if (!drowned) {
+                    if (!silent)
+                        printf("%s has play %d\n", name, card);
+                    sdl_send_to(sock, "PLAY %d\n", card);
+
+                    if (interactive)
+                        do { SDL_PollEvent(&ev); } while (ev.type != SDL_KEYDOWN);
+                }
+            } else if (!strncmp(in, "POINTS ", 7)) {
+                p = strchr(in, ' ');
+                for (i = -1; i < pos; i++)
+                    points = atoi(p = strchr(p, ' ') + 1);
+
+                if (!silent)
+                    printf("%s has points %d\n", name, points);
+                if (drowned && 0) {
+                    drowned = false;
+                    if (!silent)
+                        printf("%s replay %d\n", name, card);
+                    sdl_send_to(sock, "PLAY %d\n", card);
+                }
+            }
         }
 
         for (p = input; (p - 1) && *p; p = strchr(p, '\n') + 1) {
             strncpy(buf, p, BUFL);
             buf[BUFL - 1] = 0;
-            if (debug)
+            if (debug && 0)
                 printf("Fed the parser with: >>%s<<\n", buf);
             parse_cmd(g, buf);
         }
