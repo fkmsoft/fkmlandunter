@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
     bool debug = false, silent = false;
     char *server = "./server";
     char *silentstr = "", *debugstr = "", *passstr = "1";
-    while ((i = getopt(argc, argv, "s:p:dq")) != -1) {
+    while ((i = getopt(argc, argv, "s:p:dqh")) != -1) {
         k++;
         switch (i) {
             case 'p':
@@ -59,6 +59,9 @@ int main(int argc, char **argv) {
                 k++;
                 server = optarg;
                 break;
+            case 'h':
+                printf("Usage: %s [-q] [-d] [-p passes] [-s SERVER] [BOT1] [BOT2] [BOT3] ([BOT4] [BOT5])\n", *(argv));
+                exit(EXIT_SUCCESS);
             case '?':
             case ':':
                 printf("Usage: %s [-q] [-d] [-p passes] [-s SERVER] [BOT1] [BOT2] [BOT3] ([BOT4] [BOT5])\n", *(argv));

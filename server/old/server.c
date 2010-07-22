@@ -25,7 +25,7 @@ int main(int argc, char **argv)
 {
     bool debug = false;
     int i, j, p, pnum = MAX_PLAYERS, games = 1;
-    while ((i = getopt(argc, argv, "l:dg:")) != -1) {
+    while ((i = getopt(argc, argv, "l:dg:h")) != -1) {
         switch (i) {
             case 'l':
                 pnum = atoi(optarg);
@@ -36,6 +36,9 @@ int main(int argc, char **argv)
 			case 'g':
 				games = atoi(optarg);
 				break;
+            case 'h':
+                printf("usage: %s [-l playerlimit] [-g number_of_games]\n", argv[0]);
+                exit(EXIT_SUCCESS);
             default:
                 exit(EXIT_FAILURE);
         }

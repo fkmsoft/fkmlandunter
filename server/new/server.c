@@ -27,7 +27,7 @@ int main(int argc, char **argv)
         playerlimit = MAX_PLAYERS,
         games = 1, port = DEFPORT;
 
-    while ((opt = getopt(argc, argv, "dl:p:g:")) != -1)
+    while ((opt = getopt(argc, argv, "dl:p:g:h")) != -1)
         switch (opt) {
             case 'd':
                 debug = true;
@@ -44,6 +44,9 @@ int main(int argc, char **argv)
                 else
                     games = atoi(optarg);
                 break;
+            case 'h':
+                usage(argv[0]);
+                exit(EXIT_SUCCESS);
             default:
                 usage(argv[0]);
                 exit(EXIT_FAILURE);
