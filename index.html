@@ -76,17 +76,9 @@ What we still hope to produce is a quality gui client, that might look similar
 to what you can already see in SDL-Randall, and a master server to keep track of
 different game servers running all over the net.<br><br>
 
-This whole stuff was produced by three students of Karlruhe Institute of
-Technology as a leisure-time activity, so don't be surprised when development
-comes to a halt at times, as we sometimes have exams and other things on our
-mind - we are doing this far from full time. Our names would be<br><br>
-
-Christoph Gielisch (m0l0t0ph), graphics & gui design<br>
-Florian Kohnhäuser (flozilla), programming, protocol design<br>
-Richard Molitor (gattschardo), programming, protocol design<br><br>
+To Check progress visit: <a href="http://github.com/fkmsoft/fkmlandunter/">Our Github-Page</a><br><br>
 
 <h2>1. The Servers:</h2><br>
----------------<br><br>
 
 The servers can be found in server/old/ and server/new/ respectively. As the
 name indicates, one of them is the original one, while the other is a rather
@@ -105,8 +97,7 @@ as PORT bound to any address.<br><br>
 
 
 <h2>2. The Curses Client:</h2><br>
----------------------<br><br>
-<img src="screenshot_ncurses.jpg" alt="Screenshot of Fkmlandunter(Ncurses)" />
+<img src="screenshot_ncurses.jpg" alt="Screenshot of Fkmlandunter(Ncurses)" /><br>
 The curses client resides in the clients/curses/ subdirectory and requires the
 curses development headers and (obviously) libcurses to be compiled and run.
 After make'ing the thing, you can run the ``client'' executable from its
@@ -118,8 +109,7 @@ implementation of the chat has not been thoroughly debugged as of now.<br><br>
 
 
 <h2>3. The Python Client:</h2><br>
----------------------<br><br>
-<img src="screenshot_python.jpg" alt="Screenshot of Fkmlandunter(Python)" />
+<img src="screenshot_python.jpg" alt="Screenshot of Fkmlandunter(Python)" /><br>
 The python client to be found in clients/pyqt does not require compiling, but
 you will of course need python to run it, plus the pyqt4 library. It supports
 the complete protocol and might be nicer to use than the curses client if you
@@ -128,7 +118,6 @@ functionality.<br><br>
 
 
 <h2>4. The AI:</h2><br>
-----------<br><br>
 
 The only AI we have yet does nothing in any way intelligent, it rather plays any
 cards it gets in the order they are initially in. It can be compiled and run
@@ -137,7 +126,6 @@ default, like all the other clients.<br><br>
 
 
 <h2>5. The Test Environment:</h2><br>
-------------------------<br><br>
 
 The test environment in testenv/ was made for stress-testing and checking the
 servers & AI clients (so only Randall, so far) for deadlocks and other bugs.
@@ -145,8 +133,7 @@ Just run ``testenv'' with the -h to learn more.<br><br>
 
 
 <h2>6. The SDL Stuff:</h2><br>
------------------<br><br>
-
+<img src="screenshot_sdl.jpg" alt="Screenshot of Fkmlandunter(SDL)" /><br>
 As of now you can find a general gui demo in clients/sdl/ called ``gui_test''
 and an SDL implementation of Randall called ``randall''. Be sure to invoke them
 from the clients/sdl directory, or else fix the #defines in gui_util.h so they
@@ -159,7 +146,6 @@ using a visual representation like SDL Randall.<br><br>
 
 
 <h2>Appendix A - the fkmlandunter protocol:</h2><br>
----------------------------------------<br><br>
 -> LOGIN name<br>
 <- ACK name<br>
 <- JOIN name ****<br>
@@ -184,7 +170,6 @@ using a visual representation like SDL Randall.<br><br>
 
 
 <h2>Appendix B - Brief Game Description (German)</h2><br>
---------------------------------------------<br><br>
 
 Spieleranzahl S von Kommandozeile auswerten, sonst 3;<br>
 S Decks erstellen;<br>
@@ -221,7 +206,14 @@ Spielern Platzierung mitteilen;    // Kommunikation<br><br>
 <h2>License</h2>
 <p>GPL</p>
 <h2>Authors</h2>
-<p>Christoph Gielisch (Chr1s_t0ph@yahoo.de)<br/>Florian Kohnhäuser (florian@kohnhaeuser.com)<br/>Richard Molitor (gattschardo@gmail.com)<br/><br/>      </p>
+<p>This whole stuff was produced by three students of Karlruhe Institute of
+Technology as a leisure-time activity, so don't be surprised when development
+comes to a halt at times, as we sometimes have exams and other things on our
+mind - we are doing this far from full time. Our names would be<br><br>
+
+Christoph Gielisch (m0l0t0ph), graphics & gui design<br>
+Florian Kohnhäuser (flozilla), programming, protocol design<br>
+Richard Molitor (gattschardo), programming, protocol design<br><br><br/><br/>      </p>
 
     <h2>Download</h2>
     <p>
