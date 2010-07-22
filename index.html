@@ -1,0 +1,300 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+	<title>fkmsoft/fkmlandunter @ GitHub</title>
+	
+	<style type="text/css">
+		body {
+  		margin-top: 1.0em;
+  		background-color: #cccccc;
+		  font-family: "Helvetica,Arial,FreeSans";
+  		color: #000000;
+    }
+    #container {
+      margin: 0 auto;
+      width: 700px;
+    }
+		h1 { font-size: 3.8em; color: #333333; margin-bottom: 3px; }
+		h1 .small { font-size: 0.4em; }
+		h1 a { text-decoration: none }
+		h2 { font-size: 1.5em; color: #333333; }
+    h3 { text-align: center; color: #333333; }
+    a { color: #333333; }
+    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
+    .download { float: right; }
+		pre { background: #000; color: #fff; padding: 15px;}
+    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
+    .footer { text-align:center; padding-top:30px; font-style: italic; }
+	</style>
+	
+</head>
+
+<body>
+  <a href="http://github.com/fkmsoft/fkmlandunter"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+
+  <div id="container">
+
+    <div class="download">
+      <a href="http://github.com/fkmsoft/fkmlandunter/zipball/master">
+        <img border="0" width="90" src="http://github.com/images/modules/download/zip.png"></a>
+      <a href="http://github.com/fkmsoft/fkmlandunter/tarball/master">
+        <img border="0" width="90" src="http://github.com/images/modules/download/tar.png"></a>
+    </div>
+
+    <h1><a href="http://github.com/fkmsoft/fkmlandunter">fkmlandunter</a>
+      <span class="small">by <a href="http://github.com/fkmsoft">fkmsoft</a></span></h1>
+
+    <div class="description">
+      Fkmlandunter is the implementation of a German card game called ``land unter''
+as a computer game. As of now this whole thing is still under heavy development,
+but we (the Fkmsoft Team) have already produced some things that actually
+compile and can be run.
+    </div>
+
+    <p>These are:
+
+- 2 different servers (both implementing the same network protocol, see Appendix
+  A for further details).
+
+- A cli based client using the ncurses library (needs ncurses-dev or the
+  equivalent of your distro to compile).
+
+- A gui client based on python and pyqt4 (which you will need to run it, too)
+
+- A rather stupid AI called the random-ai, a.k.a. ``Randall''
+
+- The same AI but including a somewhat nicer gui hacked together in SDL.
+
+What we still hope to produce is a quality gui client, that might look similar
+to what you can already see in SDL-Randall, and a master server to keep track of
+different game servers running all over the net.
+
+This whole stuff was produced by three students of Karlruhe Institute of
+Technology as a leisure-time activity, so don't be surprised when development
+comes to a halt at times, as we sometimes have exams and other things on our
+mind - we are doing this far from full time. Our names would be
+
+Christoph Gielisch (m0l0t0ph), graphics & gui design
+Florian Kohnhï¿½user (flozilla), programming, protocol design
+Richard Molitor (gattschardo), programming, protocol design
+
+1. The Servers:
+---------------
+
+The servers can be found in server/old/ and server/new/ respectively. As the
+name indicates, one of them is the original one, while the other is a rather
+cleaner and (hopefully) more understandable reimplementation. Both should be
+functionally equivalent though, and possibly share some bugs, too (they did in
+the past).
+
+To run any of them just execute the file called ``server'' after make'ing the
+whole thing (either everything in one run from the top directory, or partially
+from a subdirectory). The -h switch should tell you about most options, although
+it is always a good idea to read the code (assuming you know some C) just to see
+whether anything changed since the usage message string was last updated.
+
+In general, the servers will run port 1337 or anything else you care to #define
+as PORT bound to any address.
+
+
+2. The Curses Client:
+---------------------
+
+The curses client resides in the clients/curses/ subdirectory and requires the
+curses development headers and (obviously) libcurses to be compiled and run.
+After make'ing the thing, you can run the ``client'' executable from its
+directory, it will connect to localhost port 1337 by default, but you can
+specify another IP and port on the command line.
+
+The curses client supports the complete fkmlandunter protocol, although the
+implementation of the chat has not been thoroughly debugged as of now.
+
+
+3. The Python Client:
+---------------------
+
+The python client to be found in clients/pyqt does not require compiling, but
+you will of course need python to run it, plus the pyqt4 library. It supports
+the complete protocol and might be nicer to use than the curses client if you
+prefer working with guis, but other than that it provides the same basic
+functionality.
+
+
+4. The AI:
+----------
+
+The only AI we have yet does nothing in any way intelligent, it rather plays any
+cards it gets in the order they are initially in. It can be compiled and run
+from clients/ai/random named ``random'' and connects to 127.0.0.1:1337 by
+default, like all the other clients.
+
+
+5. The Test Environment:
+------------------------
+
+The test environment in testenv/ was made for stress-testing and checking the
+servers & AI clients (so only Randall, so far) for deadlocks and other bugs.
+Just run ``testenv'' with the -h to learn more.
+
+
+6. The SDL Stuff:
+-----------------
+
+As of now you can find a general gui demo in clients/sdl/ called ``gui_test''
+and an SDL implementation of Randall called ``randall''. Be sure to invoke them
+from the clients/sdl directory, or else fix the #defines in gui_util.h so they
+can find their graphics. See data/fkmlu/ for supported resolutions. To actually
+start randall in gui mode, use the -g switch, and to have him play his cards on
+key-press, so you can see more of the game, use the -i (interactive) switch.
+
+What we hope to produce here is a real client (like the curses or pyqt ones)
+using a visual representation like SDL Randall.
+
+
+Appendix A - the fkmlandunter protocol:
+---------------------------------------
+-> LOGIN name
+<- ACK name
+<- JOIN name ****
+-> START
+<- START 3 nam1 nam2 nam3
+    <- DECK 1 2 56
+    <- RINGS 2 4 1
+    <- WEATHER 7 8
+    -> PLAY 56
+    <- ACK 56
+    <- FAIL 56
+    <- PLAYEd 1 25 60
+    <- WLEVELS 7 8 0
+    <- POINTS 1 2 -1
+
+-> LOGOUT bye
+<- LEAVE name i must go ****
+<- TERMINATE fuck off
+------
+-> MSG fu all los0rZ
+<- MSGFROM name fu all los0rZ
+
+
+Appendix B - Brief Game Description (German)
+--------------------------------------------
+
+Spieleranzahl S von Kommandozeile auswerten, sonst 3;
+S Decks erstellen;
+S Spieler mit Punktzahl 0 erstellen;
+for i = 0 to S
+    Wasserstaende 0 setzen;
+    Decks zuweisen;
+    Den Spielern Decks geben;    // Kommunikation
+    Spieler auf lebendig setzen;
+        Wasserstapel mischen;
+    for j = 0 to 12
+        Den Spielern neue Wasserkarten zeigen;    // Kommunikation
+        Eingabe von Spielern lesen solange bis gueltig;
+                            // Kommunikation
+        Wasserstand der Spieler updaten;
+        Spieler mit hoechstem Wasserstand ermitteln und Ring
+            entfernen;
+        Spielern neue Wasserstaende mitteilen; // Kommunikation
+        Pruefen auf Wasserstand -1 - Spieler als Tot markieren;
+        Pruefen ob Anzahl lebender Spieler >= 2
+            wenn nicht Runde beenden;
+
+    Spieler mit niedrigstem Wasserstand ermitteln
+        +1 Punkt;
+    Wasserstand auf Punktzahl addieren;
+    Spielern Punktzahlen mitteilen; // evtl unnoetig ausser f. Markierung
+
+Platzierung ermitteln;
+Spielern Platzierung mitteilen;    // Kommunikation
+
+Appendix A - the fkmlandunter protocol:
+---------------------------------------
+-> LOGIN name
+<- ACK name
+<- JOIN name ****
+-> START
+<- START 3 nam1 nam2 nam3
+    <- DECK 1 2 56
+    <- RINGS 2 4 1
+    <- WEATHER 7 8
+    -> PLAY 56
+    <- ACK 56
+    <- FAIL 56
+    <- PLAYEd 1 25 60
+    <- WLEVELS 7 8 0
+    <- POINTS 1 2 -1
+
+-> LOGOUT bye
+<- LEAVE name i must go ****
+<- TERMINATE fuck off
+------
+-> MSG fu all los0rZ
+<- MSGFROM name fu all los0rZ
+
+
+Appendix B - Brief Game Description (German)
+--------------------------------------------
+
+Spieleranzahl S von Kommandozeile auswerten, sonst 3;
+S Decks erstellen;
+S Spieler mit Punktzahl 0 erstellen;
+for i = 0 to S
+    Wasserstaende 0 setzen;
+    Decks zuweisen;
+    Den Spielern Decks geben;    // Kommunikation
+    Spieler auf lebendig setzen;
+        Wasserstapel mischen;
+    for j = 0 to 12
+        Den Spielern neue Wasserkarten zeigen;    // Kommunikation
+        Eingabe von Spielern lesen solange bis gueltig;
+                            // Kommunikation
+        Wasserstand der Spieler updaten;
+        Spieler mit hoechstem Wasserstand ermitteln und Ring
+            entfernen;
+        Spielern neue Wasserstaende mitteilen; // Kommunikation
+        Pruefen auf Wasserstand -1 - Spieler als Tot markieren;
+        Pruefen ob Anzahl lebender Spieler >= 2
+            wenn nicht Runde beenden;
+
+    Spieler mit niedrigstem Wasserstand ermitteln
+        +1 Punkt;
+    Wasserstand auf Punktzahl addieren;
+    Spielern Punktzahlen mitteilen; // evtl unnoetig ausser f. Markierung
+
+Platzierung ermitteln;
+Spielern Platzierung mitteilen;    // Kommunikation</p><h2>Install</h2>
+<p>Take a look at the Main Project Text
+</p>
+<h2>License</h2>
+<p>GPL</p>
+<h2>Authors</h2>
+<p>Christoph Gielisch (Chr1s_t0ph@yahoo.de)<br/>Florian Kohnhäuser (florian@kohnhaeuser.com)<br/>Richard Molitor (gattschardo@gmail.com)<br/><br/>      </p>
+<h2>Contact</h2>
+<p> (fkmsoft@wegwerfemail.de)<br/>      </p>
+
+
+    <h2>Download</h2>
+    <p>
+      You can download this project in either
+      <a href="http://github.com/fkmsoft/fkmlandunter/zipball/master">zip</a> or
+      <a href="http://github.com/fkmsoft/fkmlandunter/tarball/master">tar</a> formats.
+    </p>
+    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
+      by running:
+      <pre>$ git clone git://github.com/fkmsoft/fkmlandunter</pre>
+    </p>
+
+    <div class="footer">
+      get the source code on GitHub : <a href="http://github.com/fkmsoft/fkmlandunter">fkmsoft/fkmlandunter</a>
+    </div>
+
+  </div>
+
+  
+</body>
+</html>
