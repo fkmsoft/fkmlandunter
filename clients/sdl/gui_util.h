@@ -48,6 +48,7 @@
 /* cards */
 #define PCARD ("punktekarte.png")
 #define WCARD ("wasserkarte.png")
+#define PCARD_P ("punktekarte_p.png")
 
 /* standard font */
 #define DEFFONT (DATADIR "TOONISH.ttf")
