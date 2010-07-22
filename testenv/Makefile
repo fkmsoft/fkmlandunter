@@ -1,3 +1,4 @@
+include module.mk
+
 all:
-	$(MAKE) -C .. testenv/server testenv/random testenv/testenv \
-		testenv/nserv testenv/sdl_randl
+	$(MAKE) -C .. $(TARGETS)

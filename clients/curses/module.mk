@@ -8,5 +8,7 @@ clientdeps := $(clientobjs) $(clienths)
 OBJS += $(clientobjs)
 curslib := -lncurses
 
+all:
+
 $(DIR)/client: $(clientdeps)
 	$(CC) $(CFLAGS) -o $@ $^ $(curslib)

@@ -1,12 +1,14 @@
 DIR := server/old
 TARGETS += $(DIR)/server $(DIR)/echosrv
-SERVEROBJS := $(DIR)/ncom.o $(DIR)/server.o $(DIR)/server_util.o \
+serverobjs := $(DIR)/ncom.o $(DIR)/server.o $(DIR)/server_util.o \
 	$(DIR)/fkml_server.o
-ECHOOBJS := $(DIR)/echosrv.o $(DIR)/fkml_server.o $(DIR)/ncom.o
-OBJS += $(SERVEROBJS) $(ECHOOBJS)
+echoobjs := $(DIR)/echosrv.o $(DIR)/fkml_server.o $(DIR)/ncom.o
+OBJS += $(serverobjs) $(echoobjs)
 
-$(DIR)/server: $(SERVEROBJS)
+all:
+
+$(DIR)/server: $(serverobjs)
 	$(CC) $(CFLAGS) -o $@ $^
 
-$(DIR)/echosrv: $(ECHOOBJS)
+$(DIR)/echosrv: $(echoobjs)
 	$(CC) $(CFLAGS) -o $@ $^

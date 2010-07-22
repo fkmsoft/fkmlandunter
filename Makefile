@@ -1,6 +1,6 @@
-MODULES := server clients testenv
-# find stuff
-# CFLAGS += $(patsubst %,-I,$(MODULES))
+modules := server clients testenv
+
+# global flags
 CFLAGS = -g -Wall -ansi
 
 # extra libs
@@ -9,12 +9,12 @@ CFLAGS = -g -Wall -ansi
 # each module will add to this
 TARGETS :=
 OBJS :=
-SRC :=
+#SRC :=
 
 all:
 
 # include module descriptions
-include $(patsubst %,%/module.mk,$(MODULES))
+include $(patsubst %,%/module.mk,$(modules))
 
 # determine obj files
 #OBJS := $(patsubst %.c,%.o, $(filter %.c,$(SRC)))

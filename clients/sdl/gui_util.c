@@ -140,18 +140,17 @@ void create_playerbox(SDL_Surface *s, char *name, int x, int y, char *avatar, in
     SDL_BlitSurface(avabox, 0, s, &r);
 
     txt = TTF_RenderText_Blended(font, "Wasser", font_fg);
-    r.x += hstretch * 77;
-    r.y += vstretch * 37;
+    r.x += hstretch * 76;
+    r.y += vstretch * 35;
     SDL_BlitSurface(txt, 0, s, &r);
     SDL_FreeSurface(txt);
 
     txt = TTF_RenderText_Blended(font, "Punkte", font_fg);
-    r.x += hstretch * 1;
+    /* r.x += hstretch * 1; */
     r.y += vstretch * 50;
     SDL_BlitSurface(txt, 0, s, &r);
     SDL_FreeSurface(txt);
     
-    if (!name) name = "DUMMY";
     txt = TTF_RenderText_Blended(font, name, font_fg);
     r.x -= hstretch * 70;
     SDL_BlitSurface(txt, 0, s, &r);

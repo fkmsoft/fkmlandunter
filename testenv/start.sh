@@ -2,7 +2,7 @@
 
 ./server &
 sleep 1
-./random -s -n r1 &
-./random -s -n r2 &
-./random -s -n r3 &
-./random -s -n r4 &
+./random -s -n Hans &
+./random -s -n Schwanz &
+./random -s -n Glanz &
+./random -s -n Rendel &
