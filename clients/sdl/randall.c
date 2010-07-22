@@ -193,8 +193,6 @@ int main(int argc, char **argv) {
                     printf("%s: pos %d\n", name, pos);
             } else if (!strncmp(in, "TERMINATE", 9)) {
                 play = false;
-                if (!silent)
-                    printf("%s good-bye\n", name);
             } else if (!strncmp(in, "DECK ", 5)) {
                 p = in + 5;
                 card = 0;
