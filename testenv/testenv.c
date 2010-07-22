@@ -161,10 +161,10 @@ int main(int argc, char **argv) {
                 j++) {
             bool foo = false;
             int l;
+            wpid = wait(&status);
             if (j == 0)
                 printf("\nPass %04d summary:\n"
                         "------------------\n", i);
-            wpid = wait(&status);
             for (k = 0;
                     (i == passes - 1) ? k < botcount + 1 : k < botcount;
                     k++)
