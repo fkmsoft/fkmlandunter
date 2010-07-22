@@ -58,7 +58,7 @@ compile and can be run.
     <p>
 
 <img src="promo.png" alt="Screenshot of Fkmlandunter" />
-<br><br>These are:<br><br>
+<br><br><h2>0. What is working at the moment:</h2>
 
 - 2 different servers (both implementing the same network protocol, see Appendix
   A for further details).<br>
@@ -78,7 +78,7 @@ different game servers running all over the net.<br><br>
 
 To Check progress visit: <a href="http://github.com/fkmsoft/fkmlandunter/">Our Github-Page</a><br><br>
 
-<h2>1. The Servers:</h2><br>
+<h2>1. The Servers:</h2>
 
 The servers can be found in server/old/ and server/new/ respectively. As the
 name indicates, one of them is the original one, while the other is a rather
@@ -96,7 +96,7 @@ In general, the servers will run port 1337 or anything else you care to #define
 as PORT bound to any address.<br><br>
 
 
-<h2>2. The Curses Client:</h2><br>
+<h2>2. The Curses Client:</h2>
 <img src="screenshot_ncurses.jpg" alt="Screenshot of Fkmlandunter(Ncurses)" /><br>
 The curses client resides in the clients/curses/ subdirectory and requires the
 curses development headers and (obviously) libcurses to be compiled and run.
@@ -108,7 +108,7 @@ The curses client supports the complete fkmlandunter protocol, although the
 implementation of the chat has not been thoroughly debugged as of now.<br><br>
 
 
-<h2>3. The Python Client:</h2><br>
+<h2>3. The Python Client:</h2>
 <img src="screenshot_python.jpg" alt="Screenshot of Fkmlandunter(Python)" /><br>
 The python client to be found in clients/pyqt does not require compiling, but
 you will of course need python to run it, plus the pyqt4 library. It supports
@@ -117,7 +117,7 @@ prefer working with guis, but other than that it provides the same basic
 functionality.<br><br>
 
 
-<h2>4. The AI:</h2><br>
+<h2>4. The AI:</h2>
 
 The only AI we have yet does nothing in any way intelligent, it rather plays any
 cards it gets in the order they are initially in. It can be compiled and run
@@ -125,14 +125,14 @@ from clients/ai/random named ``random'' and connects to 127.0.0.1:1337 by
 default, like all the other clients.<br><br>
 
 
-<h2>5. The Test Environment:</h2><br>
+<h2>5. The Test Environment:</h2>
 
 The test environment in testenv/ was made for stress-testing and checking the
 servers & AI clients (so only Randall, so far) for deadlocks and other bugs.
 Just run ``testenv'' with the -h to learn more.<br><br>
 
 
-<h2>6. The SDL Stuff:</h2><br>
+<h2>6. The SDL Stuff:</h2>
 <img src="screenshot_sdl.jpg" alt="Screenshot of Fkmlandunter(SDL)" /><br>
 As of now you can find a general gui demo in clients/sdl/ called ``gui_test''
 and an SDL implementation of Randall called ``randall''. Be sure to invoke them
@@ -145,7 +145,7 @@ What we hope to produce here is a real client (like the curses or pyqt ones)
 using a visual representation like SDL Randall.<br><br>
 
 
-<h2>Appendix A - the fkmlandunter protocol:</h2><br>
+<h2>Appendix A - the fkmlandunter protocol:</h2>
 -> LOGIN name<br>
 <- ACK name<br>
 <- JOIN name ****<br>
@@ -169,7 +169,7 @@ using a visual representation like SDL Randall.<br><br>
 <- MSGFROM name fu all los0rZ<br><br>
 
 
-<h2>Appendix B - Brief Game Description (German)</h2><br>
+<h2>Appendix B - Brief Game Description (German)</h2>
 
 Spieleranzahl S von Kommandozeile auswerten, sonst 3;<br>
 S Decks erstellen;<br>
