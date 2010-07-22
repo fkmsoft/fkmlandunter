@@ -123,8 +123,14 @@ int parse_cmd(gamestr *g, char *s)
         return 0;
     } else if (strncmp(s, "RINGS ", 6) == 0) {
         strtok(s, " ");
-        for (i = 0; i < g->count; i++) 
+        for (i = 0; i < g->count; i++) {
             g->villain[i].lifebelts = atoi(strtok(NULL, " "));
+
+            if (g->villain[i].water_level == -1)
+                g->villain[i].dead = true;
+            else
+                g->villain[i].dead = false;
+        }
         g->rings = true;
         return 0;
     } else if (strncmp(s, "WEATHER ", 8) == 0) {
@@ -135,14 +141,8 @@ int parse_cmd(gamestr *g, char *s)
         return 0;
     } else if (strncmp(s, "WLEVELS ", 8) == 0) {
         strtok(s, " ");
-        for (i = 0; i < g->count; i++) {
+        for (i = 0; i < g->count; i++)
             g->villain[i].water_level = atoi(strtok(NULL, " "));
-
-            if (g->villain[i].water_level == -1)
-                g->villain[i].dead = true;
-            else
-                g->villain[i].dead = false;
-        }
         g->wlevel = true;
        return 0; 
     } else if (strncmp(s, "POINTS ", 7) == 0) {

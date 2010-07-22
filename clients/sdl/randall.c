@@ -145,8 +145,6 @@ int main(int argc, char **argv) {
     int card = 0;
     char *in;
     while (play) {
-        if (gui)
-            render(screen, g, name, pos, hs, vs);
 
         if (!input) {
             if ((input = sdl_receive_from(sock, debug)) == 0) {
@@ -162,6 +160,16 @@ int main(int argc, char **argv) {
         }
         if (debug)
             printf("%s: %s", name, input);
+
+        for (p = input; (p - 1) && *p; p = strchr(p, '\n') + 1) {
+            strncpy(buf, p, BUFL);
+            buf[BUFL - 1] = 0;
+            if (debug && 0)
+                printf("Fed the parser with: >>%s<<\n", buf);
+            parse_cmd(g, buf);
+        }
+        if (gui)
+            render(screen, g, name, pos, hs, vs);
 
         for (in = input; in != (char *)1; in = strchr(in, '\n') + 1) {
             if (!gui && !strncmp(in, "START ", 6)) {
@@ -213,14 +221,6 @@ int main(int argc, char **argv) {
                     sdl_send_to(sock, "PLAY %d\n", card);
                 }
             }
-        }
-
-        for (p = input; (p - 1) && *p; p = strchr(p, '\n') + 1) {
-            strncpy(buf, p, BUFL);
-            buf[BUFL - 1] = 0;
-            if (debug && 0)
-                printf("Fed the parser with: >>%s<<\n", buf);
-            parse_cmd(g, buf);
         }
 
         free (input);

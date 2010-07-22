@@ -30,8 +30,15 @@ int main(int argc, char **argv)
 
     draw_background(screen, 0, 0);
 
-    for (i = -1; i < 4; i++)
+    int x, y;
+    x = hs * 50;
+    y = hs * 10;
+
+    for (i = -1; i < 4; i++) {
         add_pcard_played(screen, 0, 0, i, i + 5);
+        create_playerbox(screen, "Playor", x, y, 0, 4, false);
+        x += hs * 200;
+    }
 
     draw_hud(screen, 0, 0);
 
