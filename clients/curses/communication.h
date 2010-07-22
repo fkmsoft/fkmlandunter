@@ -34,6 +34,7 @@ typedef struct {
     int weathercards[12];
     int lifebelts;
     int tabnum;
+    int played;
 } player;
 
 typedef struct {

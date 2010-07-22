@@ -35,6 +35,7 @@ gamestr *create_game()
     game->player.points = 0;
     game->player.water_level = 0;
     game->player.dead = false;
+    game->player.played = 0;
     game->player.name = malloc(MAXNICK * sizeof(char));
     for (i = 0; i < 12; i++)
         game->player.weathercards[i] = 0;
@@ -62,6 +63,7 @@ void parse_start(gamestr *game, char *s)
         v[i].points = 0;
         v[i].water_level = 0;
         v[i].dead = false;
+        v[i].played = 0;
         v[i].name = NULL;
         for (j = 0; j < 12; j++)
             v[i].weathercards[j] = 0;
@@ -159,6 +161,10 @@ int parse_cmd(gamestr *g, char *s)
         
         g->message = true;
         return 0;
+    } else if (strncmp(s, "PLAYED ", 7) == 0) {
+        strtok(s, " ");
+        for (i = 0; i < g->count; i++)
+            g->villain[i].played = atoi(strtok(NULL, " "));
     }
     return (-1);
 }
