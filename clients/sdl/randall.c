@@ -264,12 +264,13 @@ static void render(SDL_Surface *screen, gamestr *g, char *name, int pos, double 
     draw_hud(screen, 0, 0);
 
     create_playerbox(screen, name, hs * pbox_x, vs * pbox_y, 0, 0, p.dead);
-    set_wlevel(screen, hs * pbox_x, vs * pbox_y, p.water_level);
     set_points(screen, hs * pbox_x, vs * pbox_y, p.points);
-    if (p.dead)
+    if (p.dead) {
         set_lifebelts(screen, hs * pbox_x, vs *pbox_y, 0, startbelts[pos]);
-    else
+    } else {
         set_lifebelts(screen, hs * pbox_x, vs *pbox_y, p.lifebelts, startbelts[pos]);
+        set_wlevel(screen, hs * pbox_x, vs * pbox_y, p.water_level);
+    }
 
     add_wcard(screen, 0, 0, 0, g->w_card[0]);
     add_wcard(screen, 0, 0, 1, g->w_card[1]);
@@ -281,13 +282,14 @@ static void render(SDL_Surface *screen, gamestr *g, char *name, int pos, double 
         if (i != pos) {
             p = g->villain[i];
             create_playerbox(screen, p.name, x, y, 0, 0, p.dead);
-            set_wlevel(screen, x, y, p.water_level);
             set_points(screen, x, y, p.points);
 
-            if (p.dead)
+            if (p.dead) {
                 set_lifebelts(screen, x, y, 0, startbelts[i]);
-            else
+            } else {
                 set_lifebelts(screen, x, y, p.lifebelts, startbelts[i]);
+                set_wlevel(screen, x, y, p.water_level);
+            }
 
             x += 200 * hs;
             add_pcard_played(screen, 0, 0, j++, p.played);
