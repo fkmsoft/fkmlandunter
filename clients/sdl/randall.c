@@ -77,11 +77,14 @@ int main(int argc, char **argv) {
         vs = w / (float) W;
 
         screen = init_sdl(w, h);
+
+        draw_background(screen, 0, 0);
         draw_hud(screen, 0, 0);
         create_playerbox(screen, name, hs * pbox_x, vs * pbox_y, 0, 0, false);
         set_wlevel(screen, 0, 0, 0);
         set_points(screen, 0, 0, 0);
         SDL_UpdateRect(screen, 0, 0, 0, 0);
+
         g = create_game();
     }
 
@@ -118,7 +121,7 @@ int main(int argc, char **argv) {
         parse_start(g, buf);
 
         x = 50 * hs;
-        y = 0;
+        y = 10 * hs;
         for (i = 0; i < g->count; i++) {
             if (strcmp(g->villain[i].name, name) == 0) {
                 pos = i;
@@ -204,12 +207,15 @@ int main(int argc, char **argv) {
 
 static void render(SDL_Surface *screen, gamestr *g, char *name, int pos, double hs, double vs)
 {
-    int x, y, i;
+    int x, y, i, j;
     player p;
 
-    draw_hud(screen, 0, 0);
+    draw_background(screen, 0, 0);
 
     p = g->villain[pos];
+    add_pcard_played(screen, 0, 0, -1, p.played);
+    draw_hud(screen, 0, 0);
+
     create_playerbox(screen, name, hs * pbox_x, vs * pbox_y, 0, 0, p.dead);
     set_wlevel(screen, hs * pbox_x, vs * pbox_y, p.water_level);
     set_points(screen, hs * pbox_x, vs * pbox_y, p.points);
@@ -218,15 +224,17 @@ static void render(SDL_Surface *screen, gamestr *g, char *name, int pos, double 
     add_wcard(screen, 0, 0, 1, g->w_card[1]);
 
     x = 50 * hs;
-    y = 0;
+    y = 10 * vs;
+    j = 0;
     for (i = 0; i < g->count; i++) {
         if (i != pos) {
             p = g->villain[i];
             create_playerbox(screen, p.name, x, y, 0, 0, p.dead);
             set_wlevel(screen, x, y, p.water_level);
             set_points(screen, x, y, p.points);
-            set_lifebelts(screen, x, y, g->villain[i].lifebelts, 10);
+            set_lifebelts(screen, x, y, p.lifebelts, 10);
             x += 200 * hs;
+            add_pcard_played(screen, 0, 0, j++, p.played);
         }
     }
 
