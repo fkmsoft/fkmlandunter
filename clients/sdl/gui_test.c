@@ -53,7 +53,7 @@ int main(int argc, char **argv)
     set_wlevel(screen, hs * pbox_x, vs * pbox_y, 12);
     set_points(screen, hs * pbox_x, vs * pbox_y, -1);
 
-    t = create_textbox(screen, getfont(), 36, 532);
+    t = create_textbox(screen, getfont(), hs * 36, vs * 532);
     textbox_set(t, s);
 
     SDL_UpdateRect(screen, 0, 0, 0, 0);

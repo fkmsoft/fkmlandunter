@@ -175,7 +175,8 @@ int main(int argc, char **argv) {
             if (startbelts[0] == -1) {
                 for (i = 0; i < g->count; i++)
                     startbelts[i] = g->villain[i].lifebelts;
-                printf("Assigned startbelts: %d %d\n", startbelts[0], startbelts[1]);
+                if (debug)
+                    printf("Assigned startbelts: %d %d\n", startbelts[0], startbelts[1]);
             }
 
             render(screen, g, name, pos, hs, vs, startbelts);
@@ -217,6 +218,7 @@ int main(int argc, char **argv) {
                     if (interactive)
                         do { SDL_PollEvent(&ev); } while (ev.type != SDL_KEYDOWN);
                 }
+
                 if (startbelts[0] == 0)
                     for (i = 0; i < g->count; i++)
                         startbelts[i] = g->villain[i].lifebelts;
