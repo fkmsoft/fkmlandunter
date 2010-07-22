@@ -58,216 +58,161 @@ compile and can be run.
     <p>These are:<br><br>
 
 - 2 different servers (both implementing the same network protocol, see Appendix
-  A for further details).
+  A for further details).<br>
 
 - A cli based client using the ncurses library (needs ncurses-dev or the
-  equivalent of your distro to compile).
+  equivalent of your distro to compile).<br>
 
-- A gui client based on python and pyqt4 (which you will need to run it, too)
+- A gui client based on python and pyqt4 (which you will need to run it, too)<br>
 
-- A rather stupid AI called the random-ai, a.k.a. ``Randall''
+- A rather stupid AI called the random-ai, a.k.a. ``Randall''<br>
 
-- The same AI but including a somewhat nicer gui hacked together in SDL.
+- The same AI but including a somewhat nicer gui hacked together in SDL.<br><br>
 
 What we still hope to produce is a quality gui client, that might look similar
 to what you can already see in SDL-Randall, and a master server to keep track of
-different game servers running all over the net.
+different game servers running all over the net.<br><br>
 
 This whole stuff was produced by three students of Karlruhe Institute of
 Technology as a leisure-time activity, so don't be surprised when development
 comes to a halt at times, as we sometimes have exams and other things on our
-mind - we are doing this far from full time. Our names would be
+mind - we are doing this far from full time. Our names would be<br><br>
 
-Christoph Gielisch (m0l0t0ph), graphics & gui design
-Florian Kohnhï¿½user (flozilla), programming, protocol design
-Richard Molitor (gattschardo), programming, protocol design
+Christoph Gielisch (m0l0t0ph), graphics & gui design<br>
+Florian Kohnhï¿½user (flozilla), programming, protocol design<br>
+Richard Molitor (gattschardo), programming, protocol design<br><br>
 
-1. The Servers:
----------------
+1. The Servers:<br>
+---------------<br><br>
 
 The servers can be found in server/old/ and server/new/ respectively. As the
 name indicates, one of them is the original one, while the other is a rather
 cleaner and (hopefully) more understandable reimplementation. Both should be
 functionally equivalent though, and possibly share some bugs, too (they did in
-the past).
+the past).<br><br>
 
 To run any of them just execute the file called ``server'' after make'ing the
 whole thing (either everything in one run from the top directory, or partially
 from a subdirectory). The -h switch should tell you about most options, although
 it is always a good idea to read the code (assuming you know some C) just to see
-whether anything changed since the usage message string was last updated.
+whether anything changed since the usage message string was last updated.<br><br>
 
 In general, the servers will run port 1337 or anything else you care to #define
-as PORT bound to any address.
+as PORT bound to any address.<br><br>
 
 
-2. The Curses Client:
----------------------
+2. The Curses Client:<br>
+---------------------<br><br>
 
 The curses client resides in the clients/curses/ subdirectory and requires the
 curses development headers and (obviously) libcurses to be compiled and run.
 After make'ing the thing, you can run the ``client'' executable from its
 directory, it will connect to localhost port 1337 by default, but you can
-specify another IP and port on the command line.
+specify another IP and port on the command line.<br><br>
 
 The curses client supports the complete fkmlandunter protocol, although the
-implementation of the chat has not been thoroughly debugged as of now.
+implementation of the chat has not been thoroughly debugged as of now.<br><br>
 
 
-3. The Python Client:
----------------------
+3. The Python Client:<br>
+---------------------<br><br>
 
 The python client to be found in clients/pyqt does not require compiling, but
 you will of course need python to run it, plus the pyqt4 library. It supports
 the complete protocol and might be nicer to use than the curses client if you
 prefer working with guis, but other than that it provides the same basic
-functionality.
+functionality.<br><br>
 
 
-4. The AI:
-----------
+4. The AI:<br>
+----------<br><br>
 
 The only AI we have yet does nothing in any way intelligent, it rather plays any
 cards it gets in the order they are initially in. It can be compiled and run
 from clients/ai/random named ``random'' and connects to 127.0.0.1:1337 by
-default, like all the other clients.
+default, like all the other clients.<br><br>
 
 
-5. The Test Environment:
-------------------------
+5. The Test Environment:<br>
+------------------------<br><br>
 
 The test environment in testenv/ was made for stress-testing and checking the
 servers & AI clients (so only Randall, so far) for deadlocks and other bugs.
-Just run ``testenv'' with the -h to learn more.
+Just run ``testenv'' with the -h to learn more.<br><br>
 
 
-6. The SDL Stuff:
------------------
+6. The SDL Stuff:<br>
+-----------------<br><br>
 
 As of now you can find a general gui demo in clients/sdl/ called ``gui_test''
 and an SDL implementation of Randall called ``randall''. Be sure to invoke them
 from the clients/sdl directory, or else fix the #defines in gui_util.h so they
 can find their graphics. See data/fkmlu/ for supported resolutions. To actually
 start randall in gui mode, use the -g switch, and to have him play his cards on
-key-press, so you can see more of the game, use the -i (interactive) switch.
+key-press, so you can see more of the game, use the -i (interactive) switch.<br><br>
 
 What we hope to produce here is a real client (like the curses or pyqt ones)
-using a visual representation like SDL Randall.
+using a visual representation like SDL Randall.<br><br>
 
 
-Appendix A - the fkmlandunter protocol:
----------------------------------------
--> LOGIN name
-<- ACK name
-<- JOIN name ****
--> START
-<- START 3 nam1 nam2 nam3
-    <- DECK 1 2 56
-    <- RINGS 2 4 1
-    <- WEATHER 7 8
-    -> PLAY 56
-    <- ACK 56
-    <- FAIL 56
-    <- PLAYEd 1 25 60
-    <- WLEVELS 7 8 0
-    <- POINTS 1 2 -1
+Appendix A - the fkmlandunter protocol:<br>
+---------------------------------------<br><br>
+-> LOGIN name<br>
+<- ACK name<br>
+<- JOIN name ****<br>
+-> START<br>
+<- START 3 nam1 nam2 nam3<br>
+    <- DECK 1 2 56<br>
+    <- RINGS 2 4 1<br>
+    <- WEATHER 7 8<br>
+    -> PLAY 56<br>
+    <- ACK 56<br>
+    <- FAIL 56<br>
+    <- PLAYEd 1 25 60<br>
+    <- WLEVELS 7 8 0<br>
+    <- POINTS 1 2 -1<br><br>
 
--> LOGOUT bye
-<- LEAVE name i must go ****
-<- TERMINATE fuck off
-------
--> MSG fu all los0rZ
-<- MSGFROM name fu all los0rZ
-
-
-Appendix B - Brief Game Description (German)
---------------------------------------------
-
-Spieleranzahl S von Kommandozeile auswerten, sonst 3;
-S Decks erstellen;
-S Spieler mit Punktzahl 0 erstellen;
-for i = 0 to S
-    Wasserstaende 0 setzen;
-    Decks zuweisen;
-    Den Spielern Decks geben;    // Kommunikation
-    Spieler auf lebendig setzen;
-        Wasserstapel mischen;
-    for j = 0 to 12
-        Den Spielern neue Wasserkarten zeigen;    // Kommunikation
-        Eingabe von Spielern lesen solange bis gueltig;
-                            // Kommunikation
-        Wasserstand der Spieler updaten;
-        Spieler mit hoechstem Wasserstand ermitteln und Ring
-            entfernen;
-        Spielern neue Wasserstaende mitteilen; // Kommunikation
-        Pruefen auf Wasserstand -1 - Spieler als Tot markieren;
-        Pruefen ob Anzahl lebender Spieler >= 2
-            wenn nicht Runde beenden;
-
-    Spieler mit niedrigstem Wasserstand ermitteln
-        +1 Punkt;
-    Wasserstand auf Punktzahl addieren;
-    Spielern Punktzahlen mitteilen; // evtl unnoetig ausser f. Markierung
-
-Platzierung ermitteln;
-Spielern Platzierung mitteilen;    // Kommunikation
-
-Appendix A - the fkmlandunter protocol:
----------------------------------------
--> LOGIN name
-<- ACK name
-<- JOIN name ****
--> START
-<- START 3 nam1 nam2 nam3
-    <- DECK 1 2 56
-    <- RINGS 2 4 1
-    <- WEATHER 7 8
-    -> PLAY 56
-    <- ACK 56
-    <- FAIL 56
-    <- PLAYEd 1 25 60
-    <- WLEVELS 7 8 0
-    <- POINTS 1 2 -1
-
--> LOGOUT bye
-<- LEAVE name i must go ****
-<- TERMINATE fuck off
-------
--> MSG fu all los0rZ
-<- MSGFROM name fu all los0rZ
+-> LOGOUT bye<br>
+<- LEAVE name i must go ****<br>
+<- TERMINATE fuck off<br>
+------<br>
+-> MSG fu all los0rZ<br>
+<- MSGFROM name fu all los0rZ<br><br>
 
 
-Appendix B - Brief Game Description (German)
---------------------------------------------
+Appendix B - Brief Game Description (German)<br>
+--------------------------------------------<br><br>
 
-Spieleranzahl S von Kommandozeile auswerten, sonst 3;
-S Decks erstellen;
-S Spieler mit Punktzahl 0 erstellen;
-for i = 0 to S
-    Wasserstaende 0 setzen;
-    Decks zuweisen;
-    Den Spielern Decks geben;    // Kommunikation
-    Spieler auf lebendig setzen;
-        Wasserstapel mischen;
-    for j = 0 to 12
-        Den Spielern neue Wasserkarten zeigen;    // Kommunikation
-        Eingabe von Spielern lesen solange bis gueltig;
-                            // Kommunikation
-        Wasserstand der Spieler updaten;
-        Spieler mit hoechstem Wasserstand ermitteln und Ring
-            entfernen;
-        Spielern neue Wasserstaende mitteilen; // Kommunikation
-        Pruefen auf Wasserstand -1 - Spieler als Tot markieren;
-        Pruefen ob Anzahl lebender Spieler >= 2
-            wenn nicht Runde beenden;
+Spieleranzahl S von Kommandozeile auswerten, sonst 3;<br>
+S Decks erstellen;<br>
+S Spieler mit Punktzahl 0 erstellen;<br>
+for i = 0 to S<br>
+    Wasserstaende 0 setzen;<br>
+    Decks zuweisen;<br>
+    Den Spielern Decks geben;    // Kommunikation<br>
+    Spieler auf lebendig setzen;<br>
+        Wasserstapel mischen;<br>
+    for j = 0 to 12<br>
+        Den Spielern neue Wasserkarten zeigen;    // Kommunikation<br>
+        Eingabe von Spielern lesen solange bis gueltig;<br>
+                            // Kommunikation<br>
+        Wasserstand der Spieler updaten;<br>
+        Spieler mit hoechstem Wasserstand ermitteln und Ring<br>
+            entfernen;<br>
+        Spielern neue Wasserstaende mitteilen; // Kommunikation<br>
+        Pruefen auf Wasserstand -1 - Spieler als Tot markieren;<br>
+        Pruefen ob Anzahl lebender Spieler >= 2<br>
+            wenn nicht Runde beenden;<br><br>
 
-    Spieler mit niedrigstem Wasserstand ermitteln
-        +1 Punkt;
-    Wasserstand auf Punktzahl addieren;
-    Spielern Punktzahlen mitteilen; // evtl unnoetig ausser f. Markierung
+    Spieler mit niedrigstem Wasserstand ermitteln<br>
+        +1 Punkt;<br>
+    Wasserstand auf Punktzahl addieren;<br>
+    Spielern Punktzahlen mitteilen; // evtl unnoetig ausser f. Markierung<br><br>
 
-Platzierung ermitteln;
-Spielern Platzierung mitteilen;    // Kommunikation</p><h2>Install</h2>
+Platzierung ermitteln;<br>
+Spielern Platzierung mitteilen;    // Kommunikation<br><br>
+
+</p><h2>Install</h2>
 <p>Take a look at the Main Project Text
 </p>
 <h2>License</h2>
