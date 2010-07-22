@@ -153,8 +153,6 @@ int main(int argc, char **argv) {
                 if (!silent || debug)
                     printf("%s: Error on sdl_receive_from!\n", name);
                 play = false;
-                points = 113;
-                puts("FUCK");
                 continue;
             }
         } else {
@@ -166,7 +164,15 @@ int main(int argc, char **argv) {
             printf("%s: %s", name, input);
 
         for (in = input; in != (char *)1; in = strchr(in, '\n') + 1) {
-            if (!strncmp(in, "TERMINATE", 9)) {
+            if (!gui && !strncmp(in, "START ", 6)) {
+                p = strchr(in, ' ') + 1;
+                i = 0;
+                for (p = strchr(p, ' ') + 1; strncmp(p, name, strlen(name)); i++, p = strchr(p, ' ') + 1)
+                    ;
+                pos = i;
+                if (debug)
+                    printf("%s: pos %d\n", name, pos);
+            } else if (!strncmp(in, "TERMINATE", 9)) {
                 play = false;
                 if (!silent)
                     printf("%s good-bye\n", name);
