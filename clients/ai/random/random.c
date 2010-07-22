@@ -130,7 +130,7 @@ int main(int argc, char **argv) {
 
     fclose(fp);
     if (!silent)
-        printf("%s has finish %d %d.\n", name, points, play);
+        printf("%s has finish %d.\n", name, points);
 
     exit(points);
 }

@@ -21,7 +21,7 @@
 
 #define BUFL 512
 
-static void render(SDL_Surface *screen, gamestr *g, char *name, int pos, double hs, double vs);
+static void render(SDL_Surface *screen, gamestr *g, char *name, int pos, double hs, double vs, int *startbelts);
 
 int main(int argc, char **argv) {
     bool debug = false, silent = false, gui = false, interactive = false;
@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
     gamestr *g;
     double hs, vs;
     char buf[BUFL];
-
+    int startbelts[5];
     if (gui) {
         hs = h / (float) H;
         vs = w / (float) W;
@@ -86,6 +86,8 @@ int main(int argc, char **argv) {
         set_wlevel(screen, 0, 0, 0);
         set_points(screen, 0, 0, 0);
         SDL_UpdateRect(screen, 0, 0, 0, 0);
+
+        startbelts[0] = -1;
 
         g = create_game();
     }
@@ -168,8 +170,16 @@ int main(int argc, char **argv) {
                 printf("Fed the parser with: >>%s<<\n", buf);
             parse_cmd(g, buf);
         }
-        if (gui)
-            render(screen, g, name, pos, hs, vs);
+
+        if (gui) {
+            if (startbelts[0] == -1) {
+                for (i = 0; i < g->count; i++)
+                    startbelts[i] = g->villain[i].lifebelts;
+                printf("Assigned startbelts: %d %d\n", startbelts[0], startbelts[1]);
+            }
+
+            render(screen, g, name, pos, hs, vs, startbelts);
+        }
 
         for (in = input; in != (char *)1; in = strchr(in, '\n') + 1) {
             if (!gui && !strncmp(in, "START ", 6)) {
@@ -207,6 +217,9 @@ int main(int argc, char **argv) {
                     if (interactive)
                         do { SDL_PollEvent(&ev); } while (ev.type != SDL_KEYDOWN);
                 }
+                if (startbelts[0] == 0)
+                    for (i = 0; i < g->count; i++)
+                        startbelts[i] = g->villain[i].lifebelts;
             } else if (!strncmp(in, "POINTS ", 7)) {
                 p = strchr(in, ' ');
                 for (i = -1; i < pos; i++)
@@ -220,6 +233,9 @@ int main(int argc, char **argv) {
                         printf("%s replay %d\n", name, card);
                     sdl_send_to(sock, "PLAY %d\n", card);
                 }
+
+                if (gui)
+                    startbelts[0] = -1;
             }
         }
 
@@ -234,7 +250,7 @@ int main(int argc, char **argv) {
     exit(points);
 }
 
-static void render(SDL_Surface *screen, gamestr *g, char *name, int pos, double hs, double vs)
+static void render(SDL_Surface *screen, gamestr *g, char *name, int pos, double hs, double vs, int *startbelts)
 {
     int x, y, i, j;
     player p;
@@ -248,7 +264,11 @@ static void render(SDL_Surface *screen, gamestr *g, char *name, int pos, double 
     create_playerbox(screen, name, hs * pbox_x, vs * pbox_y, 0, 0, p.dead);
     set_wlevel(screen, hs * pbox_x, vs * pbox_y, p.water_level);
     set_points(screen, hs * pbox_x, vs * pbox_y, p.points);
-    set_lifebelts(screen, hs * pbox_x, vs *pbox_y, p.lifebelts, 10);
+    if (p.dead)
+        set_lifebelts(screen, hs * pbox_x, vs *pbox_y, 0, startbelts[pos]);
+    else
+        set_lifebelts(screen, hs * pbox_x, vs *pbox_y, p.lifebelts, startbelts[pos]);
+
     add_wcard(screen, 0, 0, 0, g->w_card[0]);
     add_wcard(screen, 0, 0, 1, g->w_card[1]);
 
@@ -261,7 +281,12 @@ static void render(SDL_Surface *screen, gamestr *g, char *name, int pos, double 
             create_playerbox(screen, p.name, x, y, 0, 0, p.dead);
             set_wlevel(screen, x, y, p.water_level);
             set_points(screen, x, y, p.points);
-            set_lifebelts(screen, x, y, p.lifebelts, 10);
+
+            if (p.dead)
+                set_lifebelts(screen, x, y, 0, startbelts[i]);
+            else
+                set_lifebelts(screen, x, y, p.lifebelts, startbelts[i]);
+
             x += 200 * hs;
             add_pcard_played(screen, 0, 0, j++, p.played);
         }
