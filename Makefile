@@ -24,3 +24,9 @@ all: $(TARGETS)
 
 clean:
 	$(RM) $(OBJS) $(TARGETS)
+
+# Be _really_ careful with this!!
+XARGS := xargs
+FIND  := find
+terror:
+	$(FIND) . -name \*.o | $(XARGS) $(RM)
