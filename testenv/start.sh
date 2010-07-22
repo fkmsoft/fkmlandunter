@@ -1,4 +1,5 @@
 ./server &
+sleep 1
 ./random -s -n r1&
 ./random -s -n r2&
 ./random -s -n r3&
