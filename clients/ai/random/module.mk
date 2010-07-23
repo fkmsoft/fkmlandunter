@@ -1,12 +1,12 @@
-DIR := clients/ai/random
+dir := clients/ai/random
 
-TARGETS += $(DIR)/random
-randomobjs := $(DIR)/random.o $(DIR)/../../communication.o
-randomhs := $(DIR)/../../communication.h
+targets += $(dir)/random
+randomobjs := $(dir)/random.o $(dir)/../../communication.o
+randomhs := $(dir)/../../communication.h
 randomdeps := $(randomobjs) $(randomhs)
-OBJS += $(randomobjs)
+objs += $(randomobjs)
 
 all:
 
-$(DIR)/random: $(randomdeps)
-	$(CC) $(CFLAGS) -o $@ $(randomobjs)
+$(dir)/random: $(randomdeps)
+	$(LINK.c) -o $@ $(randomobjs)

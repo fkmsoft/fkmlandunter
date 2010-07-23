@@ -3,29 +3,22 @@ modules := server clients testenv
 # global flags
 CFLAGS = -g -Wall -ansi
 
-# extra libs
-# LIBS :=
-
 # each module will add to this
-TARGETS :=
-OBJS :=
-#SRC :=
+targets :=
+objs    :=
 
 all:
 
 # include module descriptions
 include $(patsubst %,%/module.mk,$(modules))
 
-# determine obj files
-#OBJS := $(patsubst %.c,%.o, $(filter %.c,$(SRC)))
-
 # go
-all: $(TARGETS)
+all: $(targets)
 
 clean:
-	$(RM) $(OBJS) $(TARGETS)
+	$(RM) $(objs) $(targets)
 
-# Be _really_ careful with this!!
+# Be REALLY careful with this!!
 XARGS := xargs
 FIND  := find
 terror:

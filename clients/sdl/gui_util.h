@@ -59,21 +59,21 @@ extern const int pbox_x, pbox_y;
 
 SDL_Surface *init_sdl(int w, int h);
 
-void draw_background(SDL_Surface *s, unsigned x, unsigned y);
-void draw_hud(SDL_Surface *s, unsigned x, unsigned y);
+void draw_background(SDL_Surface *s, int x, int y);
+void draw_hud(SDL_Surface *s, int x, int y);
 void create_playerbox(SDL_Surface *s, char *name, int x, int y, char *avatar, int lifebelts, bool dead);
 
-int set_lifebelts(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned max);
+int set_lifebelts(SDL_Surface *s, int x, int y, int n, int max);
 
-int add_lifebelt(SDL_Surface *s, unsigned x, unsigned y, unsigned n);
-int rm_lifebelt(SDL_Surface *s, unsigned x, unsigned y, unsigned n);
+int add_lifebelt(SDL_Surface *s, int x, int y, int n);
+int rm_lifebelt(SDL_Surface *s, int x, int y, int n);
 
-int set_wlevel(SDL_Surface *s, unsigned x, unsigned y, unsigned n);
-int set_points(SDL_Surface *s, unsigned x, unsigned y, int n);
+int set_wlevel(SDL_Surface *s, int x, int y, int n);
+int set_points(SDL_Surface *s, int x, int y, int n);
 
-int add_pcard(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned val);
-int add_wcard(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned val);
-int add_pcard_played(SDL_Surface *s, unsigned x, unsigned y, int n, int val);
+int add_pcard(SDL_Surface *s, int x, int y, int n, int val);
+int add_wcard(SDL_Surface *s, int x, int y, int n, int val);
+int add_pcard_played(SDL_Surface *s, int x, int y, int n, int val);
 
 TTF_Font *getfont(void);
 

@@ -1,14 +1,14 @@
-DIR := clients/curses
+dir := clients/curses
 
-TARGETS += $(DIR)/client
-clientobjs := $(DIR)/fkml_client.o $(DIR)/interface.o $(DIR)/../communication.o
-clienths := $(DIR)/fkml_client.h $(DIR)/interface.h $(DIR)/../communication.h
+targets += $(dir)/client
+clientobjs := $(dir)/fkml_client.o $(dir)/interface.o $(dir)/../communication.o
+clienths := $(dir)/fkml_client.h $(dir)/interface.h $(dir)/../communication.h
 clientdeps := $(clientobjs) $(clienths)
 
-OBJS += $(clientobjs)
+objs += $(clientobjs)
 curslib := -lncurses
 
 all:
 
-$(DIR)/client: $(clientdeps)
-	$(CC) $(CFLAGS) -o $@ $^ $(curslib)
+$(dir)/client: $(clientdeps)
+	$(LINK.c) -o $@ $^ $(curslib)

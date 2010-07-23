@@ -7,6 +7,8 @@
 #define BUFLEN 1024
 #define DEBUG 0
 
+static void cleanup(void);
+
 static SDL_Surface  
     *act_lifebelt, *pas_lifebelt, *act_border, *drownava,
     *defava, *avabox, *hud, *pcard, *wcard, *table, *pcard_p;
@@ -79,6 +81,8 @@ SDL_Surface *init_sdl(int w, int h)
     LOAD(font3, FONTSIZE3)
 #undef LOAD
 
+    atexit(cleanup);
+
     ckey = SDL_MapRGB(screen->format, 0, 0, 0);
     SDL_SetColorKey(act_lifebelt, SDL_SRCCOLORKEY | SDL_RLEACCEL, ckey);
     SDL_SetColorKey(pas_lifebelt, SDL_SRCCOLORKEY | SDL_RLEACCEL, ckey);
@@ -91,7 +95,7 @@ SDL_Surface *init_sdl(int w, int h)
     return screen;
 }
 
-void draw_background(SDL_Surface *s, unsigned x, unsigned y)
+void draw_background(SDL_Surface *s, int x, int y)
 {
     SDL_Rect r;
 
@@ -100,7 +104,7 @@ void draw_background(SDL_Surface *s, unsigned x, unsigned y)
     SDL_BlitSurface(table, 0, s, &r);
 }
 
-void draw_hud(SDL_Surface *s, unsigned x, unsigned y)
+void draw_hud(SDL_Surface *s, int x, int y)
 {
     SDL_Rect r;
     SDL_Surface *txt;
@@ -161,7 +165,7 @@ void create_playerbox(SDL_Surface *s, char *name, int x, int y, char *avatar, in
         add_lifebelt(s, x, y, i);
 }
 
-int set_lifebelts(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned max)
+int set_lifebelts(SDL_Surface *s, int x, int y, int n, int max)
 {
     int i, j;
     SDL_Rect r;
@@ -190,7 +194,7 @@ int set_lifebelts(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned m
 }
 
 #if 0
-int kill_lifebelts(SDL_Surface *s, unsigned x, unsigned y)
+int kill_lifebelts(SDL_Surface *s, int x, int y)
 {
     SDL_Rect r;
 
@@ -202,7 +206,7 @@ int kill_lifebelts(SDL_Surface *s, unsigned x, unsigned y)
 }
 #endif
 
-int add_lifebelt(SDL_Surface *s, unsigned x, unsigned y, unsigned n)
+int add_lifebelt(SDL_Surface *s, int x, int y, int n)
 {
     SDL_Rect r;
 
@@ -218,7 +222,7 @@ int add_lifebelt(SDL_Surface *s, unsigned x, unsigned y, unsigned n)
     return 1;
 }
 
-int rm_lifebelt(SDL_Surface *s, unsigned x, unsigned y, unsigned n)
+int rm_lifebelt(SDL_Surface *s, int x, int y, int n)
 {
     SDL_Rect r;
 
@@ -236,7 +240,7 @@ int rm_lifebelt(SDL_Surface *s, unsigned x, unsigned y, unsigned n)
     return 1;
 }
 
-int set_wlevel(SDL_Surface *s, unsigned x, unsigned y, unsigned n)
+int set_wlevel(SDL_Surface *s, int x, int y, int n)
 {
     SDL_Rect r;
     SDL_Surface *txt;
@@ -253,7 +257,7 @@ int set_wlevel(SDL_Surface *s, unsigned x, unsigned y, unsigned n)
     return n;
 }
 
-int set_points(SDL_Surface *s, unsigned x, unsigned y, int n)
+int set_points(SDL_Surface *s, int x, int y, int n)
 {
     SDL_Rect r;
     SDL_Surface *txt;
@@ -270,7 +274,7 @@ int set_points(SDL_Surface *s, unsigned x, unsigned y, int n)
     return n;
 }
 
-int add_pcard(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned val)
+int add_pcard(SDL_Surface *s, int x, int y, int n, int val)
 {
     SDL_Rect r;
     SDL_Surface *txt;
@@ -303,7 +307,7 @@ int add_pcard(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned val)
     return val;
 }
 
-int add_wcard(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned val)
+int add_wcard(SDL_Surface *s, int x, int y, int n, int val)
 {
     SDL_Rect r;
     SDL_Surface *txt;
@@ -327,7 +331,7 @@ int add_wcard(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned val)
     return val;
 }
 
-int add_pcard_played(SDL_Surface *s, unsigned x, unsigned y, int n, int val)
+int add_pcard_played(SDL_Surface *s, int x, int y, int n, int val)
 {
     SDL_Rect r;
     SDL_Surface *txt;
@@ -341,6 +345,7 @@ int add_pcard_played(SDL_Surface *s, unsigned x, unsigned y, int n, int val)
         r.x += hstretch * 540;
         r.y += vstretch * 320;
         break;
+
     case 0: /* the opponents */
         r.x += hstretch * 100;
         r.y += vstretch * 200;
@@ -433,6 +438,26 @@ void render(SDL_Surface *s, gamestr *g, int pos, int *startbelts)
     for (i = 0; i < 12; i++)
         if (g->player.weathercards[i])
             add_pcard(s, 0, 0, i, g->player.weathercards[i]);
+}
+
+static void cleanup(void)
+{
+    /* free all the stuff we allocated before */
+    SDL_FreeSurface(act_lifebelt);
+    SDL_FreeSurface(pas_lifebelt);
+    SDL_FreeSurface(act_border);
+    SDL_FreeSurface(drownava);
+    SDL_FreeSurface(defava);
+    SDL_FreeSurface(avabox);
+    SDL_FreeSurface(hud);
+    SDL_FreeSurface(pcard);
+    SDL_FreeSurface(wcard);
+    SDL_FreeSurface(table);
+    SDL_FreeSurface(pcard_p);
+
+    TTF_CloseFont(font);
+    TTF_CloseFont(font2);
+    TTF_CloseFont(font3);
 }
 
 /* vim: set sw=4 ts=4 et fdm=syntax: */

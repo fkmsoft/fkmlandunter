@@ -1,14 +1,14 @@
-DIR := server/new
-TARGETS += $(DIR)/server
+dir := server/new
+targets += $(dir)/server
 
-nserverobjs := $(DIR)/fkmserver.o $(DIR)/server.o $(DIR)/communication.o \
-	$(DIR)/fkmlist.o $(DIR)/fkmlandunter.o $(DIR)/fkmlandunter_util.o
-nserverhs := $(DIR)/fkmserver.h $(DIR)/fkmlist.h $(DIR)/communication.h \
-	$(DIR)/fkmlandunter_util.h $(DIR)/fkmlandunter.h
+nserverobjs := $(dir)/fkmserver.o $(dir)/server.o $(dir)/communication.o \
+	$(dir)/fkmlist.o $(dir)/fkmlandunter.o $(dir)/fkmlandunter_util.o
+nserverhs := $(dir)/fkmserver.h $(dir)/fkmlist.h $(dir)/communication.h \
+	$(dir)/fkmlandunter_util.h $(dir)/fkmlandunter.h
 nserverdeps := $(nserverobjs) $(nserverhs)
-OBJS += $(nserverobjs)
+objs += $(nserverobjs)
 
 all:
 
-$(DIR)/server: $(nserverdeps)
-	$(CC) $(CFLAGS) -o $@ $(nserverobjs)
+$(dir)/server: $(nserverdeps)
+	$(LINK.c) -o $@ $(nserverobjs)

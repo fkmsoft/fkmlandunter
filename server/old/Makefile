@@ -1,4 +1,4 @@
 include module.mk
 
 all:
-	$(MAKE) -C ../.. $(TARGETS)
+	$(MAKE) -C ../.. $(targets)

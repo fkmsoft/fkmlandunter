@@ -1,27 +1,23 @@
-DIR := testenv
-TARGETS += $(DIR)/testenv $(DIR)/server $(DIR)/random \
-		   $(DIR)/nserv $(DIR)/sdl_randl
+dir := testenv
+targets += $(dir)/testenv $(dir)/server $(dir)/random \
+		   $(dir)/nserv $(dir)/sdl_randl
 
-testenvobjs = $(DIR)/testenv.o
-OBJS += $(testenvobjs)
+testenvobjs = $(dir)/testenv.o
+objs += $(testenvobjs)
 
 all:
 
-$(DIR)/testenv: $(testenvobjs)
-	$(CC) $(CFLAGS) -o $@ $^
+$(dir)/testenv: $(testenvobjs)
+	$(LINK.c) -o $@ $^
 
-$(DIR)/server: server/old/server
-	rm -f $@
-	ln -s ../$< $(DIR)
+$(dir)/server: server/old/server
+	if [ ! -L $@ ]; then ln -s ../$< $@; fi
 
-$(DIR)/nserv: server/new/server
-	rm -f $@
-	ln -s ../$< $@
+$(dir)/nserv: server/new/server
+	if [ ! -L $@ ]; then ln -s ../$< $@; fi
 
-$(DIR)/random: clients/ai/random/random
-	rm -f $@
-	ln -s ../$< $(DIR)
+$(dir)/random: clients/ai/random/random
+	if [ ! -L $@ ]; then ln -s ../$< $@; fi
 
-$(DIR)/sdl_randl: clients/sdl/randall
-	rm -f $@
-	ln -s ../$< $@
+$(dir)/sdl_randl: clients/sdl/randall
+	if [ ! -L $@ ]; then ln -s ../$< $@; fi
