@@ -23,7 +23,6 @@ const int pbox_x = 623, pbox_y = 393;
 
 SDL_Surface *init_sdl(int w, int h)
 {
-    int ckey;
     char buf[BUFLEN];
     SDL_Surface *screen, *temp;
     struct stat s_stat;
@@ -48,15 +47,20 @@ SDL_Surface *init_sdl(int w, int h)
 
     vstretch = w / (float)800;
     hstretch = h / (float)600;
-    printf("Stretches are %f x %f\n", vstretch, hstretch);
+    if (DEBUG)
+        printf("Stretches are %f x %f\n", vstretch, hstretch);
 
     atexit(SDL_Quit);
 
     /* load macro */
 #define LOAD(a, b) { snprintf(buf, BUFLEN, "%s%d_%d/%s", DATADIR, w, h, a); \
-    if ((temp = IMG_Load(buf))) \
-    { b = SDL_DisplayFormat(temp); SDL_FreeSurface(temp); } \
-    else { fprintf(stderr, "Could not load file >>%s<<: %s\n", a, IMG_GetError()); exit(EXIT_FAILURE); } }
+    if ((temp = IMG_Load(buf))) { \
+        SDL_SetAlpha(temp, SDL_SRCALPHA | SDL_RLEACCEL, SDL_ALPHA_TRANSPARENT); \
+        b = SDL_DisplayFormatAlpha(temp); \
+        SDL_FreeSurface(temp); \
+    } else { \
+        fprintf(stderr, "Could not load file `%s': %s\n", a, IMG_GetError()); exit(EXIT_FAILURE); \
+    } }
 
     /* load all images */
     LOAD(ACT_LIFEBELT, act_lifebelt)
@@ -74,7 +78,7 @@ SDL_Surface *init_sdl(int w, int h)
 
     /* load font */
 #define LOAD(a, b) { if(!(a = TTF_OpenFont(DEFFONT, b * hstretch))) \
-    { fprintf(stderr, "Could not load file >>%s<<: %s\n", DEFFONT, TTF_GetError()); exit(EXIT_FAILURE); } }
+    { fprintf(stderr, "Could not load file `%s': %s\n", DEFFONT, TTF_GetError()); exit(EXIT_FAILURE); } }
 
     LOAD(font, FONTSIZE)
     LOAD(font2, FONTSIZE2)
@@ -82,15 +86,6 @@ SDL_Surface *init_sdl(int w, int h)
 #undef LOAD
 
     atexit(cleanup);
-
-    ckey = SDL_MapRGB(screen->format, 0, 0, 0);
-    SDL_SetColorKey(act_lifebelt, SDL_SRCCOLORKEY | SDL_RLEACCEL, ckey);
-    SDL_SetColorKey(pas_lifebelt, SDL_SRCCOLORKEY | SDL_RLEACCEL, ckey);
-    SDL_SetColorKey(avabox, SDL_SRCCOLORKEY | SDL_RLEACCEL, ckey);
-    SDL_SetColorKey(hud, SDL_SRCCOLORKEY | SDL_RLEACCEL, ckey);
-    SDL_SetColorKey(table, SDL_SRCCOLORKEY | SDL_RLEACCEL, ckey);
-    SDL_SetColorKey(pcard, SDL_SRCCOLORKEY | SDL_RLEACCEL, ckey);
-    SDL_SetColorKey(wcard, SDL_SRCCOLORKEY | SDL_RLEACCEL, ckey);
 
     return screen;
 }
