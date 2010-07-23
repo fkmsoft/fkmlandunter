@@ -9,7 +9,9 @@
 
 static SDL_Surface  
     *act_lifebelt, *pas_lifebelt, *act_border, *drownava,
-    *defava, *avabox, *hud, *pcard, *wcard, *table, *pcard_p;
+    *defava, *avabox, *hud, *pcard, *wcard, *table, *pcard_p,
+    *bubbles, *act_belt, *pas_belt, *column_bg, *wcolumn, *pcolumn,
+    *playerbox;
 
 static TTF_Font *font, *font2, *font3;
 static SDL_Color font_fg = {0, 0, 0, 255};
@@ -68,6 +70,13 @@ SDL_Surface *init_sdl(int w, int h)
     LOAD(WCARD, wcard)
     LOAD(PCARD_P, pcard_p)
     LOAD(TABLE, table)
+    LOAD(BUBBLES, bubbles)
+    LOAD(ACT_BELT, act_belt)
+    LOAD(PAS_BELT, pas_belt)
+    LOAD(COLUMN_BG, column_bg)
+    LOAD(WCOLUMN, wcolumn)
+    LOAD(PCOLUMN, pcolumn)
+    LOAD(PLAYERBOX, playerbox)
 #undef LOAD
 
     /* load font */
@@ -87,6 +96,8 @@ SDL_Surface *init_sdl(int w, int h)
     SDL_SetColorKey(table, SDL_SRCCOLORKEY | SDL_RLEACCEL, ckey);
     SDL_SetColorKey(pcard, SDL_SRCCOLORKEY | SDL_RLEACCEL, ckey);
     SDL_SetColorKey(wcard, SDL_SRCCOLORKEY | SDL_RLEACCEL, ckey);
+    SDL_SetColorKey(playerbox, SDL_SRCCOLORKEY | SDL_RLEACCEL, ckey);
+    SDL_SetColorKey(bubbles, SDL_SRCCOLORKEY | SDL_RLEACCEL, ckey);
 
     return screen;
 }
@@ -116,7 +127,7 @@ void draw_hud(SDL_Surface *s, unsigned x, unsigned y)
     SDL_FreeSurface(txt);
 }
 
-void create_playerbox(SDL_Surface *s, char *name, int x, int y, char *avatar, int lifebelts, bool dead)
+void create_playerbox_old(SDL_Surface *s, char *name, int x, int y, char *avatar, int lifebelts, bool dead)
 {
     int i;
     SDL_Rect r;
@@ -159,6 +170,58 @@ void create_playerbox(SDL_Surface *s, char *name, int x, int y, char *avatar, in
     /* draw lifebelts */
     for (i = 0; i < lifebelts; i++)
         add_lifebelt(s, x, y, i);
+}
+
+void create_playerbox(SDL_Surface *s, char *name, int x, int y, char *avatar, int lifebelts, bool dead, int startbelts)
+{
+    int i;
+    SDL_Rect r;
+    SDL_Surface *txt;
+
+    /* draw border */
+    r.x = x;
+    r.y = y;
+    
+    r.x += hstretch * 7;
+    r.y += vstretch * 7;
+    SDL_BlitSurface(column_bg, 0, s, &r);
+    r.y += vstretch * 10;
+    SDL_BlitSurface(pcolumn, 0, s, &r);
+    r.x += hstretch * 95;
+    SDL_BlitSurface(wcolumn, 0, s, &r);
+
+    r.x -= hstretch * 70;
+    r.y -= vstretch * 10;
+    if (dead) {
+        SDL_BlitSurface(drownava, 0, s, &r);
+    } else if (!avatar) {
+        SDL_BlitSurface(defava, 0, s, &r);
+    } else {
+        /* FIXME: load real ava */
+    }
+    r.x -= hstretch * 30;
+    r.y -= vstretch * 5;
+    SDL_BlitSurface(playerbox, 0, s, &r);
+    
+    txt = TTF_RenderText_Blended(font, name, font_fg);
+    r.x += hstretch * 40;
+    r.y += vstretch * 90;
+    SDL_BlitSurface(txt, 0, s, &r);
+    SDL_FreeSurface(txt);
+    
+    /* draw lifebelts */
+    for (i = 0; i < lifebelts; i++)
+        add_lifebelt(s, x, y, i);
+
+    if (dead) {
+        set_lifebelts(s, hstretch * pbox_x, vstretch *pbox_y, 0, startbelts);
+    } else {
+        set_lifebelts(s, hstretch * pbox_x, vstretch *pbox_y, lifebelts, startbelts);
+    }
+
+    r.x -= hstretch * 40;
+    r.y -= vstretch * 12;
+    SDL_BlitSurface(bubbles, 0, s, &r);
 }
 
 int set_lifebelts(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned max)
@@ -245,8 +308,8 @@ int set_wlevel(SDL_Surface *s, unsigned x, unsigned y, unsigned n)
     snprintf(buf, 5, "%i", n);
     txt = TTF_RenderText_Blended(font2, buf, font_fg);
 
-    r.x = x + hstretch * 94;
-    r.y = y + vstretch * 17;
+    r.x = x + hstretch * 109;
+    r.y = y + vstretch * 90;
     SDL_BlitSurface(txt, 0, s, &r);
     SDL_FreeSurface(txt);
 
@@ -262,8 +325,8 @@ int set_points(SDL_Surface *s, unsigned x, unsigned y, int n)
     snprintf(buf, 5, "%i", n);
     txt = TTF_RenderText_Blended(font2, buf, font_fg);
 
-    r.x = x + hstretch * 94;
-    r.y = y + vstretch * 67;
+    r.x = x + hstretch * 13;
+    r.y = y + vstretch * 90;
     SDL_BlitSurface(txt, 0, s, &r);
     SDL_FreeSurface(txt);
 
@@ -397,12 +460,12 @@ void render(SDL_Surface *s, gamestr *g, int pos, int *startbelts)
     add_pcard_played(s, 0, 0, -1, p.played);
     draw_hud(s, 0, 0);
 
-    create_playerbox(s, p.name, hstretch * pbox_x, vstretch * pbox_y, 0, 0, p.dead);
+    create_playerbox(s, p.name, hstretch * pbox_x, vstretch * pbox_y, 0, 0, p.dead, startbelts[pos]);
     set_points(s, hstretch * pbox_x, vstretch * pbox_y, p.points);
     if (p.dead) {
-        set_lifebelts(s, hstretch * pbox_x, vstretch *pbox_y, 0, startbelts[pos]);
+        /*set_lifebelts(s, hstretch * pbox_x, vstretch *pbox_y, 0, startbelts[pos]);*/
     } else {
-        set_lifebelts(s, hstretch * pbox_x, vstretch *pbox_y, p.lifebelts, startbelts[pos]);
+        /*set_lifebelts(s, hstretch * pbox_x, vstretch *pbox_y, p.lifebelts, startbelts[pos]);*/
         set_wlevel(s, hstretch * pbox_x, vstretch * pbox_y, p.water_level);
     }
 
@@ -415,13 +478,13 @@ void render(SDL_Surface *s, gamestr *g, int pos, int *startbelts)
     for (i = 0; i < g->count; i++) {
         if (i != pos) {
             p = g->villain[i];
-            create_playerbox(s, p.name, x, y, 0, 0, p.dead);
+            create_playerbox(s, p.name, x, y, 0, 0, p.dead, startbelts[i]);
             set_points(s, x, y, p.points);
 
             if (p.dead) {
-                set_lifebelts(s, x, y, 0, startbelts[i]);
+                /*set_lifebelts(s, x, y, 0, startbelts[i]);*/
             } else {
-                set_lifebelts(s, x, y, p.lifebelts, startbelts[i]);
+                /*set_lifebelts(s, x, y, p.lifebelts, startbelts[i]);*/
                 set_wlevel(s, x, y, p.water_level);
             }
 

@@ -24,6 +24,15 @@
 #define ACT_BORDER ("rahmen_aktiv.png")
 #define PAS_BORDER ("rahmen_fertig.png")
 
+/*new playerbox*/
+#define BUBBLES ("new_playerbox/blasen.png")
+#define ACT_BELT ("new_playerbox/ring.png")
+#define PAS_BELT ("new_playerbox/ring_sw.png")
+#define COLUMN_BG ("new_playerbox/saeulen_bg.png")
+#define WCOLUMN ("new_playerbox/saeule_w.png")
+#define PCOLUMN ("new_playerbox/saeule_p.png")
+#define PLAYERBOX ("new_playerbox/playerbox.png")
+
 /* background */
 #define TABLE ("tisch.png")
 #define HUD ("hud.png")
@@ -61,7 +70,8 @@ SDL_Surface *init_sdl(int w, int h);
 
 void draw_background(SDL_Surface *s, unsigned x, unsigned y);
 void draw_hud(SDL_Surface *s, unsigned x, unsigned y);
-void create_playerbox(SDL_Surface *s, char *name, int x, int y, char *avatar, int lifebelts, bool dead);
+void create_playerbox(SDL_Surface *s, char *name, int x, int y, char *avatar, int lifebelts, bool dead, int startbelts);
+void create_playerbox_old(SDL_Surface *s, char *name, int x, int y, char *avatar, int lifebelts, bool dead);
 
 int set_lifebelts(SDL_Surface *s, unsigned x, unsigned y, unsigned n, unsigned max);
 

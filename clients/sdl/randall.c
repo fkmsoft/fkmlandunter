@@ -211,8 +211,11 @@ int main(int argc, char **argv) {
                         printf("%s has play %d\n", name, card);
                     sdl_send_to(sock, "PLAY %d\n", card);
 
-                    if (interactive)
+                    if (interactive) {
                         do { SDL_PollEvent(&ev); } while (ev.type != SDL_KEYDOWN);
+                        if (ev.key.keysym.sym == 'q')
+                            exit(0);
+                    }
                 }
 
                 if (startbelts[0] == 0)
