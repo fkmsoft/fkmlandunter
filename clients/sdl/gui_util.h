@@ -65,6 +65,7 @@ void pre_render(SDL_Surface *s, char *name);
 void render(SDL_Surface *s, gamestr *g, int pos, int *startbelts);
 
 int card_select(int x, int y, int *deck);
+void game_over(SDL_Surface *s, gamestr *g, int pos, int x, int y);
 
 #endif /* FKML_GUI_UTIL_H */
 

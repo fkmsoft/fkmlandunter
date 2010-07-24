@@ -14,9 +14,7 @@ static void draw_hud(SDL_Surface *s, int x, int y);
 static void create_playerbox(SDL_Surface *s, char *name, int x, int y, char *avatar, int lifebelts, bool dead);
 
 static int set_lifebelts(SDL_Surface *s, int x, int y, int n, int max);
-
 static int add_lifebelt(SDL_Surface *s, int x, int y, int n);
-static int rm_lifebelt(SDL_Surface *s, int x, int y, int n);
 
 static int set_wlevel(SDL_Surface *s, int x, int y, int n);
 static int set_points(SDL_Surface *s, int x, int y, int n);
@@ -223,24 +221,7 @@ static int add_lifebelt(SDL_Surface *s, int x, int y, int n)
     if (n >= 5)
         r.y += vstretch * BELTSIZE+4;
     SDL_BlitSurface(act_lifebelt, 0, s, &r);
-
-    return 1;
-}
-
-static int rm_lifebelt(SDL_Surface *s, int x, int y, int n)
-{
-    SDL_Rect r;
-
-    r.x = x + hstretch * 5;
-    r.y = y + vstretch * 105;
-
-    r.x += hstretch * (n % 5) * BELTSIZE;
-
-    if (n >= 5)
-        r.y += vstretch * BELTSIZE+4;
 #undef BELTSIZE
-
-    SDL_BlitSurface(pas_lifebelt, 0, s, &r);
 
     return 1;
 }
@@ -485,6 +466,32 @@ int card_select(int x, int y, int *deck)
     }
 
     return c;
+}
+
+void game_over(SDL_Surface *s, gamestr *g, int pos, int x, int y)
+{
+    int i, maxp, maxi;
+    char buf[BUFLEN];
+    SDL_Surface *txt;
+    SDL_Rect r;
+
+    maxp = g->villain[0].points;
+    maxi = 0;
+    for (i = 1; i < g->count; i++)
+        if (g->villain[i].points > maxp) {
+            maxp = g->villain[i].points;
+            maxi = i;
+        }
+
+    if (maxi == pos)
+        sprintf(buf, "You win the game with %d points!\n", maxp);
+    else
+        sprintf(buf, "%s wins the game with %d points!\n", g->villain[maxi].name, maxp);
+
+    txt = TTF_RenderText_Blended(font3, buf, font_fg);
+    r.x = x + 100 * hstretch;
+    r.y = y + 300 * vstretch;
+    SDL_BlitSurface(txt, 0, s, &r);
 }
 
 static void cleanup(void)

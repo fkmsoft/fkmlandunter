@@ -89,6 +89,7 @@ int main(int argc, char **argv)
         render(screen, &g, 0, belts);
         s[15 - i] = '0' + i;
         textbox_set(t, s);
+        game_over(screen, &g, 0, 0, 0);
 
         SDL_UpdateRect(screen, 0, 0, 0, 0);
     }

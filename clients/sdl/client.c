@@ -123,6 +123,7 @@ int main(int argc, char **argv)
                 parse_input(input, g, startbelts, pos, screen, true);
             else
                 parse_input(input, g, startbelts, pos, screen, false);
+
             free(input);
         }
     }
@@ -133,15 +134,10 @@ int main(int argc, char **argv)
     }
 
     while (play) {
-        /*
-        for (i = 0; i < 12; i++)
-            printf("%s%d%c", (i == 0) ? "Deck is " : " ", deck[i], (i == 11) ? '\n' : ' ');
-        */
-
         SDL_PollEvent(&ev);
-        if (ev.type == SDL_KEYUP && ev.key.keysym.sym == SDLK_q)
+        if (ev.type == SDL_KEYUP && ev.key.keysym.sym == SDLK_q) {
             exit(EXIT_SUCCESS);
-        else if (down && ev.type == SDL_MOUSEBUTTONUP && !g->villain[pos].dead) {
+        } else if (down && ev.type == SDL_MOUSEBUTTONUP && !g->villain[pos].dead) {
             opt = card_select(ev.button.x, ev.button.y, deck);
 
             if (opt != -1) {
@@ -165,7 +161,8 @@ int main(int argc, char **argv)
         }
     }
     
-    puts("Game Over");
+    game_over(screen, g, pos, 0, 0);
+    SDL_UpdateRect(screen, 0, 0, 0, 0);
 
     do {
         SDL_WaitEvent(&ev);
