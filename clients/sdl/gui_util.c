@@ -9,6 +9,22 @@
 
 static void cleanup(void);
 
+static void draw_background(SDL_Surface *s, int x, int y);
+static void draw_hud(SDL_Surface *s, int x, int y);
+static void create_playerbox(SDL_Surface *s, char *name, int x, int y, char *avatar, int lifebelts, bool dead);
+
+static int set_lifebelts(SDL_Surface *s, int x, int y, int n, int max);
+
+static int add_lifebelt(SDL_Surface *s, int x, int y, int n);
+static int rm_lifebelt(SDL_Surface *s, int x, int y, int n);
+
+static int set_wlevel(SDL_Surface *s, int x, int y, int n);
+static int set_points(SDL_Surface *s, int x, int y, int n);
+
+static int add_pcard(SDL_Surface *s, int x, int y, int n, int val);
+static int add_wcard(SDL_Surface *s, int x, int y, int n, int val);
+static int add_pcard_played(SDL_Surface *s, int x, int y, int n, int val);
+
 static SDL_Surface  
     *act_lifebelt, *pas_lifebelt, *act_border, *drownava,
     *defava, *avabox, *hud, *pcard, *wcard, *table, *pcard_p;
@@ -92,7 +108,7 @@ SDL_Surface *init_sdl(int w, int h)
     return screen;
 }
 
-void draw_background(SDL_Surface *s, int x, int y)
+static void draw_background(SDL_Surface *s, int x, int y)
 {
     SDL_Rect r;
 
@@ -101,7 +117,7 @@ void draw_background(SDL_Surface *s, int x, int y)
     SDL_BlitSurface(table, 0, s, &r);
 }
 
-void draw_hud(SDL_Surface *s, int x, int y)
+static void draw_hud(SDL_Surface *s, int x, int y)
 {
     SDL_Rect r;
     SDL_Surface *txt;
@@ -117,7 +133,7 @@ void draw_hud(SDL_Surface *s, int x, int y)
     SDL_FreeSurface(txt);
 }
 
-void create_playerbox(SDL_Surface *s, char *name, int x, int y, char *avatar, int lifebelts, bool dead)
+static void create_playerbox(SDL_Surface *s, char *name, int x, int y, char *avatar, int lifebelts, bool dead)
 {
     int i;
     SDL_Rect r;
@@ -162,7 +178,7 @@ void create_playerbox(SDL_Surface *s, char *name, int x, int y, char *avatar, in
         add_lifebelt(s, x, y, i);
 }
 
-int set_lifebelts(SDL_Surface *s, int x, int y, int n, int max)
+static int set_lifebelts(SDL_Surface *s, int x, int y, int n, int max)
 {
     int i, j;
     SDL_Rect r;
@@ -195,20 +211,7 @@ int set_lifebelts(SDL_Surface *s, int x, int y, int n, int max)
     return n;
 }
 
-#if 0
-int kill_lifebelts(SDL_Surface *s, int x, int y)
-{
-    SDL_Rect r;
-
-    r.x = x + 4 * hstretch;
-    r.y = y + vstretch * 105;
-    /*SDL_BlitSurface(box_lifebelt, 0, s, &r);*/
-
-    return 1;
-}
-#endif
-
-int add_lifebelt(SDL_Surface *s, int x, int y, int n)
+static int add_lifebelt(SDL_Surface *s, int x, int y, int n)
 {
     SDL_Rect r;
 
@@ -224,7 +227,7 @@ int add_lifebelt(SDL_Surface *s, int x, int y, int n)
     return 1;
 }
 
-int rm_lifebelt(SDL_Surface *s, int x, int y, int n)
+static int rm_lifebelt(SDL_Surface *s, int x, int y, int n)
 {
     SDL_Rect r;
 
@@ -242,7 +245,7 @@ int rm_lifebelt(SDL_Surface *s, int x, int y, int n)
     return 1;
 }
 
-int set_wlevel(SDL_Surface *s, int x, int y, int n)
+static int set_wlevel(SDL_Surface *s, int x, int y, int n)
 {
     SDL_Rect r;
     SDL_Surface *txt;
@@ -259,7 +262,7 @@ int set_wlevel(SDL_Surface *s, int x, int y, int n)
     return n;
 }
 
-int set_points(SDL_Surface *s, int x, int y, int n)
+static int set_points(SDL_Surface *s, int x, int y, int n)
 {
     SDL_Rect r;
     SDL_Surface *txt;
@@ -276,7 +279,7 @@ int set_points(SDL_Surface *s, int x, int y, int n)
     return n;
 }
 
-int add_pcard(SDL_Surface *s, int x, int y, int n, int val)
+static int add_pcard(SDL_Surface *s, int x, int y, int n, int val)
 {
     SDL_Rect r;
     SDL_Surface *txt;
@@ -309,7 +312,7 @@ int add_pcard(SDL_Surface *s, int x, int y, int n, int val)
     return val;
 }
 
-int add_wcard(SDL_Surface *s, int x, int y, int n, int val)
+static int add_wcard(SDL_Surface *s, int x, int y, int n, int val)
 {
     SDL_Rect r;
     SDL_Surface *txt;
@@ -333,7 +336,7 @@ int add_wcard(SDL_Surface *s, int x, int y, int n, int val)
     return val;
 }
 
-int add_pcard_played(SDL_Surface *s, int x, int y, int n, int val)
+static int add_pcard_played(SDL_Surface *s, int x, int y, int n, int val)
 {
     SDL_Rect r;
     SDL_Surface *txt;
@@ -394,6 +397,15 @@ int add_pcard_played(SDL_Surface *s, int x, int y, int n, int val)
 TTF_Font *getfont(void)
 {
   return font;
+}
+
+void pre_render(SDL_Surface *s, char *name)
+{
+    draw_background(s, 0, 0);
+    draw_hud(s, 0, 0);
+    create_playerbox(s, name, hstretch * pbox_x, vstretch * pbox_y, 0, 0, false);
+    set_wlevel(s, 0, 0, 0);
+    set_points(s, 0, 0, 0);
 }
 
 void render(SDL_Surface *s, gamestr *g, int pos, int *startbelts)

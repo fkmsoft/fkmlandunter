@@ -19,7 +19,6 @@
 static const int W = 800;
 static const int H = 600;
 
-static void pre_render(SDL_Surface *s, char *name, double hs, double vs);
 static void parse_input(char *input, gamestr *g, int *startbelts, int pos, SDL_Surface *s, bool rend);
 
 int main(int argc, char **argv)
@@ -31,7 +30,6 @@ int main(int argc, char **argv)
     int opt, port = DEFPORT, w = W, h = H, pos, i;
     int startbelts[5], *deck;
     int down = 0;
-    double hs, vs;
     gamestr *g;
     SDL_Surface *screen;
     SDL_Event ev;
@@ -66,12 +64,9 @@ int main(int argc, char **argv)
         }
     }
 
-    hs = h / (float) H;
-    vs = w / (float) W;
-
     screen = init_sdl(w, h);
 
-    pre_render(screen, name, hs, vs);
+    pre_render(screen, name);
     SDL_UpdateRect(screen, 0, 0, 0, 0);
 
     g = create_game();
@@ -103,7 +98,7 @@ int main(int argc, char **argv)
     play = false;
     pos = -1;
     while (!play) {
-        pre_render(screen, name, hs, vs);
+        pre_render(screen, name);
         SDL_UpdateRect(screen, 0, 0, 0, 0);
 
         SDL_PollEvent(&ev);
@@ -124,7 +119,10 @@ int main(int argc, char **argv)
                 play = true;
             }
 
-            parse_input(input, g, startbelts, pos, screen, false);
+            if (play)
+                parse_input(input, g, startbelts, pos, screen, true);
+            else
+                parse_input(input, g, startbelts, pos, screen, false);
             free(input);
         }
     }
@@ -177,15 +175,6 @@ int main(int argc, char **argv)
     } while(!play);
 
     return EXIT_SUCCESS;
-}
-
-static void pre_render(SDL_Surface *s, char *name, double hs, double vs)
-{
-    draw_background(s, 0, 0);
-    draw_hud(s, 0, 0);
-    create_playerbox(s, name, hs * pbox_x, vs * pbox_y, 0, 0, false);
-    set_wlevel(s, 0, 0, 0);
-    set_points(s, 0, 0, 0);
 }
 
 static void parse_input(char *input, gamestr *g, int *startbelts, int pos, SDL_Surface *s, bool rend)

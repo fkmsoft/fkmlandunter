@@ -68,21 +68,12 @@ int main(int argc, char **argv) {
     /* initialize sdl & sdl_net */
     SDL_Surface *screen;
     gamestr *g;
-    double hs, vs;
     char buf[BUFL];
     int startbelts[5];
     if (gui) {
-        hs = h / (float) H;
-        vs = w / (float) W;
-
         screen = init_sdl(w, h);
 
-        draw_background(screen, 0, 0);
-        draw_hud(screen, 0, 0);
-        create_playerbox(screen, name, hs * pbox_x, vs * pbox_y, 0, 0, false);
-        set_wlevel(screen, 0, 0, 0);
-        set_points(screen, 0, 0, 0);
-        SDL_UpdateRect(screen, 0, 0, 0, 0);
+        pre_render(screen, name);
 
         startbelts[0] = -1;
 
@@ -105,9 +96,6 @@ int main(int argc, char **argv) {
     char *input = 0, *p;
     int pos = -1, points = 0, i;
 
-    /* for gui */
-    int x, y;
-
     /* position */
     do {
         if (input)
@@ -121,21 +109,7 @@ int main(int argc, char **argv) {
         strncpy(buf, p, BUFL);
         parse_start(g, buf);
 
-        x = 50 * hs;
-        y = 10 * hs;
-        for (i = 0; i < g->count; i++) {
-            if (strcmp(g->villain[i].name, name) == 0) {
-                pos = i;
-                if (debug)
-                    printf("Have pos %d\n", pos);
-            } else {
-                if (debug)
-                    printf("Have opponent %s\n", g->villain[i].name);
-                create_playerbox(screen, g->villain[i].name, x, y, 0, 0, false);
-                x += 200 * hs;
-            }
-        }
-
+        render(screen, g, pos, startbelts);
         SDL_UpdateRect(screen, 0, 0, 0, 0);
     }
 
@@ -181,7 +155,7 @@ int main(int argc, char **argv) {
         }
 
         for (in = input; in != (char *)1; in = strchr(in, '\n') + 1) {
-            if (!gui && !strncmp(in, "START ", 6)) {
+            if (!strncmp(in, "START ", 6)) {
                 p = strchr(in, ' ') + 1;
                 i = 0;
                 for (p = strchr(p, ' ') + 1; strncmp(p, name, strlen(name)); i++, p = strchr(p, ' ') + 1)
