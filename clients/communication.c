@@ -51,14 +51,16 @@ gamestr *create_game()
 }
 
 /* initialise gamestr->villains from string s */
-void parse_start(gamestr *game, char *s)
+int parse_start(gamestr *game, char *s)
 {
-    int i, j, maxt;
+    int i, j, maxt, pos;
+    char *p;
+    player *v;
 
     sscanf(s, "START %d", &game->count);
 
     /* creating villains */
-    player *v = malloc(sizeof(player) * game->count);
+    v = malloc(sizeof(player) * game->count);
     for (i = 0; i < game->count; i++) {
         v[i].points = 0;
         v[i].water_level = 0;
@@ -75,11 +77,21 @@ void parse_start(gamestr *game, char *s)
     strtok(s, " ");
     strtok(NULL, " ");
     
-    maxt = 0; char *p;
+    pos = -1;
+    maxt = 0;
     for (i = 0; i < game->count; i++) {
         p = strtok(NULL, " ");
+
+        /* freeing last name from newline */
+        if (i == game->count-1) {
+            *strchr(p, '\n') = '\0';
+        }
+
         v[i].name = malloc(strlen(p) + 1);
         strcpy(v[i].name, p);
+
+        if (strcmp(v[i].name, game->player.name) == 0)
+            pos = i;
 
         v[i].tabnum = strlen(v[i].name) / TABSIZE;
 
@@ -95,10 +107,9 @@ void parse_start(gamestr *game, char *s)
     }
     game->tabnum = 1 + maxt;
 
-    /* freeing last char from newline */
-    v[game->count-1].name[strlen(v[game->count-1].name) - 1] = '\0';
-
     game->villain = v;
+
+    return pos;
 }
 
 /* parse server command */
@@ -126,7 +137,7 @@ int parse_cmd(gamestr *g, char *s)
         for (i = 0; i < g->count; i++) {
             g->villain[i].lifebelts = atoi(strtok(NULL, " "));
 
-            if (g->villain[i].water_level == -1)
+            if (g->villain[i].lifebelts == -1)
                 g->villain[i].dead = true;
             else
                 g->villain[i].dead = false;

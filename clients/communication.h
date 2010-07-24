@@ -55,8 +55,9 @@ typedef struct {
 /* Create and initialize game */
 gamestr *create_game();
 
-/* initialise gamestr->villains from string s */
-void parse_start(gamestr *game, char *s);
+/* initialise gamestr->villains from string s
+ * returns position of player (0..4) */
+int parse_start(gamestr *game, char *s);
 
 /* parse server command */
 int parse_cmd(gamestr *g, char *s);

@@ -9,7 +9,7 @@
 
 int main(int argc, char **argv)
 {
-    int i, j, c, *w;
+    int i, c, *w;
     double hs, vs;
     gamestr g;
     player players[5];
@@ -75,24 +75,11 @@ int main(int argc, char **argv)
         } else if (event.type == SDL_MOUSEBUTTONUP) {
             w = g.player.weathercards;
 
-            if (event.button.x > hs * 222 && event.button.x < hs * 590 &&
-                event.button.y > vs * 430 && event.button.y < vs * 545) {
-                c = (event.button.x - hs * 220) / (hs * 25);
-                if (c > 11) {
-                    j = 3 + 11 - c;
-                    c = 11;
-                } else {
-                    j = 3;
-                }
+            c = card_select(event.button.x, event.button.y, w);
 
-                for (; j && c && !w[c]; j--)
-                    c--;
-
-                if (w[c]) {
-                    printf("On Card %d: %d\n", c, w[c]);
-                    g.villain[0].played = w[c];
-                    w[c] = 0;
-                }
+            if (c != -1) {
+                g.villain[0].played = w[c];
+                w[c] = 0;
             }
         }
 

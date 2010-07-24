@@ -79,6 +79,8 @@ TTF_Font *getfont(void);
 
 void render(SDL_Surface *s, gamestr *g, int pos, int *startbelts);
 
+int card_select(int x, int y, int *deck);
+
 #endif /* FKML_GUI_UTIL_H */
 
 /* vim: set sw=4 ts=4 et fdm=syntax: */

@@ -167,7 +167,7 @@ int set_lifebelts(SDL_Surface *s, int x, int y, int n, int max)
     int i, j;
     SDL_Rect r;
 
-    if (max > 12 || n > 12 || max < 0 || n < 0) {
+    if (max > 12 || n > 12 || max < 0 || n < -1) {
         fprintf(stderr, "Error: illegal number of lifebelts %d/%d\n", n, max);
         return -1;
     }
@@ -339,6 +339,9 @@ int add_pcard_played(SDL_Surface *s, int x, int y, int n, int val)
     SDL_Surface *txt;
     char buf[5];
 
+    if (val == 0)
+        return -1;
+
     r.x = x;
     r.y = y;
 
@@ -440,6 +443,36 @@ void render(SDL_Surface *s, gamestr *g, int pos, int *startbelts)
     for (i = 0; i < 12; i++)
         if (g->player.weathercards[i])
             add_pcard(s, 0, 0, i, g->player.weathercards[i]);
+}
+
+int card_select(int x, int y, int *deck)
+{
+    int i, c;
+
+    c = -1;
+    if (x > hstretch * 222 && x < hstretch * 590 &&
+        y > vstretch * 430 && y < vstretch * 545) {
+        c = (x - hstretch * 220) / (hstretch * 25);
+
+        if (c > 11) {
+            i = 3 + 11 - c;
+            c = 11;
+        } else {
+            i = 3;
+        }
+
+        /* this is too close */
+        if ((int)(x - hstretch * 220) % (int)(hstretch * 25) > hstretch * 22)
+            i--;
+
+        for (; i && c && !deck[c]; i--)
+            c--;
+
+        if (!deck[c])
+            c = -1;
+    }
+
+    return c;
 }
 
 static void cleanup(void)
