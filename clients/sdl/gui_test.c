@@ -9,7 +9,7 @@
 
 int main(int argc, char **argv)
 {
-    int i, c, *w;
+    int i, c, *w, down;
     double hs, vs;
     gamestr g;
     player players[5];
@@ -59,6 +59,7 @@ int main(int argc, char **argv)
     textbox_set(t, s);
     SDL_UpdateRect(screen, 0, 0, 0, 0);
 
+    down = 0;
     for (i = 9; i; i--) {
         do {
             SDL_WaitEvent(&event);
@@ -67,10 +68,12 @@ int main(int argc, char **argv)
                 exit(0);
             if (event.type == SDL_KEYUP || event.type == SDL_MOUSEBUTTONUP)
                 belts[0] = 0;
+            if (event.type == SDL_KEYDOWN)
+                down = 1;
         } while (belts[0]);
         belts[0] = 10;
 
-        if (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_q) {
+        if (down && event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_q) {
             exit(0);
         } else if (event.type == SDL_MOUSEBUTTONUP) {
             w = g.player.weathercards;

@@ -36,6 +36,8 @@ compile and can be run. These are:
 
 - The same AI but including a somewhat nicer gui hacked together in SDL.
 
+- A nice SDL client without chat-capabilities.
+
 What we still hope to produce is a quality gui client, that might look similar
 to what you can already see in SDL-Randall, and a master server to keep track of
 different game servers running all over the net.
@@ -119,8 +121,9 @@ can find their graphics. See data/fkmlu/ for supported resolutions. To actually
 start randall in gui mode, use the -g switch, and to have him play his cards on
 key-press, so you can see more of the game, use the -i (interactive) switch.
 
-What we hope to produce here is a real client (like the curses or pyqt ones)
-using a visual representation like SDL Randall.
+We have also produced a real SDL client, that is already playable, although it
+has no support for ingame chat or any other advanced features like menus yet. It
+can also be found in clients/sdl/, just run `client -H' for help.
 
 
 Appendix A - The Fkmlandunter Protocol:

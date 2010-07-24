@@ -1,7 +1,7 @@
 #include "gui_util.h"
 
 #define FONTSIZE (11)
-#define FONTSIZE2 (15)
+#define FONTSIZE2 (18)
 #define FONTSIZE3 (36)
 
 #define BUFLEN 1024
@@ -369,6 +369,13 @@ static int add_pcard_played(SDL_Surface *s, int x, int y, int n, int val)
     SDL_BlitSurface(txt, 0, s, &r);
 
     r.y -= vstretch * 48;
+    SDL_BlitSurface(txt, 0, s, &r);
+    SDL_FreeSurface(txt);
+
+    /* big number in the center */
+    txt = TTF_RenderText_Blended(font2, buf, font_fg);
+    r.y += vstretch * 20;
+    r.x -= hstretch * 18;
     SDL_BlitSurface(txt, 0, s, &r);
     SDL_FreeSurface(txt);
 

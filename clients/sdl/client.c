@@ -19,17 +19,17 @@
 static const int W = 800;
 static const int H = 600;
 
-static void parse_input(char *input, gamestr *g, int *startbelts, int pos, SDL_Surface *s, bool rend);
+static bool parse_input(char *input, gamestr *g, int *startbelts, int pos, SDL_Surface *s, bool needbelt);
 
 int main(int argc, char **argv)
 {
     bool debug = false;
-    bool play = true;
+    bool play = true, needbelt = true;
     char *name = DEFNAME, *host = DEFHOST;
     char *input, *p, buf[BUFL];
     int opt, port = DEFPORT, w = W, h = H, pos, i;
     int startbelts[5], *deck;
-    int down = 0;
+    int mdown = 0, kdown = 0;
     gamestr *g;
     SDL_Surface *screen;
     SDL_Event ev;
@@ -102,8 +102,12 @@ int main(int argc, char **argv)
         SDL_UpdateRect(screen, 0, 0, 0, 0);
 
         SDL_PollEvent(&ev);
-        if (ev.type == SDL_KEYUP && ev.key.keysym.sym == SDLK_q)
+        if (ev.type == SDL_QUIT ||
+            (ev.type == SDL_KEYUP && ev.key.keysym.sym == SDLK_q)) {
+            sdl_send_to(sock, "LOGOUT bye\n");
+            SDLNet_TCP_Close(sock);
             exit(EXIT_SUCCESS);
+        }
 
         if (SDLNet_CheckSockets(set, 200) && SDLNet_SocketReady(sock)) {
             input = sdl_receive_from(sock, debug);
@@ -120,13 +124,16 @@ int main(int argc, char **argv)
             }
 
             if (play)
-                parse_input(input, g, startbelts, pos, screen, true);
+                needbelt = parse_input(input, g, startbelts, pos, screen, needbelt);
             else
-                parse_input(input, g, startbelts, pos, screen, false);
+                needbelt = parse_input(input, g, startbelts, pos, screen, needbelt);
 
             free(input);
         }
     }
+
+    render(screen, g, pos, startbelts);
+    SDL_UpdateRect(screen, 0, 0, 0, 0);
 
     if (pos < 0 || pos > 4) {
         fprintf(stderr, "Error: illegal pos %d\n", pos);
@@ -135,18 +142,26 @@ int main(int argc, char **argv)
 
     while (play) {
         SDL_PollEvent(&ev);
-        if (ev.type == SDL_KEYUP && ev.key.keysym.sym == SDLK_q) {
+        if (ev.type == SDL_QUIT ||
+            (kdown && ev.type == SDL_KEYUP && ev.key.keysym.sym == SDLK_q)) {
+            sdl_send_to(sock, "LOGOUT bye\n");
+            SDLNet_TCP_Close(sock);
             exit(EXIT_SUCCESS);
-        } else if (down && ev.type == SDL_MOUSEBUTTONUP && !g->villain[pos].dead) {
+        } else if (mdown && ev.type == SDL_MOUSEBUTTONUP && !g->villain[pos].dead) {
             opt = card_select(ev.button.x, ev.button.y, deck);
 
             if (opt != -1) {
                 sdl_send_to(sock, "PLAY %d\n", deck[opt]);
                 deck[opt] = 0;
+
+                render(screen, g, pos, startbelts);
+                SDL_UpdateRect(screen, 0, 0, 0, 0);
             }
-            down = 0;
+            mdown = 0;
         } else if (ev.type == SDL_MOUSEBUTTONDOWN) {
-            down = 1;
+            mdown = 1;
+        } else if (ev.type == SDL_KEYDOWN) {
+            kdown = 1;
         }
 
         if (SDLNet_CheckSockets(set, 0) && SDLNet_SocketReady(sock)) {
@@ -155,7 +170,9 @@ int main(int argc, char **argv)
             if (!strncmp(input, "TERMINATE", 9) || strstr(input, "\nTERMINATE"))
                 play = false;
 
-            parse_input(input, g, startbelts, pos, screen, true);
+            needbelt = parse_input(input, g, startbelts, pos, screen, needbelt);
+            render(screen, g, pos, startbelts);
+            SDL_UpdateRect(screen, 0, 0, 0, 0);
 
             free(input);
         }
@@ -174,14 +191,12 @@ int main(int argc, char **argv)
     return EXIT_SUCCESS;
 }
 
-static void parse_input(char *input, gamestr *g, int *startbelts, int pos, SDL_Surface *s, bool rend)
+static bool parse_input(char *input, gamestr *g, int *startbelts, int pos, SDL_Surface *s, bool needbelt)
 {
     char *p, b[BUFL];
-    int i, needbelt = (startbelts[0] == 0);
+    int i;
 
     for (p = input; p != (char *)1; p = strchr(p, '\n') + 1) {
-        needbelt = (startbelts[0] == 0);
-
         g->rings = g->points = false;
         strncpy(b, p, BUFL);
         parse_cmd(g, b);
@@ -191,17 +206,12 @@ static void parse_input(char *input, gamestr *g, int *startbelts, int pos, SDL_S
                 startbelts[i] = g->villain[i].lifebelts;
 
             needbelt = false;
-        }
-
-        needbelt = g->points;
-        if (needbelt)
-            startbelts[0] = 0;
-
-        if (rend) {
-            render(s, g, pos, startbelts);
-            SDL_UpdateRect(s, 0, 0, 0, 0);
+        } else if (!needbelt) {
+            needbelt = g->points;
         }
     }
+
+    return needbelt;
 }
 
 /* vim: set sw=4 ts=4 et fdm=syntax: */
