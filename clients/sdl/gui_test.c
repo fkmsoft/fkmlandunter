@@ -9,15 +9,19 @@
 
 int main(int argc, char **argv)
 {
-    int i, k;
-    char c = '0';
+    int i, c;
     double hs, vs;
+    gamestr g;
+    player players[5];
+    char names[5 * 9];
+    int belts[5];
+    g.villain = players;
 
     SDL_Surface *screen;
     SDL_Event event;
     Tbox t;
 
-    char s[] = "hello\0\0\0\0\0\0\0\0\0\0\0";
+    char s[] = "hello_\0\0\0\0\0\0\0\0\0\0\0";
 
     if (argc == 3) {
         screen = init_sdl(atoi(argv[1]), atoi(argv[2]));
@@ -28,49 +32,69 @@ int main(int argc, char **argv)
         hs = vs = 1.0;
     }
 
-    draw_background(screen, 0, 0);
-
-    int x, y;
-    x = hs * 50;
-    y = hs * 10;
-
-    for (i = -1; i < 4; i++) {
-        add_pcard_played(screen, 0, 0, i, i + 5);
-        create_playerbox(screen, "Playor", x, y, 0, 4, false);
-        x += hs * 200;
+    for (i = 0; i < 5; i++) {
+        sprintf(&names[9 * i], "Player %1d", i + 1);
+        g.villain[i].name = &names[9 * i];
+        g.villain[i].water_level = i;
+        g.villain[i].points = i;
+        g.villain[i].lifebelts = i;
+        g.villain[i].played = i + 1;
+        g.villain[i].dead = i;
+        belts[i] = 6;
     }
 
-    draw_hud(screen, 0, 0);
-
-    create_playerbox(screen, NAME, hs * pbox_x, vs * pbox_y, 0, 10, true);
+    belts[0] = 10;
 
     for (i = 0; i < 12; i++)
-       add_pcard(screen, 0, 0, i, i+1);
+        g.player.weathercards[i] = i;
 
-    add_wcard(screen, 0, 0, 0, 5);
-    add_wcard(screen, 0, 0, 1, 5);
-
-    set_wlevel(screen, hs * pbox_x, vs * pbox_y, 12);
-    set_points(screen, hs * pbox_x, vs * pbox_y, -1);
+    g.w_card[0] = 5;
+    g.w_card[1] = 12;
 
     t = create_textbox(screen, getfont(), hs * 36, vs * 532);
-    textbox_set(t, s);
 
+    g.count = 5;
+
+    render(screen, &g, 0, belts);
+    textbox_set(t, s);
     SDL_UpdateRect(screen, 0, 0, 0, 0);
 
     for (i = 9; i; i--) {
-    	rm_lifebelt(screen, hs * pbox_x, vs * pbox_y, i);
-	s[5 + c - '0'] = c;
-	c++;
-	textbox_set(t, s);
-	k = (i % 3 + i % 5) % 12;
-        add_pcard(screen, 0, 0, k, k + 1);
+        do {
+            SDL_WaitEvent(&event);
+
+            if (event.type == SDL_QUIT)
+                exit(0);
+            if (event.type == SDL_KEYUP || event.type == SDL_MOUSEBUTTONUP)
+                belts[0] = 0;
+        } while (belts[0]);
+        belts[0] = 10;
+
+        if (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_q) {
+            exit(0);
+        } else if (event.type == SDL_MOUSEBUTTONUP) {
+            /*
+            printf("Mouse is at %d/%d\n", event.button.x, event.button.y);
+            */
+
+            if (event.button.x > 222 && event.button.x < 590 &&
+                event.button.y > 430 && event.button.y < 545) {
+                c = (event.button.x - 220) / 25;
+                if (c > 11) c = 11;
+
+                printf("On Card %i\n", c);
+            }
+        }
+
+    	g.villain[0].lifebelts = i;
+        if (i == 1) i = 2;
+
+        render(screen, &g, 0, belts);
+        s[15 - i] = '0' + i;
+        textbox_set(t, s);
 
         SDL_UpdateRect(screen, 0, 0, 0, 0);
-	SDL_Delay(1000);
     }
-
-    do { SDL_PollEvent(&event); } while (event.type != SDL_KEYDOWN);
 
     return 0;
 }

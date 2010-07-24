@@ -165,6 +165,11 @@ int set_lifebelts(SDL_Surface *s, int x, int y, int n, int max)
     int i, j;
     SDL_Rect r;
 
+    if (max > 12 || n > 12 || max < 0 || n < 0) {
+        fprintf(stderr, "Error: illegal number of lifebelts %d/%d\n", n, max);
+        return -1;
+    }
+
     /* draw lifebelts */
     r.x = x + hstretch * 5;
     r.y = y + vstretch * 106;
@@ -308,7 +313,7 @@ int add_wcard(SDL_Surface *s, int x, int y, int n, int val)
     SDL_Surface *txt;
     char buf[3];
 
-    r.x = x + hstretch * 320;
+    r.x = x + hstretch * 305;
     r.y = y + vstretch * 230;
 
     r.x += hstretch * n * 100;
