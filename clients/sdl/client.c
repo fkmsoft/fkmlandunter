@@ -20,7 +20,7 @@ static const int W = 800;
 static const int H = 600;
 
 static void pre_render(SDL_Surface *s, char *name, double hs, double vs);
-static void parse_input(char *input, gamestr *g, int *startbelts, int pos, SDL_Surface *s);
+static void parse_input(char *input, gamestr *g, int *startbelts, int pos, SDL_Surface *s, bool rend);
 
 int main(int argc, char **argv)
 {
@@ -124,7 +124,7 @@ int main(int argc, char **argv)
                 play = true;
             }
 
-            parse_input(input, g, startbelts, pos, screen);
+            parse_input(input, g, startbelts, pos, screen, false);
             free(input);
         }
     }
@@ -161,7 +161,7 @@ int main(int argc, char **argv)
             if (!strncmp(input, "TERMINATE", 9) || strstr(input, "\nTERMINATE"))
                 play = false;
 
-            parse_input(input, g, startbelts, pos, screen);
+            parse_input(input, g, startbelts, pos, screen, true);
 
             free(input);
         }
@@ -188,7 +188,7 @@ static void pre_render(SDL_Surface *s, char *name, double hs, double vs)
     set_points(s, 0, 0, 0);
 }
 
-static void parse_input(char *input, gamestr *g, int *startbelts, int pos, SDL_Surface *s)
+static void parse_input(char *input, gamestr *g, int *startbelts, int pos, SDL_Surface *s, bool rend)
 {
     char *p, b[BUFL];
     int i, needbelt = (startbelts[0] == 0);
@@ -211,8 +211,10 @@ static void parse_input(char *input, gamestr *g, int *startbelts, int pos, SDL_S
         if (needbelt)
             startbelts[0] = 0;
 
-        render(s, g, pos, startbelts);
-        SDL_UpdateRect(s, 0, 0, 0, 0);
+        if (rend) {
+            render(s, g, pos, startbelts);
+            SDL_UpdateRect(s, 0, 0, 0, 0);
+        }
     }
 }
 
