@@ -19,7 +19,7 @@ static SDL_Color font_fg = {0, 0, 0, 255};
 
 double hstretch, vstretch;
 
-const int pbox_x = 623, pbox_y = 393;
+const int pbox_x = 624, pbox_y = 394;
 
 SDL_Surface *init_sdl(int w, int h)
 {
@@ -44,6 +44,8 @@ SDL_Surface *init_sdl(int w, int h)
     if (TTF_Init() == -1) {
         exit(EXIT_FAILURE);
     }
+
+    SDL_WM_SetCaption("Fkmlandunter", "fkml");
 
     vstretch = w / (float)800;
     hstretch = h / (float)600;

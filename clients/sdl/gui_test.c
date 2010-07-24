@@ -9,7 +9,7 @@
 
 int main(int argc, char **argv)
 {
-    int i, c;
+    int i, j, c, *w;
     double hs, vs;
     gamestr g;
     player players[5];
@@ -46,7 +46,7 @@ int main(int argc, char **argv)
     belts[0] = 10;
 
     for (i = 0; i < 12; i++)
-        g.player.weathercards[i] = i;
+        g.player.weathercards[i] = i + 1;
 
     g.w_card[0] = 5;
     g.w_card[1] = 12;
@@ -73,16 +73,26 @@ int main(int argc, char **argv)
         if (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_q) {
             exit(0);
         } else if (event.type == SDL_MOUSEBUTTONUP) {
-            /*
-            printf("Mouse is at %d/%d\n", event.button.x, event.button.y);
-            */
+            w = g.player.weathercards;
 
-            if (event.button.x > 222 && event.button.x < 590 &&
-                event.button.y > 430 && event.button.y < 545) {
-                c = (event.button.x - 220) / 25;
-                if (c > 11) c = 11;
+            if (event.button.x > hs * 222 && event.button.x < hs * 590 &&
+                event.button.y > vs * 430 && event.button.y < vs * 545) {
+                c = (event.button.x - hs * 220) / (hs * 25);
+                if (c > 11) {
+                    j = 3 + 11 - c;
+                    c = 11;
+                } else {
+                    j = 3;
+                }
 
-                printf("On Card %i\n", c);
+                for (; j && c && !w[c]; j--)
+                    c--;
+
+                if (w[c]) {
+                    printf("On Card %d: %d\n", c, w[c]);
+                    g.villain[0].played = w[c];
+                    w[c] = 0;
+                }
             }
         }
 
