@@ -130,7 +130,7 @@ void send_points(fkmserver *s)
     return;
 }
 
-/* returns played weather card or -1 if other command */
+/* returns played weather card or -2 on disconnect, -1 if other command */
 int parse_game_input(fkmserver *s, int p)
 {
     bool indeck = false;
@@ -187,7 +187,7 @@ int parse_game_input(fkmserver *s, int p)
                     p, pl->name);
             send_leave(s, p);
             rmplayer(s, p);
-            break;
+			return -2;
         case MSG:
             if (!cmddata || *(++cmddata) == 0)
                 fkmserver_cidxsend(s, p, build_cmd(FAIL, "Message expected"));
@@ -236,7 +236,6 @@ int parse_pre_game_input(fkmserver *s, int p)
                         p, pl->name);
                 send_leave(s, p);
                 rmplayer(s, p);
-                return -1;
             case PLAY:
                 fkmserver_cidxsend(s, p, build_cmd(FAIL, "game hasn't started"));
                 break;
@@ -372,15 +371,15 @@ void disconnect_fuckers(fkmserver *s, bool all)
     if (all) {
         for (i = 0; i < pnum; i++) {
             fkmserver_cidxsend(s, i, build_cmd(TERMINATE, "game ended"));
-            /* always take the first, because the ones before
-             * are already gone */
             p = fkmserver_getc(s, i);
             if (p->name)
                 free(p->name);
         }
         for (i = 0; i < pnum; i++)
+            /* always take the first, because the ones before
+             * are already gone */
             fkmserver_rmidxc(s, 0);
-    } else
+    } else {
         for (i = 0; i < pnum; i++) {
             p = fkmserver_getc(s, i);
             if (!p->name) {
@@ -388,6 +387,7 @@ void disconnect_fuckers(fkmserver *s, bool all)
                 i--; pnum--;
             }
         }
+	}
 
     return;
 }

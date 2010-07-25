@@ -1,4 +1,6 @@
-modules := server clients testenv
+# some binaries
+XARGS := xargs
+FIND  := find
 
 # global flags
 CFLAGS = -g -Wall -ansi
@@ -10,6 +12,7 @@ objs    :=
 all:
 
 # include module descriptions
+modules := server clients testenv
 include $(patsubst %,%/module.mk,$(modules))
 
 # go
@@ -19,7 +22,5 @@ clean:
 	$(RM) $(objs) $(targets)
 
 # Be REALLY careful with this!!
-XARGS := xargs
-FIND  := find
 terror:
 	$(FIND) . -name \*.o | $(XARGS) $(RM)

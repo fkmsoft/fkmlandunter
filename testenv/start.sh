@@ -1,6 +1,6 @@
 #!/bin/sh
 
-./server &
+./nserv &
 sleep 1
 ./random -s -n Hans &
 ./random -s -n Schwanz &

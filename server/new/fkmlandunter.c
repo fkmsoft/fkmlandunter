@@ -79,10 +79,10 @@ bool fkmlandunter_play(fkmserver *s, int playerlimit)
         for (j = 0; j < 12 && alive > 2; j++) {
             /* w_min & w_max are the current watercards */
             int w_min, w_max;
-            w_min = (water[j] < water[j+1] ?
-                  water[j] : water[j+1]);
-            w_max = (water[j] > water[j+1] ?
-                  water[j] : water[j+1]);
+            w_min = (water[j] < water[23-j] ?
+                  water[j] : water[23-j]);
+            w_max = (water[j] > water[23-j] ?
+                  water[j] : water[23-j]);
 
             /* This loop provides all players with information necessary to
              * make their move */
@@ -110,8 +110,15 @@ bool fkmlandunter_play(fkmserver *s, int playerlimit)
                 }
 
                 int w_card;
-                if ((w_card = parse_game_input(s, --p)) < 0)
+                w_card = parse_game_input(s, --p);
+				if (w_card == -2) {
+                    /* FIXME */
+                    send_op_message(s, "Some fucker left, game must be cancelled");
+                    disconnect_fuckers(s, true);
+                    return false;
+				} else if (w_card == -1) {
                     continue;
+				}
 
                 /* remove used weathercard from deck */
                 rm_wcard(s, p, w_card);

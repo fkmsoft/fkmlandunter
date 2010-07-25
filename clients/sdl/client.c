@@ -19,11 +19,19 @@
 static const int W = 800;
 static const int H = 600;
 
+struct net_s {
+    SDLNet_SocketSet set;
+    TCPsocket sock;
+    bool *play;
+    bool *push;
+};
+
 static bool parse_input(char *input, gamestr *g, int *startbelts, int pos, SDL_Surface *s, bool needbelt);
+static int network_thread(struct net_s *data);
 
 int main(int argc, char **argv)
 {
-    bool debug = false;
+    bool debug = false, netpush = true;
     bool play = true, needbelt = true;
     char *name = DEFNAME, *host = DEFHOST;
     char *input, *p, buf[BUFL];
@@ -32,7 +40,9 @@ int main(int argc, char **argv)
     int mdown = 0, kdown = 0;
     gamestr *g;
     SDL_Surface *screen;
+    SDL_Thread *net;
     SDL_Event ev;
+    TCPsocket sock;
     SDLNet_SocketSet set;
 
     while ((opt = getopt(argc, argv, "Hn:p:h:dr:")) != -1) {
@@ -74,7 +84,7 @@ int main(int argc, char **argv)
 
     IPaddress addr = compute_address(host, port);
 
-    TCPsocket sock = SDLNet_TCP_Open(&addr);
+    sock = SDLNet_TCP_Open(&addr);
     if (sock == NULL) {
         printf("cannot connect to %s:%d\n", host, port);
         exit(EXIT_FAILURE);
@@ -140,12 +150,21 @@ int main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
+    struct net_s netdata;
+    netdata.sock = sock;
+    netdata.set = set;
+    netdata.play = &play;
+    netdata.push = &netpush;
+    net = SDL_CreateThread((int (*)(void *))network_thread, &netdata);
+
     while (play) {
-        SDL_PollEvent(&ev);
+        SDL_WaitEvent(&ev);
+
         if (ev.type == SDL_QUIT ||
             (kdown && ev.type == SDL_KEYUP && ev.key.keysym.sym == SDLK_q)) {
             sdl_send_to(sock, "LOGOUT bye\n");
             SDLNet_TCP_Close(sock);
+            SDL_KillThread(net);
             exit(EXIT_SUCCESS);
         } else if (mdown && ev.type == SDL_MOUSEBUTTONUP && !g->villain[pos].dead) {
             opt = card_select(ev.button.x, ev.button.y, deck);
@@ -162,21 +181,22 @@ int main(int argc, char **argv)
             mdown = 1;
         } else if (ev.type == SDL_KEYDOWN) {
             kdown = 1;
-        }
-
-        if (SDLNet_CheckSockets(set, 0) && SDLNet_SocketReady(sock)) {
+        } else if (ev.type == SDL_USEREVENT) {
             input = sdl_receive_from(sock, debug);
 
             if (!strncmp(input, "TERMINATE", 9) || strstr(input, "\nTERMINATE"))
                 play = false;
 
             needbelt = parse_input(input, g, startbelts, pos, screen, needbelt);
+            free(input);
+            netpush = true;
+
             render(screen, g, pos, startbelts);
             SDL_UpdateRect(screen, 0, 0, 0, 0);
-
-            free(input);
         }
     }
+
+    SDL_WaitThread(net, 0);
     
     game_over(screen, g, pos, 0, 0);
     SDL_UpdateRect(screen, 0, 0, 0, 0);
@@ -212,6 +232,28 @@ static bool parse_input(char *input, gamestr *g, int *startbelts, int pos, SDL_S
     }
 
     return needbelt;
+}
+
+static int network_thread(struct net_s *data)
+{
+    SDLNet_SocketSet set = data->set;
+    TCPsocket sock = data->sock;
+    bool *play = data->play;
+    bool *push = data->push;
+    SDL_Event net_event;
+
+    net_event.type = SDL_USEREVENT;
+    net_event.user.code = 0;
+    net_event.user.data1 = 0;
+    net_event.user.data2 = 0;
+
+    while (*play)
+        if (*push && SDLNet_CheckSockets(set, -1) && SDLNet_SocketReady(sock)) {
+            SDL_PushEvent(&net_event);
+            *push = false;
+        }
+
+    return 0;
 }
 
 /* vim: set sw=4 ts=4 et fdm=syntax: */

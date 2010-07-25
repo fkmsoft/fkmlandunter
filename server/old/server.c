@@ -139,10 +139,10 @@ int main(int argc, char **argv)
         for (j = 0; j < 12 && alive > 2; j++) {
             /* w_min & w_max are the current watercards */
             int w_min, w_max;
-            w_min = (s->water[j] < s->water[j+1] ?
-                  s->water[j] : s->water[j+1]);
-            w_max = (s->water[j] > s->water[j+1] ?
-                  s->water[j] : s->water[j+1]);
+            w_min = (s->water[j] < s->water[23-j] ?
+                  s->water[j] : s->water[23-j]);
+            w_max = (s->water[j] > s->water[23-j] ?
+                  s->water[j] : s->water[23-j]);
 
             /* This loop provides all players with information necessary to
              * make their move */
