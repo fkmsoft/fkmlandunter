@@ -160,7 +160,8 @@ int fkml_addclient(fkml_server *s, int fd)
 
 bool fkml_addplayer(fkml_server *s)
 {
-    int fd = accept(s->socket, 0, 0);
+    int i, fd = accept(s->socket, 0, 0);
+
     if (fd == -1) {
         puts("Error waiting for client connection");
         return false;
@@ -185,7 +186,21 @@ bool fkml_addplayer(fkml_server *s)
                     "Player names must not contain \'%%\'");
             fkml_rmclient(s, newplayer);
             return false;
+        } else if (strchr(nam, ' ')) {
+            send_cmd(s, newplayer, FAIL,
+                    "Player names must not contain spaces");
+            fkml_rmclient(s, newplayer);
+            return false;
         } else {
+			/* check whether name is taken yet */
+			for (i = 0; i < s->connected - 1; i++)
+				if (strcmp(s->players[i].name, nam) == 0) {
+					send_cmd(s, newplayer, FAIL, "nickname taken");
+					fkml_rmclient(s, newplayer);
+					return false;
+				}
+			
+			/* everything ok, let him in */
             s->players[newplayer].name = malloc(sizeof(char) *
                     (buf + strlen(buf) - nam/*strlen(client_command[LOGIN])*/));
             strcpy(s->players[newplayer].name, nam);

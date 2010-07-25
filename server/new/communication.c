@@ -203,15 +203,16 @@ int parse_game_input(fkmserver *s, int p)
 
 int parse_pre_game_input(fkmserver *s, int p)
 {
-    player *pl = fkmserver_getc(s, p);
+    int i;
+    player *p2, *pl = fkmserver_getc(s, p);
     char *in = fkmserver_cidxrecv(s, p);
 
     trim(in, "\r\n");
     if (strchr(in, '%')) {
-        if (pl->name)
+        if (pl->name) {
             fkmserver_cidxsend(s, p, build_cmd(FAIL,
                         "invalid character \'%%\' in input"));
-        else {
+        } else {
             fkmserver_cidxsend(s, p, build_cmd(TERMINATE,
                         "invalid character \'%%\' in input"));
             fkmserver_rmidxc(s, p);
@@ -257,14 +258,25 @@ int parse_pre_game_input(fkmserver *s, int p)
             fkmserver_cidxsend(s, p, build_cmd(TERMINATE,
                         "spaces are not allowed in nicknames"));
             fkmserver_rmidxc(s, p);
-        } else { /* everything OK, let him in */
+        } else {
+            /* check whether this name is already taken */
+            for (i = 0; i < s->connections; i++) {
+				p2 = fkmserver_getc(s, i);
+				if (p2->name && strcmp(p2->name, data) == 0) {
+					fkmserver_cidxsend(s, p, build_cmd(TERMINATE,
+							  "nickname taken: `%s'", p2->name));
+					fkmserver_rmidxc(s, p);
+					return 0;
+			    }
+            }
+
+			/* everything OK, let him in */
             pl->name = malloc(strlen(data));
             strcpy(pl->name, data);
             fkmserver_cidxsend(s, p, build_cmd(ACK, 0));
             send_join(s, p);
             return 1;
         }
-        return -1;
     }
 
     return 0;

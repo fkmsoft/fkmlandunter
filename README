@@ -61,7 +61,7 @@ cleaner and (hopefully) more understandable reimplementation. Both should be
 functionally equivalent though, and possibly share some bugs, too (they did in
 the past).
 
-To run any of them just execute the file called ``server'' after make'ing the
+To run any of them just execute the file called `server' after make'ing the
 whole thing (either everything in one run from the top directory, or partially
 from a subdirectory). The -h switch should tell you about most options, although
 it is always a good idea to read the code (assuming you know some C) just to see
@@ -76,7 +76,7 @@ as PORT bound to any address.
 
 The curses client resides in the clients/curses/ subdirectory and requires the
 curses development headers and (obviously) libcurses to be compiled and run.
-After make'ing the thing, you can run the ``client'' executable from its
+After make'ing the thing, you can run the `client' executable from its
 directory, it will connect to localhost port 1337 by default, but you can
 specify another IP and port on the command line.
 
@@ -87,11 +87,11 @@ implementation of the chat has not been thoroughly debugged as of now.
 3. The Python Client:
 ---------------------
 
-The python client to be found in clients/pyqt does not require compiling, but
+The python client to be found in clients/pyqt/ does not require compiling, but
 you will of course need python to run it, plus the pyqt4 library. It supports
 the complete protocol and might be nicer to use than the curses client if you
 prefer working with guis, but other than that it provides the same basic
-functionality.
+functionality - just run `client' from the pyqt directory.
 
 
 4. The AI:
@@ -99,7 +99,7 @@ functionality.
 
 The only AI we have yet does nothing in any way intelligent, it rather plays any
 cards it gets in the order they are initially in. It can be compiled and run
-from clients/ai/random named ``random'' and connects to 127.0.0.1:1337 by
+from clients/ai/random named `random' and connects to 127.0.0.1:1337 by
 default, like all the other clients.
 
 
@@ -108,14 +108,14 @@ default, like all the other clients.
 
 The test environment in testenv/ was made for stress-testing and checking the
 servers & AI clients (so only Randall, so far) for deadlocks and other bugs.
-Just run ``testenv'' with the -h to learn more.
+Just run `testenv -h' to learn more.
 
 
 6. The SDL Stuff:
 -----------------
 
-As of now you can find a general gui demo in clients/sdl/ called ``gui_test''
-and an SDL implementation of Randall called ``randall''. Be sure to invoke them
+As of now you can find a general gui demo in clients/sdl/ called `gui_test'
+and an SDL implementation of Randall called `randall'. Be sure to invoke them
 from the clients/sdl directory, or else fix the #defines in gui_util.h so they
 can find their graphics. See data/fkmlu/ for supported resolutions. To actually
 start randall in gui mode, use the -g switch, and to have him play his cards on
