@@ -55,22 +55,20 @@ but we (the Fkmsoft Team) have already produced some things that actually
 compile and can be run.
     </div>
 
-    <p align="justify">
+    <p>
 
 <img src="promo.png" alt="Screenshot of Fkmlandunter" />
 <br><br><h2>0. What is working at the moment:</h2>
 
-- 2 different servers (both implementing the same network protocol, see Appendix
-  A for further details).<br>
-
-- A cli based client using the ncurses library (needs ncurses-dev or the
-  equivalent of your distro to compile).<br>
-
-- A gui client based on python and pyqt4 (which you will need to run it, too)<br>
-
-- A rather stupid AI called the random-ai, a.k.a. ``Randall''<br>
-
-- The same AI but including a somewhat nicer gui hacked together in SDL.<br><br>
+<ul>
+<li>2 different servers (both implementing the same network protocol, see Appendix
+  A for further details).</li>
+<li>A cli based client using the ncurses library (needs ncurses-dev or the
+  equivalent of your distro to compile).</li>
+<li>A gui client based on python and pyqt4 (which you will need to run it, too)</li>
+<li>A rather stupid AI called the random-ai, a.k.a. ``Randall''</li>
+<li>The same AI but including a somewhat nicer gui hacked together in SDL.</li>
+</ul>
 
 What we still hope to produce is a quality gui client, that might look similar
 to what you can already see in SDL-Randall, and a master server to keep track of
@@ -85,66 +83,77 @@ The servers can be found in server/old/ and server/new/ respectively. As the
 name indicates, one of them is the original one, while the other is a rather
 cleaner and (hopefully) more understandable reimplementation. Both should be
 functionally equivalent though, and possibly share some bugs, too (they did in
-the past).</p><br><br>
+the past).</p>
 
-<p align="right">
+<p align="justify">
 To run any of them just execute the file called ``server'' after make'ing the
 whole thing (either everything in one run from the top directory, or partially
 from a subdirectory). The -h switch should tell you about most options, although
 it is always a good idea to read the code (assuming you know some C) just to see
-whether anything changed since the usage message string was last updated.</p><br><br>
+whether anything changed since the usage message string was last updated.</p>
 
+<p align="justify">
 In general, the servers will run port 1337 or anything else you care to #define
-as PORT bound to any address.<br><br>
+as PORT bound to any address.</p>
 
 
 <h2>2. The Curses Client:</h2>
 <img src="screenshot_ncurses.jpg" alt="Screenshot of Fkmlandunter(Ncurses)" /><br>
+
+<p align="justify">
 The curses client resides in the clients/curses/ subdirectory and requires the
 curses development headers and (obviously) libcurses to be compiled and run.
 After make'ing the thing, you can run the ``client'' executable from its
 directory, it will connect to localhost port 1337 by default, but you can
-specify another IP and port on the command line.<br><br>
+specify another IP and port on the command line.</p>
 
+<p align="justify">
 The curses client supports the complete fkmlandunter protocol, although the
-implementation of the chat has not been thoroughly debugged as of now.<br><br>
+implementation of the chat has not been thoroughly debugged as of now.</p>
 
 
 <h2>3. The Python Client:</h2>
 <img src="screenshot_python.jpg" alt="Screenshot of Fkmlandunter(Python)" /><br>
+
+<p align="justify">
 The python client to be found in clients/pyqt does not require compiling, but
 you will of course need python to run it, plus the pyqt4 library. It supports
 the complete protocol and might be nicer to use than the curses client if you
 prefer working with guis, but other than that it provides the same basic
-functionality.<br><br>
+functionality.</p>
 
 
 <h2>4. The AI:</h2>
 
+<p align="justify">
 The only AI we have yet does nothing in any way intelligent, it rather plays any
 cards it gets in the order they are initially in. It can be compiled and run
 from clients/ai/random named ``random'' and connects to 127.0.0.1:1337 by
-default, like all the other clients.<br><br>
+default, like all the other clients.</p>
 
 
 <h2>5. The Test Environment:</h2>
 
+<p align="justify">
 The test environment in testenv/ was made for stress-testing and checking the
 servers & AI clients (so only Randall, so far) for deadlocks and other bugs.
-Just run ``testenv'' with the -h to learn more.<br><br>
+Just run ``testenv'' with the -h to learn more.</p>
 
 
 <h2>6. The SDL Stuff:</h2>
 <img src="screenshot_sdl.jpg" alt="Screenshot of Fkmlandunter(SDL)" /><br>
+
+<p align="justify">
 As of now you can find a general gui demo in clients/sdl/ called ``gui_test''
 and an SDL implementation of Randall called ``randall''. Be sure to invoke them
 from the clients/sdl directory, or else fix the #defines in gui_util.h so they
 can find their graphics. See data/fkmlu/ for supported resolutions. To actually
 start randall in gui mode, use the -g switch, and to have him play his cards on
-key-press, so you can see more of the game, use the -i (interactive) switch.<br><br>
+key-press, so you can see more of the game, use the -i (interactive) switch.</p>
 
+<p align="justify">
 What we hope to produce here is a real client (like the curses or pyqt ones)
-using a visual representation like SDL Randall.<br><br>
+using a visual representation like SDL Randall.</p>
 
 
 <h2>Appendix A - the fkmlandunter protocol:</h2>
@@ -208,7 +217,7 @@ Spielern Platzierung mitteilen;    // Kommunikation<br><br>
 <h2>License</h2>
 <p>GPL</p>
 <h2>Authors</h2>
-<p>This whole stuff was produced by three students of Karlruhe Institute of
+<p align="justify">This whole stuff was produced by three students of Karlruhe Institute of
 Technology as a leisure-time activity, so don't be surprised when development
 comes to a halt at times, as we sometimes have exams and other things on our
 mind - we are doing this far from full time. Our names would be<br><br>
