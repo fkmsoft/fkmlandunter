@@ -60,6 +60,7 @@ SDL_Surface *init_sdl(int w, int h)
     }
 
     SDL_WM_SetCaption("Fkmlandunter", "fkml");
+    SDL_WM_SetIcon(SDL_LoadBMP(ICON), 0);
 
     vstretch = w / (float)800;
     hstretch = h / (float)600;

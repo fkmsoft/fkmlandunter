@@ -55,6 +55,9 @@
 /* standard font */
 #define DEFFONT (DATADIR "TOONISH.ttf")
 
+/* icon */
+#define ICON (DATADIR "ring.bmp")
+
 extern const int pbox_x, pbox_y;
 
 SDL_Surface *init_sdl(int w, int h);
