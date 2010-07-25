@@ -56,7 +56,7 @@
 #define DEFFONT (DATADIR "TOONISH.ttf")
 
 /* icon */
-#define ICON (DATADIR "ring.bmp")
+#define ICON (DATADIR "ring.png")
 
 extern const int pbox_x, pbox_y;
 

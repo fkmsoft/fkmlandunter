@@ -40,7 +40,6 @@ SDL_Surface *init_sdl(int w, int h)
     char buf[BUFLEN];
     SDL_Surface *screen, *temp;
     struct stat s_stat;
-    unsigned ckey;
 
     snprintf(buf, BUFLEN, "%s%d_%d", DATADIR, w, h);
     if (stat(buf, &s_stat) == -1 || !S_ISDIR(s_stat.st_mode)) {
@@ -52,10 +51,12 @@ SDL_Surface *init_sdl(int w, int h)
         exit(EXIT_FAILURE);
     }
 
-    temp = SDL_LoadBMP(ICON);
-    ckey = SDL_MapRGB(temp->format, 0, 255, 0);
-    SDL_SetColorKey(temp, SDL_SRCCOLORKEY, ckey);
+    temp = IMG_Load(ICON);
+    SDL_SetColorKey(temp, SDL_SRCCOLORKEY, SDL_MapRGB(temp->format, 0, 255, 0));
     SDL_WM_SetIcon(temp, 0);
+    /*
+    SDL_FreeSurface(temp);
+    */
 
     if (!(screen = SDL_SetVideoMode(w, h, 0, 0))) {
         exit(EXIT_FAILURE);
