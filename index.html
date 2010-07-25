@@ -62,7 +62,7 @@ compile and can be run.
       <p align="center">last updated: 23.07.2010</p>
     </div>
 
-<br><br><h2>0. What is working at the moment:</h2>
+<h2>0. What is working at the moment:</h2>
 
 <ul>
 <li>2 different servers (both implementing the same network protocol, see Appendix
@@ -100,7 +100,7 @@ whether anything changed since the usage message string was last updated.</p>
 In general, the servers will run port 1337 or anything else you care to #define
 as PORT bound to any address.</p>
 
-
+<br>
 <h2>2. The Curses Client:</h2>
 <img src="screenshot_ncurses.jpg" alt="Screenshot of Fkmlandunter(Ncurses)" /><br>
 
@@ -115,7 +115,7 @@ specify another IP and port on the command line.</p>
 The curses client supports the complete fkmlandunter protocol, although the
 implementation of the chat has not been thoroughly debugged as of now.</p>
 
-
+<br>
 <h2>3. The Python Client:</h2>
 <img src="screenshot_python.jpg" alt="Screenshot of Fkmlandunter(Python)" /><br>
 
@@ -126,7 +126,7 @@ the complete protocol and might be nicer to use than the curses client if you
 prefer working with guis, but other than that it provides the same basic
 functionality.</p>
 
-
+<br>
 <h2>4. The AI:</h2>
 
 <p align="justify">
@@ -135,7 +135,7 @@ cards it gets in the order they are initially in. It can be compiled and run
 from clients/ai/random named ``random'' and connects to 127.0.0.1:1337 by
 default, like all the other clients.</p>
 
-
+<br>
 <h2>5. The Test Environment:</h2>
 
 <p align="justify">
@@ -143,7 +143,7 @@ The test environment in testenv/ was made for stress-testing and checking the
 servers & AI clients (so only Randall, so far) for deadlocks and other bugs.
 Just run ``testenv'' with the -h to learn more.</p>
 
-
+<br>
 <h2>6. The SDL Stuff:</h2>
 <img src="screenshot_sdl.jpg" alt="Screenshot of Fkmlandunter(SDL)" /><br>
 
@@ -159,33 +159,33 @@ key-press, so you can see more of the game, use the -i (interactive) switch.</p>
 What we hope to produce here is a real client (like the curses or pyqt ones)
 using a visual representation like SDL Randall.</p>
 
-
+<br>
 <h2>Appendix A - the fkmlandunter protocol:</h2>
 <ul>
 <li>-> LOGIN name</li>
-<li><- ACK name<li>
-<li><- JOIN name ****<li>
-<li>-> START<li>
-<li><- START 3 nam1 nam2 nam3<li>
+<li><- ACK name</li>
+<li><- JOIN name ****</li>
+<li>-> START</li>
+<li><- START 3 nam1 nam2 nam3</li>
     <ul>
-    <li><- DECK 1 2 56<li>
-    <li><- RINGS 2 4 1<li>
-    <li><- WEATHER 7 8<li>
-    <li>-> PLAY 56<li>
-    <li><- ACK 56<li>
-    <li><- FAIL 56<li>
-    <li><- PLAYEd 1 25 60<li>
-    <li><- WLEVELS 7 8 0<li>
-    <li><- POINTS 1 2 -1<li>
+    <li><- DECK 1 2 56</li>
+    <li><- RINGS 2 4 1</li>
+    <li><- WEATHER 7 8</li>
+    <li>-> PLAY 56</li>
+    <li><- ACK 56</li>
+    <li><- FAIL 56</li>
+    <li><- PLAYEd 1 25 60</li>
+    <li><- WLEVELS 7 8 0</li>
+    <li><- POINTS 1 2 -1</li>
     </ul>
-<li>-> LOGOUT bye<li>
-<li><- LEAVE name i must go ****<li>
+<li>-> LOGOUT bye</li>
+<li><- LEAVE name i must go ****</li>
 <li><- TERMINATE fuck off<br>
-------<li>
-<li>-> MSG fu all los0rZ<li>
-<li><- MSGFROM name fu all los0rZ<br><li>
+------</li>
+<li>-> MSG fu all los0rZ</li>
+<li><- MSGFROM name fu all los0rZ<br></li>
 </ul>
-
+<br>
 <h2>Appendix B - Brief Game Description (German)</h2>
 <ul>
 <li>Spieleranzahl S von Kommandozeile auswerten, sonst 3;</li>
@@ -220,6 +220,7 @@ using a visual representation like SDL Randall.</p>
 <li>Platzierung ermitteln;</li>
 <li>Spielern Platzierung mitteilen;    // Kommunikation</li>
 </ul>
+<br>
 </p><h2>Install</h2>
 <p>Take a look at the Main Project Text
 </p>
