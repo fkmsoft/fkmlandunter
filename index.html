@@ -57,7 +57,11 @@ compile and can be run.
 
     <p>
 
-<img src="promo.png" alt="Screenshot of Fkmlandunter" />
+<img src="promo.png" alt="Screenshot of Fkmlandunter" /><br>
+<div class="description">
+      <p align="center">last updated: 23.07.2010</p>
+    </div>
+
 <br><br><h2>0. What is working at the moment:</h2>
 
 <ul>
@@ -157,60 +161,65 @@ using a visual representation like SDL Randall.</p>
 
 
 <h2>Appendix A - the fkmlandunter protocol:</h2>
--> LOGIN name<br>
-<- ACK name<br>
-<- JOIN name ****<br>
--> START<br>
-<- START 3 nam1 nam2 nam3<br>
-    <- DECK 1 2 56<br>
-    <- RINGS 2 4 1<br>
-    <- WEATHER 7 8<br>
-    -> PLAY 56<br>
-    <- ACK 56<br>
-    <- FAIL 56<br>
-    <- PLAYEd 1 25 60<br>
-    <- WLEVELS 7 8 0<br>
-    <- POINTS 1 2 -1<br><br>
-
--> LOGOUT bye<br>
-<- LEAVE name i must go ****<br>
-<- TERMINATE fuck off<br>
-------<br>
--> MSG fu all los0rZ<br>
-<- MSGFROM name fu all los0rZ<br><br>
-
+<ul>
+<li>-> LOGIN name</li>
+<li><- ACK name<li>
+<li><- JOIN name ****<li>
+<li>-> START<li>
+<li><- START 3 nam1 nam2 nam3<li>
+    <ul>
+    <li><- DECK 1 2 56<li>
+    <li><- RINGS 2 4 1<li>
+    <li><- WEATHER 7 8<li>
+    <li>-> PLAY 56<li>
+    <li><- ACK 56<li>
+    <li><- FAIL 56<li>
+    <li><- PLAYEd 1 25 60<li>
+    <li><- WLEVELS 7 8 0<li>
+    <li><- POINTS 1 2 -1<li>
+    </ul>
+<li>-> LOGOUT bye<li>
+<li><- LEAVE name i must go ****<li>
+<li><- TERMINATE fuck off<br>
+------<li>
+<li>-> MSG fu all los0rZ<li>
+<li><- MSGFROM name fu all los0rZ<br><li>
+</ul>
 
 <h2>Appendix B - Brief Game Description (German)</h2>
-
-Spieleranzahl S von Kommandozeile auswerten, sonst 3;<br>
-S Decks erstellen;<br>
-S Spieler mit Punktzahl 0 erstellen;<br>
-for i = 0 to S<br>
-    Wasserstaende 0 setzen;<br>
-    Decks zuweisen;<br>
-    Den Spielern Decks geben;    // Kommunikation<br>
-    Spieler auf lebendig setzen;<br>
-        Wasserstapel mischen;<br>
-    for j = 0 to 12<br>
-        Den Spielern neue Wasserkarten zeigen;    // Kommunikation<br>
-        Eingabe von Spielern lesen solange bis gueltig;<br>
-                            // Kommunikation<br>
-        Wasserstand der Spieler updaten;<br>
-        Spieler mit hoechstem Wasserstand ermitteln und Ring<br>
-            entfernen;<br>
-        Spielern neue Wasserstaende mitteilen; // Kommunikation<br>
-        Pruefen auf Wasserstand -1 - Spieler als Tot markieren;<br>
-        Pruefen ob Anzahl lebender Spieler >= 2<br>
-            wenn nicht Runde beenden;<br><br>
-
-    Spieler mit niedrigstem Wasserstand ermitteln<br>
-        +1 Punkt;<br>
-    Wasserstand auf Punktzahl addieren;<br>
-    Spielern Punktzahlen mitteilen; // evtl unnoetig ausser f. Markierung<br><br>
-
-Platzierung ermitteln;<br>
-Spielern Platzierung mitteilen;    // Kommunikation<br><br>
-
+<ul>
+<li>Spieleranzahl S von Kommandozeile auswerten, sonst 3;</li>
+<li>S Decks erstellen;</li>
+<li>S Spieler mit Punktzahl 0 erstellen;</li>
+<li>for i = 0 to S</li>
+    <ul>
+    <li>Wasserstaende 0 setzen;</li>
+    <li>Decks zuweisen;</li>
+    <li>Den Spielern Decks geben;    // Kommunikation</li>
+    <li>Spieler auf lebendig setzen;</li>
+        <ul>
+        <li>Wasserstapel mischen;</li>
+        </ul>
+    <li>for j = 0 to 12</li>
+        <ul>
+        <li>Den Spielern neue Wasserkarten zeigen;    // Kommunikation</li>
+        <li>Eingabe von Spielern lesen solange bis gueltig;     //Kommunikation</li>                           
+        <li>Wasserstand der Spieler updaten;</li>
+        <li>Spieler mit hoechstem Wasserstand ermitteln und Ring entfernen;</li>            
+        <li>Spielern neue Wasserstaende mitteilen; // Kommunikation</li>
+        <li>Pruefen auf Wasserstand -1 - Spieler als Tot markieren;</li>
+        <li>Pruefen ob Anzahl lebender Spieler >= 2</li>
+            <ul>
+            <li>wenn nicht Runde beenden;</li>
+            </ul>
+        </ul>
+    <li>Spieler mit niedrigstem Wasserstand ermitteln +1 Punkt;</li>
+    <li>Wasserstand auf Punktzahl addieren;</li>
+    <li>Spielern Punktzahlen mitteilen; // evtl unnoetig ausser f. Markierung</li>
+    </ul>
+<li>Platzierung ermitteln;</li>
+<li>Spielern Platzierung mitteilen;    // Kommunikation</li>
+</ul>
 </p><h2>Install</h2>
 <p>Take a look at the Main Project Text
 </p>
