@@ -15,7 +15,7 @@
   		color: #000000;
     }
     #container {
-      margin: 25px;
+      margin: auto;
       width: 750px;
       background-color: #cccccc;
     }
@@ -25,8 +25,8 @@
 		h2 { font-size: 1.5em; color: #333333; }
     h3 { text-align: center; color: #333333; }
     a { color: #333333; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
-    .contents { font-size: 1.05em; margin-bottom: 30px; margin-top: 30px; font-style: bold;}
+    .description { font-size: 1.2em; margin: 30px; font-style: italic;}
+    .contents { text-align:justify; font-size: 1.05em; margin-bottom: 30px; margin-top: 30px; font-style: bold;}
     .download { float: right; }
 		pre { background: #000; color: #fff; padding: 15px;}
     hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
@@ -59,6 +59,7 @@
       <p align="center">
       last updated: 26.07.2010 
       </p>
+      <hr noshade width="600" size="3">
     </div>
 
     <p>
@@ -71,7 +72,7 @@
       </p>
     </div>
 
-<hr noshade width="600" size="2">
+<hr noshade width="600" size="3">
 
 <h2>0. What is working at the moment:</h2><p font-size=9><a href="#top">go back to top</a></p>
 
@@ -91,7 +92,7 @@ to what you can already see in SDL-Randall, and a master server to keep track of
 different game servers running all over the net.<br><br>
 
 To Check progress visit: <a href="http://github.com/fkmsoft/fkmlandunter/">Our Github-Page</a><br><br>
-
+<hr noshade width="600" size="3">
 <a name="servers"><h2>1. The Servers:</h2></a>
 
 <p align="justify">
@@ -113,6 +114,7 @@ In general, the servers will run port 1337 or anything else you care to #define
 as PORT bound to any address.</p>
 
 <br>
+<hr noshade width="600" size="3">
 <a name="curses"><h2>2. The Curses Client:</h2></a>
 <img src="screenshot_ncurses.jpg" alt="Screenshot of Fkmlandunter(Ncurses)" /><br>
 
@@ -128,6 +130,7 @@ The curses client supports the complete fkmlandunter protocol, although the
 implementation of the chat has not been thoroughly debugged as of now.</p>
 
 <br>
+<hr noshade width="600" size="3">
 <a name="python"><h2>3. The Python Client:</h2></a>
 <img src="screenshot_python.jpg" alt="Screenshot of Fkmlandunter(Python)" /><br>
 
@@ -139,6 +142,7 @@ prefer working with guis, but other than that it provides the same basic
 functionality.</p>
 
 <br>
+<hr noshade width="600" size="3">
 <a name="ai"><h2>4. The AI:</h2></a>
 
 <p align="justify">
@@ -148,6 +152,7 @@ from clients/ai/random named ``random'' and connects to 127.0.0.1:1337 by
 default, like all the other clients.</p>
 
 <br>
+<hr noshade width="600" size="3">
 <a name="enviroment"><h2>5. The Test Environment:</h2></a>
 
 <p align="justify">
@@ -156,6 +161,7 @@ servers & AI clients (so only Randall, so far) for deadlocks and other bugs.
 Just run ``testenv'' with the -h to learn more.</p>
 
 <br>
+<hr noshade width="600" size="3">
 <a name="sdl"><h2>6. The SDL Stuff:</h2></a>
 <img src="screenshot_sdl.jpg" alt="Screenshot of Fkmlandunter(SDL)" /><br>
 
@@ -173,6 +179,7 @@ has no support for ingame chat or any other advanced features like menus yet. It
 can also be found in clients/sdl/, just run `client -H' for help.</p>
 
 <br>
+<hr noshade width="600" size="3">
 <a name="app_a"><h2>Appendix A - the fkmlandunter protocol:</h2></a>
 <ul>
 <li>-> LOGIN name</li>
@@ -199,6 +206,7 @@ can also be found in clients/sdl/, just run `client -H' for help.</p>
 <li><- MSGFROM name fu all los0rZ<br></li>
 </ul>
 <br>
+<hr noshade width="600" size="3">
 <a name="app_b"><h2>Appendix B - Brief Game Description (German)</h2></a>
 <ul>
 <li>Spieleranzahl S von Kommandozeile auswerten, sonst 3;</li>
@@ -234,11 +242,15 @@ can also be found in clients/sdl/, just run `client -H' for help.</p>
 <li>Spielern Platzierung mitteilen;    // Kommunikation</li>
 </ul>
 <br>
-</p><h2>Install</h2>
+</p>
+<hr noshade width="600" size="3">
+<h2>Install</h2>
 <p>Take a look at the Main Project Text
 </p>
+<hr noshade width="600" size="3">
 <h2>License</h2>
 <p>GPL</p>
+<hr noshade width="600" size="3">
 <h2>Authors</h2>
 <p align="justify">This whole stuff was produced by three students of Karlruhe Institute of
 Technology as a leisure-time activity, so don't be surprised when development
@@ -248,7 +260,7 @@ mind - we are doing this far from full time. Our names would be<br><br>
 Christoph Gielisch (m0l0t0ph), graphics & gui design<br>
 Florian Kohnhäuser (flozilla), programming, protocol design<br>
 Richard Molitor (gattschardo), programming, protocol design<br><br><br/><br/>      </p>
-
+<hr noshade width="600" size="3">
     <h2>Download</h2>
     <p>
       You can download this project in either
