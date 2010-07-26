@@ -22,7 +22,7 @@
       		background-color: #cccccc;
     		}
 
-		h1 { font-size: 3.8em; color: #333333; margin-bottom: 3px; }
+		h1 { font-size: 3.8em; color: #333333; margin-bottom: 1px; margin-top: 5px; }
 		h1 .small { font-size: 0.4em; }
 		h1 .download {float:right; }
 		h1 a { text-decoration: none }
@@ -33,10 +33,10 @@
     		a { color: #333333; }
 		a:link{ text-decoration:none; font-weight:bold; color:#000000; }
 
-		.description { font-size: 1.2em; margin: 30px; font-style: italic;}
-    		.contents { font-size: 1.1em; margin: 30px; font-style: bold;}
+		.description { font-size: 1.2em; margin: 30px; margin-top:10px; font-style: italic;}
+    		.contents { font-size: 1.1em; margin: 30px; margin-top:10px; margin-bottom:10px; font-style: bold;}
     		.content { text-align:justify; font-size: 1.0em; margin: 30px;}
-    		.header { float: center; margin: 30px;}
+    		.header { float: center; margin: 30px; margin-bottom:10px}
     		.footer { text-align:center; margin:30; pxpadding-top:30px; font-style: italic; }
 
 		pre { background: #000; color: #fff; padding: 15px;}
@@ -58,10 +58,10 @@
 
 
 	<div class="header">
- 		
+ 		<br>
 		<h1>
 		  <a href="http://github.com/fkmsoft/fkmlandunter">fkmlandunter</a>
-      		  <span class="small">by <a href="http://github.com/fkmsoft">fkmsoft</a></span>
+      		  <span class="small">by  <a href="http://github.com/fkmsoft"><img border="0" width="100" src="fkmsoft_logo.gif"></a></span>
 		  <span class="download"><a href="http://github.com/fkmsoft/fkmlandunter/zipball/master">
 		    <img border="0" width="64" src="http://github.com/images/modules/download/zip.png"></a>
       		    <a href="http://github.com/fkmsoft/fkmlandunter/tarball/master">
@@ -72,13 +72,34 @@
 
 		<!-- /////////////////////////////////////////////////////////////////////////////////////////// --> 
 
-   	
+
+	<div class="contents" >
+		<p align="center"> 
+      		<a href="#servers" style="text-decoration:none; font-weight:bold; color:#000000;">Servers</a> | 
+		<a href="#curses" style="text-decoration:none; font-weight:bold; color:#000000;">Curses-Client</a> | 
+		<a href="#python" style="text-decoration:none; font-weight:bold; color:#000000;">Python-Client</a> | 
+		<a href="#ai" style="text-decoration:none; font-weight:bold; color:#000000;">AI</a> | 
+		<a href="#enviroment" style="text-decoration:none; font-weight:bold; color:#000000;">Enviroment</a> | 
+		<a href="#sdl" style="text-decoration:none; font-weight:bold; color:#000000;">SDL-Stuff</a> | 
+		<a href="#app_a" style="text-decoration:none; font-weight:bold; color:#000000;">Appendix A</a> | 
+		<a href="#app_b" style="text-decoration:none; font-weight:bold; color:#000000;">Appendix B</a> | 
+		<a href="#install" style="text-decoration:none; font-weight:bold; color:#000000;">Install</a> | 
+		<a href="#license" style="text-decoration:none; font-weight:bold; color:#000000;">License</a> | 
+		<a href="#authors" style="text-decoration:none; font-weight:bold; color:#000000;">Authors</a> | 
+		<a href="#download" style="text-decoration:none; font-weight:bold; color:#000000;">Download</a> 
+		</p>
+    	</div>
+
+
+		<!-- /////////////////////////////////////////////////////////////////////////////////////////// -->
+
+  	
     	<div class="description">
-      		<img src="promo.png" alt="Screenshot of Fkmlandunter" /><br><br>
+		<img src="promo.png" alt="Screenshot of Fkmlandunter" /><br><br>
       		Fkmlandunter is the implementation of a German card game called ``land unter''
       		as a computer game. As of now this whole thing is still under heavy development,
       		but we (the Fkmsoft Team) have already produced some things that actually
-      		compile and can be run.<br>
+      		compile and can be run.
       		<p align="center">
       		last updated: 26.07.2010 
       		</p>
@@ -89,27 +110,9 @@
 		<!-- /////////////////////////////////////////////////////////////////////////////////////////// -->
 
 
-	<div class="contents">
-		<p align="center"> 
-      		<a href="#servers" style="text-decoration:none; font-weight:bold; color:#000000;">Servers</a> | 
-		<a href="#curses" style="text-decoration:none; font-weight:bold; color:#000000;">Curses-Client</a> | 
-		<a href="#python" style="text-decoration:none; font-weight:bold; color:#000000;">Python-Client</a> | 
-		<a href="#ai" style="text-decoration:none; font-weight:bold; color:#000000;">AI</a> | 
-		<a href="#enviroment" style="text-decoration:none; font-weight:bold; color:#000000;">Enviroment</a> | 
-		<a href="#sdl" style="text-decoration:none; font-weight:bold; color:#000000;">SDL-Stuff</a> | 
-		<a href="#app_a" style="text-decoration:none; font-weight:bold; color:#000000;">Appendix A</a> | 
-		<a href="#app_b" style="text-decoration:none; font-weight:bold; color:#000000;">Appendix B</a>
-		</p>
-      		<hr noshade width="600" size="3">
-    	</div>
-
-
-		<!-- /////////////////////////////////////////////////////////////////////////////////////////// -->
-
-
 	<div class="content">
 
-		<h2>0. What is working at the moment:<span class="small"><a href="#top">go back to top</a></span></h2>
+		<h2>0. What is working at the moment:<span class="small"><a href="#top">back to top</a></span></h2>
 
 		<ul>
 		  <li>2 different servers (both implementing the same network protocol, see Appendix
@@ -130,11 +133,11 @@
 		<p align="justify">
 		To Check progress visit: <a href="http://github.com/fkmsoft/fkmlandunter/">Our Github-Page</a></p>
 
-		<hr noshade width="600" size="3">
-
 		<!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
-		<a name="servers"></a>
-		<h2>1. The Servers:<span class="small"><a href="#top">go back to top</a></span></h2>
+
+		<a name="servers"><hr noshade width="600" size="3"></a>
+		
+		<h2>1. The Servers:<span class="small"><a href="#top">back to top</a></span></h2>
 
 		<p align="justify">
 		The servers can be found in server/old/ and server/new/ respectively. As the
@@ -154,11 +157,11 @@
 		In general, the servers will run port 1337 or anything else you care to #define
 		as PORT bound to any address.</p>
 
-		<hr noshade width="600" size="3">
-
 		<!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
-		<a name="curses"><h2>2. The Curses Client:<span class="small"><a href="#top">go back to top</a></span></h2></a>
+		<a name="curses"><hr noshade width="600" size="3"></a>
+
+		<h2>2. The Curses Client:<span class="small"><a href="#top">back to top</a></span></h2>
 
 		<img src="screenshot_ncurses.jpg" alt="Screenshot of Fkmlandunter(Ncurses)" /><br>
 
@@ -173,11 +176,11 @@
 		The curses client supports the complete fkmlandunter protocol, although the
 		implementation of the chat has not been thoroughly debugged as of now.</p>
 
-		<hr noshade width="600" size="3">
-
 		<!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
-		<a name="python"><h2>3. The Python Client:<span class="small"><a href="#top">go back to top</a></span></h2></a>
+		<a name="python"><hr noshade width="600" size="3"></a>
+
+		<h2>3. The Python Client:<span class="small"><a href="#top">back to top</a></span></h2>
 
 		<img src="screenshot_python.jpg" alt="Screenshot of Fkmlandunter(Python)" /><br>
 
@@ -188,11 +191,11 @@
 		prefer working with guis, but other than that it provides the same basic
 		functionality.</p>
 
-		<hr noshade width="600" size="3">
-
 		<!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
-		<a name="ai"><h2>4. The AI:<span class="small"><a href="#top">go back to top</a></span></h2></a>
+		<a name="ai"><hr noshade width="600" size="3"></a>
+
+		<h2>4. The AI:<span class="small"><a href="#top">back to top</a></span></h2>
 
 		<p align="justify">
 		The only AI we have yet does nothing in any way intelligent, it rather plays any
@@ -200,22 +203,22 @@
 		from clients/ai/random named ``random'' and connects to 127.0.0.1:1337 by
 		default, like all the other clients.</p>
 
-		<hr noshade width="600" size="3">
-
 		<!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
-		<a name="enviroment"><h2>5. The Test Environment:<span class="small"><a href="#top">go back to top</a></span></h2></a>
+		<a name="enviroment"><hr noshade width="600" size="3"></a>
+
+		<h2>5. The Test Environment:<span class="small"><a href="#top">back to top</a></span></h2>
 
 		<p align="justify">
 		The test environment in testenv/ was made for stress-testing and checking the
 		servers & AI clients (so only Randall, so far) for deadlocks and other bugs.
 		Just run ``testenv'' with the -h to learn more.</p>
 
-		<hr noshade width="600" size="3">
-
 		<!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
-		<a name="sdl"><h2>6. The SDL Stuff:<span class="small"><a href="#top">go back to top</a></span></h2></a>
+		<a name="sdl"><hr noshade width="600" size="3"></a>
+
+		<h2>6. The SDL Stuff:<span class="small"><a href="#top">back to top</a></span></h2>
 
 		<img src="screenshot_sdl.jpg" alt="Screenshot of Fkmlandunter(SDL)" /><br>
 
@@ -232,11 +235,11 @@
 		has no support for ingame chat or any other advanced features like menus yet. It
 		can also be found in clients/sdl/, just run `client -H' for help.</p>
 
-		<hr noshade width="600" size="3">
-
 		<!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
-		<a name="app_a"><h2>Appendix A - the fkmlandunter protocol:<span class="small"><a href="#top">go back to top</a></span></h2></a>
+		<a name="app_a"><hr noshade width="600" size="3"></a>
+
+		<h2>Appendix A - the fkmlandunter protocol:<span class="small"><a href="#top">back to top</a></span></h2>
 
 		<ul>
 		  <li>-> LOGIN name</li>
@@ -263,11 +266,11 @@
 		  <li><- MSGFROM name fu all los0rZ<br></li>
 		</ul>
 
-		<hr noshade width="600" size="3">
-
 		<!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
-		<a name="app_b"><h2>Appendix B - Brief Game Description (German)<span class="small"><a href="#top">go back to top</a></span></h2></a>
+		<a name="app_b"><hr noshade width="600" size="3"></a>
+
+		<h2>Appendix B - Brief Game Description (German)<span class="small"><a href="#top">back to top</a></span></h2>
 
 		<ul>
 		  <li>Spieleranzahl S von Kommandozeile auswerten, sonst 3;</li>
@@ -303,31 +306,31 @@
 		  <li>Spielern Platzierung mitteilen;    // Kommunikation</li>
 		</ul>
 
-		<hr noshade width="600" size="3">
-
 		<!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
-		<h2>Install<span class="small"><a href="#top">go back to top</a></span></h2>
+		<a name="install"><hr noshade width="600" size="3"></a>
+
+		<h2>Install<span class="small"><a href="#top">back to top</a></span></h2>
 
 		<p>
 		Take a look at the Main Project Text
 		</p>
 
-		<hr noshade width="600" size="3">
-
 		<!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
-		<h2>License<span class="small"><a href="#top">go back to top</a></span></h2>
+		<a name="license"><hr noshade width="600" size="3"></a>
+
+		<h2>License<span class="small"><a href="#top">back to top</a></span></h2>
 		
 		<p>
 		GPL
 		</p>
 
-		<hr noshade width="600" size="3">
-
 		<!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
-		<h2>Authors<span class="small"><a href="#top">go back to top</a></span></h2>
+		<a name="authors"><hr noshade width="600" size="3"></a>
+
+		<h2>Authors<span class="small"><a href="#top">back to top</a></span></h2>
 
 		<p align="justify">
 		This whole stuff was produced by three students of Karlruhe Institute of
@@ -340,11 +343,11 @@
 		  <li>Florian Kohnhäuser (flozilla), programming, protocol design</li>
 		  <li>Richard Molitor (gattschardo), programming, protocol design</li>		</ul>
 
-		<hr noshade width="600" size="3">
-
 		<!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
-		<h2>Download<span class="small"><a href="#top">go back to top</a></span></h2>
+		<a name="download"><hr noshade width="600" size="3"></a>
+
+		<h2>Download<span class="small"><a href="#top">back to top</a></span></h2>
 
 		<p>
 		You can download this project in either
