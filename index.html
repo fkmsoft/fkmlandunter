@@ -16,6 +16,7 @@
     }
     #container {
       margin: 15px auto;
+      margin-top: 30px;
       width: 700px;
       background-color: #cccccc;
     }
@@ -26,7 +27,7 @@
     h3 { text-align: center; color: #333333; }
     a { color: #333333; }
     .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
-    .contents { font-size: 1.0em; margin-bottom: 30px; margin-top: 30px;}
+    .contents { font-size: 1.05em; margin-bottom: 30px; margin-top: 30px; font-style: bold;}
     .download { float: right; }
 		pre { background: #000; color: #fff; padding: 15px;}
     hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
@@ -57,15 +58,14 @@
       but we (the Fkmsoft Team) have already produced some things that actually
       compile and can be run.<br>
       <p align="center">
-      last updated: 23.07.2010 
+      last updated: 26.07.2010 
       </p>
     </div>
 
     <p>
 
 <div class="contents">
-      <p align="center">
-      last updated: 23.07.2010<br> 
+      <p align="justify"> 
       <a href="#servers">Servers</a> | <a href="#curses">Curses-Client</a> | <a href="#python">Python-Client</a>
 	 | <a href="#ai">AI</a> | <a href="#enviroment">Enviroment</a> | <a href="#sdl">SDL-Stuff</a>
 	 | <a href="#app_a">Appendix A</a> | <a href="#app_b">Appendix B</a>
@@ -82,6 +82,7 @@
 <li>A gui client based on python and pyqt4 (which you will need to run it, too)</li>
 <li>A rather stupid AI called the random-ai, a.k.a. ``Randall''</li>
 <li>The same AI but including a somewhat nicer gui hacked together in SDL.</li>
+<li>A nice SDL client without chat-capabilities.</li>
 </ul>
 
 What we still hope to produce is a quality gui client, that might look similar
@@ -158,16 +159,17 @@ Just run ``testenv'' with the -h to learn more.</p>
 <img src="screenshot_sdl.jpg" alt="Screenshot of Fkmlandunter(SDL)" /><br>
 
 <p align="justify">
-As of now you can find a general gui demo in clients/sdl/ called ``gui_test''
-and an SDL implementation of Randall called ``randall''. Be sure to invoke them
+As of now you can find a general gui demo in clients/sdl/ called `gui_test'
+and an SDL implementation of Randall called `randall'. Be sure to invoke them
 from the clients/sdl directory, or else fix the #defines in gui_util.h so they
 can find their graphics. See data/fkmlu/ for supported resolutions. To actually
 start randall in gui mode, use the -g switch, and to have him play his cards on
 key-press, so you can see more of the game, use the -i (interactive) switch.</p>
 
 <p align="justify">
-What we hope to produce here is a real client (like the curses or pyqt ones)
-using a visual representation like SDL Randall.</p>
+We have also produced a real SDL client, that is already playable, although it
+has no support for ingame chat or any other advanced features like menus yet. It
+can also be found in clients/sdl/, just run `client -H' for help.</p>
 
 <br>
 <a name="app_a"><h2>Appendix A - the fkmlandunter protocol:</h2></a>
