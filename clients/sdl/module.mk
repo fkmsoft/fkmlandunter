@@ -9,8 +9,9 @@ guitestobjs := $(dir)/gui_test.o $(dir)/gui_util.o $(dir)/text_util.o
 guitesths   := $(dir)/gui_util.h $(dir)/text_util.h
 guitestdeps := $(guitestobjs) $(guitesths)
 
-clientobjs  := $(dir)/client.o $(dir)/net_util.o $(dir)/gui_util.o $(dir)/../communication.o
-clienths    := $(randallhs)
+clientobjs  := $(dir)/client.o $(dir)/net_util.o $(dir)/gui_util.o $(dir)/../communication.o \
+		$(dir)/config.o
+clienths    := $(randallhs) $(dir)/config.h
 clientsdeps := $(clientobjs) $(clienths)
 
 sdl_cmd     := `sdl-config --libs --cflags`

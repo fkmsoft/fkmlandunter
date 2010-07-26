@@ -5,16 +5,14 @@
  * (c) Fkmsoft, 2010
  */
 
-#include <getopt.h>
-
 #include "net_util.h"
 #include "gui_util.h"
+#include "config.h"
 
 #define DEFPORT (1337)
 #define DEFNAME ("SDL_Player")
 #define DEFHOST ("127.0.0.1")
-
-#define BUFL 1024
+#define DEFRCFILE ("~/.fkmlandunterrc")
 
 static const int W = 800;
 static const int H = 600;
@@ -31,66 +29,50 @@ static int network_thread(struct net_s *data);
 
 int main(int argc, char **argv)
 {
-    bool debug = false, netpush = true;
+    bool netpush = true;
     bool play = true, needbelt = true;
-    char *name = DEFNAME, *host = DEFHOST;
     char *input, *p, buf[BUFL];
-    int opt, port = DEFPORT, w = W, h = H, pos, i;
+    int card, pos, i;
     int startbelts[5], *deck;
     int mdown = 0, kdown = 0;
+
     gamestr *g;
+    struct config_s conf;
+    struct net_s netdata;
+
     SDL_Surface *screen;
     SDL_Thread *net;
     SDL_Event ev;
     TCPsocket sock;
     SDLNet_SocketSet set;
 
-    while ((opt = getopt(argc, argv, "Hn:p:h:dr:")) != -1) {
-        switch (opt) {
-        case 'n':
-            name = optarg;
-            break;
-        case 'p':
-            port = atoi(optarg);
-            break;
-        case 'h':
-            host = optarg;
-            break;
-        case 'd':
-            debug = true;
-            break;
-        case 'r':
-            w = atoi(optarg);
-            h = atoi(strchr(optarg, 'x') + 1);
-            if (debug)
-                printf("have %dx%d\n", w, h);
-            break;
-        case 'H':
-            printf("Usage: %s [-d] [-n name] [-h host] [-p port] [-r 800x600]\n", argv[0]);
-            exit(EXIT_SUCCESS);
-        default:
-            printf("Usage: %s [-d] [-n name] [-h host] [-p port] [-r 800x600]\n", argv[0]);
-            exit(EXIT_FAILURE);
-        }
-    }
+    conf.name  = DEFNAME;
+    conf.host  = DEFHOST;
+    conf.port  = DEFPORT;
+    conf.x_res = W;
+    conf.y_res = H;
+    conf.debug = false;
 
-    screen = init_sdl(w, h);
+    config_fromfile(DEFRCFILE, &conf);
+    config_fromargv(argc, argv, &conf);
 
-    pre_render(screen, name);
+    screen = init_sdl(conf.x_res, conf.y_res);
+
+    pre_render(screen, conf.name);
     SDL_UpdateRect(screen, 0, 0, 0, 0);
 
     g = create_game();
-    g->player.name = name;
+    g->player.name = conf.name;
 
-    IPaddress addr = compute_address(host, port);
+    IPaddress addr = compute_address(conf.host, conf.port);
 
     sock = SDLNet_TCP_Open(&addr);
     if (sock == NULL) {
-        printf("cannot connect to %s:%d\n", host, port);
+        printf("cannot connect to %s:%d\n", conf.host, conf.port);
         exit(EXIT_FAILURE);
     }
 
-    sdl_send_to(sock, "LOGIN %s\n", name);
+    sdl_send_to(sock, "LOGIN %s\n", conf.name);
 
     set = SDLNet_AllocSocketSet(1);
     if (!set) {
@@ -108,7 +90,7 @@ int main(int argc, char **argv)
     play = false;
     pos = -1;
     while (!play) {
-        pre_render(screen, name);
+        pre_render(screen, conf.name);
         SDL_UpdateRect(screen, 0, 0, 0, 0);
 
         SDL_PollEvent(&ev);
@@ -120,7 +102,7 @@ int main(int argc, char **argv)
         }
 
         if (SDLNet_CheckSockets(set, 200) && SDLNet_SocketReady(sock)) {
-            input = sdl_receive_from(sock, debug);
+            input = sdl_receive_from(sock, conf.debug);
             p = strstr(input, "\nSTART");
 
             if (strncmp(input, "START ", 6) == 0) {
@@ -150,7 +132,6 @@ int main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
-    struct net_s netdata;
     netdata.sock = sock;
     netdata.set = set;
     netdata.play = &play;
@@ -167,11 +148,11 @@ int main(int argc, char **argv)
             SDL_KillThread(net);
             exit(EXIT_SUCCESS);
         } else if (mdown && ev.type == SDL_MOUSEBUTTONUP && !g->villain[pos].dead) {
-            opt = card_select(ev.button.x, ev.button.y, deck);
+            card = card_select(ev.button.x, ev.button.y, deck);
 
-            if (opt != -1) {
-                sdl_send_to(sock, "PLAY %d\n", deck[opt]);
-                deck[opt] = 0;
+            if (card != -1) {
+                sdl_send_to(sock, "PLAY %d\n", deck[card]);
+                deck[card] = 0;
 
                 render(screen, g, pos, startbelts);
                 SDL_UpdateRect(screen, 0, 0, 0, 0);
@@ -182,7 +163,7 @@ int main(int argc, char **argv)
         } else if (ev.type == SDL_KEYDOWN) {
             kdown = 1;
         } else if (ev.type == SDL_USEREVENT) {
-            input = sdl_receive_from(sock, debug);
+            input = sdl_receive_from(sock, conf.debug);
 
             if (!strncmp(input, "TERMINATE", 9) || strstr(input, "\nTERMINATE"))
                 play = false;
