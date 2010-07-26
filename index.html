@@ -62,7 +62,9 @@
 <div class="description">
       <p align="center">
       last updated: 23.07.2010<br> 
-      <a href="#servers">Servers</a>|<a href="#curses">Curses-Client</a>
+      <a href="#servers">Servers</a>|<a href="#curses">Curses-Client</a>|<a href="#python">Python-Client</a>
+	|<a href="#ai">The AI</a>|<a href="#enviroment">The Enviroment</a>|<a href="#sdl">SDL-Stuff</a>
+	|<a href="#app_a">Appendix A</a>|<a href="#app_b">Appendix B</a>
       </p>
     </div>
 
@@ -131,7 +133,7 @@ prefer working with guis, but other than that it provides the same basic
 functionality.</p>
 
 <br>
-<h2>4. The AI:</h2>
+<a name="ai"><h2>4. The AI:</h2></a>
 
 <p align="justify">
 The only AI we have yet does nothing in any way intelligent, it rather plays any
@@ -140,7 +142,7 @@ from clients/ai/random named ``random'' and connects to 127.0.0.1:1337 by
 default, like all the other clients.</p>
 
 <br>
-<h2>5. The Test Environment:</h2>
+<a name="enviroment"><h2>5. The Test Environment:</h2></a>
 
 <p align="justify">
 The test environment in testenv/ was made for stress-testing and checking the
@@ -148,7 +150,7 @@ servers & AI clients (so only Randall, so far) for deadlocks and other bugs.
 Just run ``testenv'' with the -h to learn more.</p>
 
 <br>
-<h2>6. The SDL Stuff:</h2>
+<a name="sdl"><h2>6. The SDL Stuff:</h2></a>
 <img src="screenshot_sdl.jpg" alt="Screenshot of Fkmlandunter(SDL)" /><br>
 
 <p align="justify">
@@ -164,7 +166,7 @@ What we hope to produce here is a real client (like the curses or pyqt ones)
 using a visual representation like SDL Randall.</p>
 
 <br>
-<h2>Appendix A - the fkmlandunter protocol:</h2>
+<a name="app_a"><h2>Appendix A - the fkmlandunter protocol:</h2></a>
 <ul>
 <li>-> LOGIN name</li>
 <li><- ACK name</li>
@@ -190,7 +192,7 @@ using a visual representation like SDL Randall.</p>
 <li><- MSGFROM name fu all los0rZ<br></li>
 </ul>
 <br>
-<h2>Appendix B - Brief Game Description (German)</h2>
+<a name="app_b"><h2>Appendix B - Brief Game Description (German)</h2></a>
 <ul>
 <li>Spieleranzahl S von Kommandozeile auswerten, sonst 3;</li>
 <li>S Decks erstellen;</li>
