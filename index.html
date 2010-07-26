@@ -2,6 +2,7 @@
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
@@ -41,21 +42,32 @@
 	</style>	
 </head>
 
+
+		<!-- /////////////////////////////////////////////////////////////////////////////////////////// -->
+
+
 <body>
 	<a name="top" href="http://github.com/fkmsoft/fkmlandunter"><img style="position: absolute; top: 0; right: 		  0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me 		  on GitHub" /></a>
 
 	<div id="container">
+
+
+		<!-- /////////////////////////////////////////////////////////////////////////////////////////// -->
+
 
 	<div class="download">
 		<a href="http://github.com/fkmsoft/fkmlandunter/zipball/master">
 		  <img border="0" width="90" src="http://github.com/images/modules/download/zip.png"></a>
       		<a href="http://github.com/fkmsoft/fkmlandunter/tarball/master">
         	  <img border="0" width="90" src="http://github.com/images/modules/download/tar.png"></a>
+		<h1><a href="http://github.com/fkmsoft/fkmlandunter">fkmlandunter</a>
+      		  <span class="small">by <a href="http://github.com/fkmsoft">fkmsoft</a></span></h1>
     	</div>
 
-    	<h1><a href="http://github.com/fkmsoft/fkmlandunter">fkmlandunter</a>
-      	<span class="small">by <a href="http://github.com/fkmsoft">fkmsoft</a></span></h1>
 
+		<!-- /////////////////////////////////////////////////////////////////////////////////////////// --> 
+
+   	
     	<div class="description">
       		<img src="promo.png" alt="Screenshot of Fkmlandunter" /><br><br>
       		Fkmlandunter is the implementation of a German card game called ``land unter''
@@ -68,223 +80,294 @@
       		<hr noshade width="600" size="3">
     	</div>
 
-    <p>
 
-<div class="contents">
-      <p align="center"> 
-      <a href="#servers">Servers</a> | <a href="#curses">Curses-Client</a> | <a href="#python">Python-Client</a>
-	 | <a href="#ai">AI</a> | <a href="#enviroment">Enviroment</a> | <a href="#sdl">SDL-Stuff</a>
-	 | <a href="#app_a">Appendix A</a> | <a href="#app_b">Appendix B</a>
-      </p>
-      <hr noshade width="600" size="3">
-    </div>
+		<!-- /////////////////////////////////////////////////////////////////////////////////////////// -->
 
-<div class="content">
-<h2>0. What is working at the moment:</h2><p ><a href="#top" style="font-size:0.8em">go back to top</a></p>
 
-<ul>
-<li>2 different servers (both implementing the same network protocol, see Appendix
-  A for further details).</li>
-<li>A cli based client using the ncurses library (needs ncurses-dev or the
-  equivalent of your distro to compile).</li>
-<li>A gui client based on python and pyqt4 (which you will need to run it, too)</li>
-<li>A rather stupid AI called the random-ai, a.k.a. ``Randall''</li>
-<li>The same AI but including a somewhat nicer gui hacked together in SDL.</li>
-<li>A nice SDL client without chat-capabilities.</li>
-</ul>
+	<div class="contents">
+		<p align="center"> 
+      		<a href="#servers">Servers</a> | <a href="#curses">Curses-Client</a> | <a href="#python">Python-Client</a>
+		 | <a href="#ai">AI</a> | <a href="#enviroment">Enviroment</a> | <a href="#sdl">SDL-Stuff</a>
+		 | <a href="#app_a">Appendix A</a> | <a href="#app_b">Appendix B</a>
+		</p>
+      		<hr noshade width="600" size="3">
+    	</div>
 
-What we still hope to produce is a quality gui client, that might look similar
-to what you can already see in SDL-Randall, and a master server to keep track of
-different game servers running all over the net.<br><br>
 
-To Check progress visit: <a href="http://github.com/fkmsoft/fkmlandunter/">Our Github-Page</a><br><br>
-<hr noshade width="600" size="3">
-<a name="servers"><h2>1. The Servers:</h2></a>
+		<!-- /////////////////////////////////////////////////////////////////////////////////////////// -->
 
-<p align="justify">
-The servers can be found in server/old/ and server/new/ respectively. As the
-name indicates, one of them is the original one, while the other is a rather
-cleaner and (hopefully) more understandable reimplementation. Both should be
-functionally equivalent though, and possibly share some bugs, too (they did in
-the past).</p>
 
-<p align="justify">
-To run any of them just execute the file called ``server'' after make'ing the
-whole thing (either everything in one run from the top directory, or partially
-from a subdirectory). The -h switch should tell you about most options, although
-it is always a good idea to read the code (assuming you know some C) just to see
-whether anything changed since the usage message string was last updated.</p>
+	<div class="content">
 
-<p align="justify">
-In general, the servers will run port 1337 or anything else you care to #define
-as PORT bound to any address.</p>
+		<h2>0. What is working at the moment:</h2><a href="#top" style="font-size:0.8em">go back to top</a>
 
-<br>
-<hr noshade width="600" size="3">
-<a name="curses"><h2>2. The Curses Client:</h2></a>
-<img src="screenshot_ncurses.jpg" alt="Screenshot of Fkmlandunter(Ncurses)" /><br>
+		<ul>
+		  <li>2 different servers (both implementing the same network protocol, see Appendix
+  		    A for further details).</li>
+		  <li>A cli based client using the ncurses library (needs ncurses-dev or the
+		    equivalent of your distro to compile).</li>
+		  <li>A gui client based on python and pyqt4 (which you will need to run it, too)</li>
+		  <li>A rather stupid AI called the random-ai, a.k.a. ``Randall''</li>
+		  <li>The same AI but including a somewhat nicer gui hacked together in SDL.</li>
+		  <li>A nice SDL client without chat-capabilities.</li>
+		</ul>
 
-<p align="justify">
-The curses client resides in the clients/curses/ subdirectory and requires the
-curses development headers and (obviously) libcurses to be compiled and run.
-After make'ing the thing, you can run the ``client'' executable from its
-directory, it will connect to localhost port 1337 by default, but you can
-specify another IP and port on the command line.</p>
+		<p align="justify">
+		What we still hope to produce is a quality gui client, that might look similar
+		to what you can already see in SDL-Randall, and a master server to keep track of
+		different game servers running all over the net.</p>
 
-<p align="justify">
-The curses client supports the complete fkmlandunter protocol, although the
-implementation of the chat has not been thoroughly debugged as of now.</p>
+		<p align="justify">
+		To Check progress visit: <a href="http://github.com/fkmsoft/fkmlandunter/">Our Github-Page</a></p>
 
-<br>
-<hr noshade width="600" size="3">
-<a name="python"><h2>3. The Python Client:</h2></a>
-<img src="screenshot_python.jpg" alt="Screenshot of Fkmlandunter(Python)" /><br>
+		<br>
+		<hr noshade width="600" size="3">
 
-<p align="justify">
-The python client to be found in clients/pyqt does not require compiling, but
-you will of course need python to run it, plus the pyqt4 library. It supports
-the complete protocol and might be nicer to use than the curses client if you
-prefer working with guis, but other than that it provides the same basic
-functionality.</p>
+		<!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
-<br>
-<hr noshade width="600" size="3">
-<a name="ai"><h2>4. The AI:</h2></a>
+		<a name="servers"><h2>1. The Servers:</h2></a>
 
-<p align="justify">
-The only AI we have yet does nothing in any way intelligent, it rather plays any
-cards it gets in the order they are initially in. It can be compiled and run
-from clients/ai/random named ``random'' and connects to 127.0.0.1:1337 by
-default, like all the other clients.</p>
+		<p align="justify">
+		The servers can be found in server/old/ and server/new/ respectively. As the
+		name indicates, one of them is the original one, while the other is a rather
+		cleaner and (hopefully) more understandable reimplementation. Both should be
+		functionally equivalent though, and possibly share some bugs, too (they did in
+		the past).</p>
 
-<br>
-<hr noshade width="600" size="3">
-<a name="enviroment"><h2>5. The Test Environment:</h2></a>
+		<p align="justify">
+		To run any of them just execute the file called ``server'' after make'ing the
+		whole thing (either everything in one run from the top directory, or partially
+		from a subdirectory). The -h switch should tell you about most options, although
+		it is always a good idea to read the code (assuming you know some C) just to see
+		whether anything changed since the usage message string was last updated.</p>
 
-<p align="justify">
-The test environment in testenv/ was made for stress-testing and checking the
-servers & AI clients (so only Randall, so far) for deadlocks and other bugs.
-Just run ``testenv'' with the -h to learn more.</p>
+		<p align="justify">
+		In general, the servers will run port 1337 or anything else you care to #define
+		as PORT bound to any address.</p>
 
-<br>
-<hr noshade width="600" size="3">
-<a name="sdl"><h2>6. The SDL Stuff:</h2></a>
-<img src="screenshot_sdl.jpg" alt="Screenshot of Fkmlandunter(SDL)" /><br>
+		<br>
+		<hr noshade width="600" size="3">
 
-<p align="justify">
-As of now you can find a general gui demo in clients/sdl/ called `gui_test'
-and an SDL implementation of Randall called `randall'. Be sure to invoke them
-from the clients/sdl directory, or else fix the #defines in gui_util.h so they
-can find their graphics. See data/fkmlu/ for supported resolutions. To actually
-start randall in gui mode, use the -g switch, and to have him play his cards on
-key-press, so you can see more of the game, use the -i (interactive) switch.</p>
+		<!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 
-<p align="justify">
-We have also produced a real SDL client, that is already playable, although it
-has no support for ingame chat or any other advanced features like menus yet. It
-can also be found in clients/sdl/, just run `client -H' for help.</p>
+		<a name="curses"><h2>2. The Curses Client:</h2></a>
 
-<br>
-<hr noshade width="600" size="3">
-<a name="app_a"><h2>Appendix A - the fkmlandunter protocol:</h2></a>
-<ul>
-<li>-> LOGIN name</li>
-<li><- ACK name</li>
-<li><- JOIN name ****</li>
-<li>-> START</li>
-<li><- START 3 nam1 nam2 nam3</li>
-    <ul>
-    <li><- DECK 1 2 56</li>
-    <li><- RINGS 2 4 1</li>
-    <li><- WEATHER 7 8</li>
-    <li>-> PLAY 56</li>
-    <li><- ACK 56</li>
-    <li><- FAIL 56</li>
-    <li><- PLAYEd 1 25 60</li>
-    <li><- WLEVELS 7 8 0</li>
-    <li><- POINTS 1 2 -1</li>
-    </ul>
-<li>-> LOGOUT bye</li>
-<li><- LEAVE name i must go ****</li>
-<li><- TERMINATE fuck off<br>
-------</li>
-<li>-> MSG fu all los0rZ</li>
-<li><- MSGFROM name fu all los0rZ<br></li>
-</ul>
-<br>
-<hr noshade width="600" size="3">
-<a name="app_b"><h2>Appendix B - Brief Game Description (German)</h2></a>
-<ul>
-<li>Spieleranzahl S von Kommandozeile auswerten, sonst 3;</li>
-<li>S Decks erstellen;</li>
-<li>S Spieler mit Punktzahl 0 erstellen;</li>
-<li>for i = 0 to S</li>
-    <ul>
-    <li>Wasserstaende 0 setzen;</li>
-    <li>Decks zuweisen;</li>
-    <li>Den Spielern Decks geben;    // Kommunikation</li>
-    <li>Spieler auf lebendig setzen;</li>
-        <ul>
-        <li>Wasserstapel mischen;</li>
-        </ul>
-    <li>for j = 0 to 12</li>
-        <ul>
-        <li>Den Spielern neue Wasserkarten zeigen;    // Kommunikation</li>
-        <li>Eingabe von Spielern lesen solange bis gueltig;     //Kommunikation</li>                           
-        <li>Wasserstand der Spieler updaten;</li>
-        <li>Spieler mit hoechstem Wasserstand ermitteln und Ring entfernen;</li>            
-        <li>Spielern neue Wasserstaende mitteilen; // Kommunikation</li>
-        <li>Pruefen auf Wasserstand -1 - Spieler als Tot markieren;</li>
-        <li>Pruefen ob Anzahl lebender Spieler >= 2</li>
-            <ul>
-            <li>wenn nicht Runde beenden;</li>
-            </ul>
-        </ul>
-    <li>Spieler mit niedrigstem Wasserstand ermitteln +1 Punkt;</li>
-    <li>Wasserstand auf Punktzahl addieren;</li>
-    <li>Spielern Punktzahlen mitteilen; // evtl unnoetig ausser f. Markierung</li>
-    </ul>
-<li>Platzierung ermitteln;</li>
-<li>Spielern Platzierung mitteilen;    // Kommunikation</li>
-</ul>
-<br>
-</p>
-<hr noshade width="600" size="3">
-<h2>Install</h2>
-<p>Take a look at the Main Project Text
-</p>
-<hr noshade width="600" size="3">
-<h2>License</h2>
-<p>GPL</p>
-<hr noshade width="600" size="3">
-<h2>Authors</h2>
-<p align="justify">This whole stuff was produced by three students of Karlruhe Institute of
-Technology as a leisure-time activity, so don't be surprised when development
-comes to a halt at times, as we sometimes have exams and other things on our
-mind - we are doing this far from full time. Our names would be<br><br>
+		<img src="screenshot_ncurses.jpg" alt="Screenshot of Fkmlandunter(Ncurses)" /><br>
 
-Christoph Gielisch (m0l0t0ph), graphics & gui design<br>
-Florian Kohnhäuser (flozilla), programming, protocol design<br>
-Richard Molitor (gattschardo), programming, protocol design<br><br><br/><br/>      </p>
-<hr noshade width="600" size="3">
-    <h2>Download</h2>
-    <p>
-      You can download this project in either
-      <a href="http://github.com/fkmsoft/fkmlandunter/zipball/master">zip</a> or
-      <a href="http://github.com/fkmsoft/fkmlandunter/tarball/master">tar</a> formats.
-    </p>
-    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
-      by running:
-      <pre>$ git clone git://github.com/fkmsoft/fkmlandunter</pre>
-    </p>
+		<p align="justify">
+		The curses client resides in the clients/curses/ subdirectory and requires the
+		curses development headers and (obviously) libcurses to be compiled and run.
+		After make'ing the thing, you can run the ``client'' executable from its
+		directory, it will connect to localhost port 1337 by default, but you can
+		specify another IP and port on the command line.</p>
 
-</div>
+		<p align="justify">
+		The curses client supports the complete fkmlandunter protocol, although the
+		implementation of the chat has not been thoroughly debugged as of now.</p>
 
-    <div class="footer">
-      get the source code on GitHub : <a href="http://github.com/fkmsoft/fkmlandunter">fkmsoft/fkmlandunter</a>
-    </div>
+		<br>
+		<hr noshade width="600" size="3">
 
-  </div>
+		<!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+
+		<a name="python"><h2>3. The Python Client:</h2></a>
+
+		<img src="screenshot_python.jpg" alt="Screenshot of Fkmlandunter(Python)" /><br>
+
+		<p align="justify">
+		The python client to be found in clients/pyqt does not require compiling, but
+		you will of course need python to run it, plus the pyqt4 library. It supports
+		the complete protocol and might be nicer to use than the curses client if you
+		prefer working with guis, but other than that it provides the same basic
+		functionality.</p>
+
+		<br>
+		<hr noshade width="600" size="3">
+
+		<!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+
+		<a name="ai"><h2>4. The AI:</h2></a>
+
+		<p align="justify">
+		The only AI we have yet does nothing in any way intelligent, it rather plays any
+		cards it gets in the order they are initially in. It can be compiled and run
+		from clients/ai/random named ``random'' and connects to 127.0.0.1:1337 by
+		default, like all the other clients.</p>
+
+		<br>
+		<hr noshade width="600" size="3">
+
+		<!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+
+		<a name="enviroment"><h2>5. The Test Environment:</h2></a>
+
+		<p align="justify">
+		The test environment in testenv/ was made for stress-testing and checking the
+		servers & AI clients (so only Randall, so far) for deadlocks and other bugs.
+		Just run ``testenv'' with the -h to learn more.</p>
+
+		<br>
+		<hr noshade width="600" size="3">
+
+		<!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+
+		<a name="sdl"><h2>6. The SDL Stuff:</h2></a>
+
+		<img src="screenshot_sdl.jpg" alt="Screenshot of Fkmlandunter(SDL)" /><br>
+
+		<p align="justify">
+		As of now you can find a general gui demo in clients/sdl/ called `gui_test'
+		and an SDL implementation of Randall called `randall'. Be sure to invoke them
+		from the clients/sdl directory, or else fix the #defines in gui_util.h so they
+		can find their graphics. See data/fkmlu/ for supported resolutions. To actually
+		start randall in gui mode, use the -g switch, and to have him play his cards on
+		key-press, so you can see more of the game, use the -i (interactive) switch.</p>
+
+		<p align="justify">
+		We have also produced a real SDL client, that is already playable, although it
+		has no support for ingame chat or any other advanced features like menus yet. It
+		can also be found in clients/sdl/, just run `client -H' for help.</p>
+
+		<br>
+		<hr noshade width="600" size="3">
+
+		<!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+
+		<a name="app_a"><h2>Appendix A - the fkmlandunter protocol:</h2></a>
+
+		<ul>
+		  <li>-> LOGIN name</li>
+		  <li><- ACK name</li>
+		  <li><- JOIN name ****</li>
+		  <li>-> START</li>
+		  <li><- START 3 nam1 nam2 nam3</li>
+		    <ul>
+		      <li><- DECK 1 2 56</li>
+		      <li><- RINGS 2 4 1</li>
+		      <li><- WEATHER 7 8</li>
+		      <li>-> PLAY 56</li>
+		      <li><- ACK 56</li>
+		      <li><- FAIL 56</li>
+		      <li><- PLAYEd 1 25 60</li>
+		      <li><- WLEVELS 7 8 0</li>
+ 		      <li><- POINTS 1 2 -1</li>
+		    </ul>
+		  <li>-> LOGOUT bye</li>
+		  <li><- LEAVE name i must go ****</li>
+		  <li><- TERMINATE fuck off<br>
+		  ------</li>
+		  <li>-> MSG fu all los0rZ</li>
+		  <li><- MSGFROM name fu all los0rZ<br></li>
+		</ul>
+
+		<br>
+		<hr noshade width="600" size="3">
+
+		<!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+
+		<a name="app_b"><h2>Appendix B - Brief Game Description (German)</h2></a>
+
+		<ul>
+		  <li>Spieleranzahl S von Kommandozeile auswerten, sonst 3;</li>
+		  <li>S Decks erstellen;</li>
+		  <li>S Spieler mit Punktzahl 0 erstellen;</li>
+		  <li>for i = 0 to S</li>
+ 		    <ul>
+ 		      <li>Wasserstaende 0 setzen;</li>
+		      <li>Decks zuweisen;</li>
+		      <li>Den Spielern Decks geben;    // Kommunikation</li>
+ 		      <li>Spieler auf lebendig setzen;</li>
+		        <ul>
+		          <li>Wasserstapel mischen;</li>
+ 		        </ul>
+ 		      <li>for j = 0 to 12</li>
+ 		        <ul>
+ 		          <li>Den Spielern neue Wasserkarten zeigen;    // Kommunikation</li>
+		          <li>Eingabe von Spielern lesen solange bis gueltig;     //Kommunikation</li>                           
+		          <li>Wasserstand der Spieler updaten;</li>
+		          <li>Spieler mit hoechstem Wasserstand ermitteln und Ring entfernen;</li>            
+		          <li>Spielern neue Wasserstaende mitteilen; // Kommunikation</li>
+		          <li>Pruefen auf Wasserstand -1 - Spieler als Tot markieren;</li>
+ 		          <li>Pruefen ob Anzahl lebender Spieler >= 2</li>
+		            <ul>
+		              <li>wenn nicht Runde beenden;</li>
+		            </ul>
+		        </ul>
+ 		      <li>Spieler mit niedrigstem Wasserstand ermitteln +1 Punkt;</li>
+ 		      <li>Wasserstand auf Punktzahl addieren;</li>
+		      <li>Spielern Punktzahlen mitteilen; // evtl unnoetig ausser f. Markierung</li>
+		    </ul>
+		  <li>Platzierung ermitteln;</li>
+		  <li>Spielern Platzierung mitteilen;    // Kommunikation</li>
+		</ul>
+
+		<br>
+		<hr noshade width="600" size="3">
+
+		<!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+
+		<h2>Install</h2>
+
+		<p>
+		Take a look at the Main Project Text
+		</p>
+
+		<br>
+		<hr noshade width="600" size="3">
+
+		<!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+
+		<h2>License</h2>
+		
+		<p>
+		GPL
+		</p>
+
+		<br>
+		<hr noshade width="600" size="3">
+
+		<!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+
+		<h2>Authors</h2>
+
+		<p align="justify">
+		This whole stuff was produced by three students of Karlruhe Institute of
+		Technology as a leisure-time activity, so don't be surprised when development
+		comes to a halt at times, as we sometimes have exams and other things on our
+		mind - we are doing this far from full time. Our names would be:</p>
+
+		<ul>
+		  <li>Christoph Gielisch (m0l0t0ph), graphics & gui design</li>
+		  <li>Florian Kohnhäuser (flozilla), programming, protocol design</li>
+		  <li>Richard Molitor (gattschardo), programming, protocol design</li>		</ul>
+
+		<br>
+		<hr noshade width="600" size="3">
+
+		<!-- oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
+
+		<h2>Download</h2>
+
+		<p>
+		You can download this project in either
+      		<a href="http://github.com/fkmsoft/fkmlandunter/zipball/master">zip</a> or
+      		<a href="http://github.com/fkmsoft/fkmlandunter/tarball/master">tar</a> formats.
+    		</p>
+
+    		<p>You can also clone the project with <a href="http://git-scm.com">Git</a>
+ 		  by running:
+      		<pre>$ git clone git://github.com/fkmsoft/fkmlandunter</pre>
+    		</p>
+
+	</div>
+
+
+		<!-- /////////////////////////////////////////////////////////////////////////////////////////// -->
+
+
+	<div class="footer">
+		get the source code on GitHub : <a href="http://github.com/fkmsoft/fkmlandunter">fkmsoft/fkmlandunter</a>
+	</div>
 
   
 </body>
