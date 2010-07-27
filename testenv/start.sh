@@ -2,7 +2,7 @@
 
 ./nserv &
 sleep 1
+./random -s -n Flo &
+./random -s -n Richard &
 ./random -s -n Hans &
-./random -s -n Schwanz &
-./random -s -n Glanz &
-./random -s -n Rendel &
+./random -s -n Randall &
