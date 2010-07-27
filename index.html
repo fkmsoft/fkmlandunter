@@ -33,10 +33,10 @@
     		a { color: #333333; }
 		a:link{ text-decoration:none; font-weight:bold; color:#000000; }
 
-		.description { font-size: 1.2em; margin: 30px; margin-top:10px; font-style: italic;}
+		.description { font-size: 1.2em; margin: 30px; margin-top:0px; font-style: italic;}
     		.contents { font-size: 1.1em; margin: 30px; margin-top:10px; margin-bottom:10px; font-style: bold;}
     		.content { text-align:justify; font-size: 1.0em; margin: 30px;}
-    		.header { float: center; margin: 30px; margin-bottom:10px}
+    		.header { float: center; margin: 30px; margin-bottom:0px}
     		.footer { text-align:center; margin:30; pxpadding-top:30px; font-style: italic; }
 
 		pre { background: #000; color: #fff; padding: 15px;}
@@ -95,11 +95,13 @@
 
   	
     	<div class="description">
-		<img src="promo.png" alt="Screenshot of Fkmlandunter" /><br><br>
-      		Fkmlandunter is the implementation of a German card game called ``land unter''
+		<img src="images/promo.png" alt="Screenshot of Fkmlandunter" />
+		<p align="justify">      		
+		Fkmlandunter is the implementation of a German card game called ``land unter''
       		as a computer game. As of now this whole thing is still under heavy development,
       		but we (the Fkmsoft Team) have already produced some things that actually
       		compile and can be run.
+		</p>
       		<p align="center">
       		last updated: 26.07.2010 
       		</p>
@@ -139,6 +141,8 @@
 		
 		<h2>1. The Servers:<span class="small"><a href="#top">back to top</a></span></h2>
 
+		<a href="http://github.com/fkmsoft/fkmlandunter/blob/master/server/new/fkmlandunter.c#L23"><img src="images/promo_server.png" alt="Screenshot of Fkmlandunter(Server)"/></a><br>
+
 		<p align="justify">
 		The servers can be found in server/old/ and server/new/ respectively. As the
 		name indicates, one of them is the original one, while the other is a rather
@@ -163,7 +167,7 @@
 
 		<h2>2. The Curses Client:<span class="small"><a href="#top">back to top</a></span></h2>
 
-		<img src="screenshot_ncurses.jpg" alt="Screenshot of Fkmlandunter(Ncurses)" /><br>
+		<a href="images/screenshot_ncurses.png"><img src="images/promo_ncurses.png" alt="Screenshot of Fkmlandunter(Ncurses)"/></a><br>
 
 		<p align="justify">
 		The curses client resides in the clients/curses/ subdirectory and requires the
@@ -182,7 +186,7 @@
 
 		<h2>3. The Python Client:<span class="small"><a href="#top">back to top</a></span></h2>
 
-		<img src="screenshot_python.jpg" alt="Screenshot of Fkmlandunter(Python)" /><br>
+		<a href="images/screenshot_pyqt.png"><img src="images/promo_pyqt.png" alt="Screenshot of Fkmlandunter(Pyqt)"/></a><br>
 
 		<p align="justify">
 		The python client to be found in clients/pyqt does not require compiling, but
@@ -209,6 +213,8 @@
 
 		<h2>5. The Test Environment:<span class="small"><a href="#top">back to top</a></span></h2>
 
+		<img src="images/promo_testenv.png" alt="Screenshot of Fkmlandunter(testenv)" /><br>
+
 		<p align="justify">
 		The test environment in testenv/ was made for stress-testing and checking the
 		servers & AI clients (so only Randall, so far) for deadlocks and other bugs.
@@ -220,7 +226,7 @@
 
 		<h2>6. The SDL Stuff:<span class="small"><a href="#top">back to top</a></span></h2>
 
-		<img src="screenshot_sdl.jpg" alt="Screenshot of Fkmlandunter(SDL)" /><br>
+		<a href="images/screenshot_sdl.png"><img src="images/promo_sdl.png" alt="Screenshot of Fkmlandunter(SDL)"/></a><br>
 
 		<p align="justify">
 		As of now you can find a general gui demo in clients/sdl/ called `gui_test'
