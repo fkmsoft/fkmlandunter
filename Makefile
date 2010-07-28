@@ -24,21 +24,21 @@ all: $(targets)
 
 install: all
 	# binaries
-	mkdir -p $(PREFIX)/bin
+	mkdir -p $(DESTDIR)/$(PREFIX)/bin
 	# servers
-	install -s -m 755 server/new/server $(PREFIX)/bin/$(base)_srv_new
-	install -s -m 755 server/old/server $(PREFIX)/bin/$(base)_srv_old
+	install -s -m 755 server/new/server $(DESTDIR/$(PREFIX)/bin/$(base)_srv_new
+	install -s -m 755 server/old/server $(DESTDIR)/$(PREFIX)/bin/$(base)_srv_old
 	# clients
-	install    -m 755 clients/pyqt/client.py $(PREFIX)/bin/$(base)_client_py
-	install -s -m 755 clients/curses/client  $(PREFIX)/bin/$(base)_client_curses
-	install -s -m 755 clients/sdl/client     $(PREFIX)/bin/$(base)_client_sdl
+	install    -m 755 clients/pyqt/client.py $(DESTDIR)/$(PREFIX)/bin/$(base)_client_py
+	install -s -m 755 clients/curses/client  $(DESTDIR)/$(PREFIX)/bin/$(base)_client_curses
+	install -s -m 755 clients/sdl/client     $(DESTDIR)/$(PREFIX)/bin/$(base)_client_sdl
 	# links
-	ln -s $(PREFIX)/bin/$(base)_srv_new $(PREFIX)/bin/$(base)_srv
-	ln -s $(PREFIX)/bin/$(base)_client_sdl $(PREFIX)/bin/$(base)
+	ln -s $(DESTDIR)/$(PREFIX)/bin/$(base)_srv_new    $(DESTDIR)/$(PREFIX)/bin/$(base)_srv
+	ln -s $(DESTDIR)/$(PREFIX)/bin/$(base)_client_sdl $(DESTDIR)/$(PREFIX)/bin/$(base)
 	#
 	# data
-	mkdir -p $(PREFIX)/share/fkmlandunter
-	cp -r data/fkmlu $(PREFIX)/share/fkmlandunter/data
+	mkdir -p $(DESTDIR)/$(PREFIX)/share/fkmlandunter
+	cp -r data/fkmlu $(DESTDIR)/$(PREFIX)/share/fkmlandunter/data
 
 clean:
 	$(RM) $(objs) $(targets)
