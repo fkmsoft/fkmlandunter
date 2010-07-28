@@ -24,11 +24,11 @@ int main(int argc, char **argv)
     char s[] = "hello_\0\0\0\0\0\0\0\0\0\0\0";
 
     if (argc == 3) {
-        screen = init_sdl(atoi(argv[1]), atoi(argv[2]));
+        screen = init_sdl(atoi(argv[1]), atoi(argv[2]), 0);
         hs = atoi(argv[1]) / (float)W;
         vs = atoi(argv[2]) / (float)H;
     } else {
-        screen = init_sdl(W, H);
+        screen = init_sdl(W, H, 0);
         hs = vs = 1.0;
     }
 
