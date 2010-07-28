@@ -29,8 +29,8 @@ install: all
 	install -s -m 755 server/new/server $(PREFIX)/bin/$(base)_srv_new
 	install -s -m 755 server/old/server $(PREFIX)/bin/$(base)_srv_old
 	# clients
-	install -s -m 755 clients/pyqt/client.py $(PREFIX)/bin/$(base)_client_py
-	install    -m 755 clients/curses/client  $(PREFIX)/bin/$(base)_client_curses
+	install    -m 755 clients/pyqt/client.py $(PREFIX)/bin/$(base)_client_py
+	install -s -m 755 clients/curses/client  $(PREFIX)/bin/$(base)_client_curses
 	install -s -m 755 clients/sdl/client     $(PREFIX)/bin/$(base)_client_sdl
 	# links
 	ln -s $(PREFIX)/bin/$(base)_srv_new $(PREFIX)/bin/$(base)_srv
