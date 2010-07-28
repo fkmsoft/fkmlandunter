@@ -38,7 +38,8 @@ install: all
 	#
 	# data
 	mkdir -p $(DESTDIR)/$(PREFIX)/share/fkmlandunter
-	cp -r data/fkmlu $(DESTDIR)/$(PREFIX)/share/fkmlandunter/data
+	cp -r data/fkmlu                         $(DESTDIR)/$(PREFIX)/share/fkmlandunter/data
+	cp    clients/sdl/example.fkmlandunterrc $(DESTDIR)/$(PREFIX)/share/fkmlandunter/data
 
 clean:
 	$(RM) $(objs) $(targets)

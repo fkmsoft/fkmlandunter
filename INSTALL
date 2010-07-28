@@ -33,4 +33,5 @@ by default, you can point it to the old server implementation
 `fkmlandunter_srv_old' instead.
 
 All data files (mostly .pngs used to render the surface of the sdl client) can
-be found in `PREFIX/share/fkmlandunter/data/'.
+be found in `PREFIX/share/fkmlandunter/data/'. In this directory you can also
+find an example configuration file for the sdl client.
