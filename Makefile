@@ -26,7 +26,7 @@ install: all
 	# binaries
 	mkdir -p $(DESTDIR)/$(PREFIX)/bin
 	# servers
-	install -s -m 755 server/new/server $(DESTDIR/$(PREFIX)/bin/$(base)_srv_new
+	install -s -m 755 server/new/server $(DESTDIR)/$(PREFIX)/bin/$(base)_srv_new
 	install -s -m 755 server/old/server $(DESTDIR)/$(PREFIX)/bin/$(base)_srv_old
 	# clients
 	install    -m 755 clients/pyqt/client.py $(DESTDIR)/$(PREFIX)/bin/$(base)_client_py
@@ -40,6 +40,9 @@ install: all
 	mkdir -p $(DESTDIR)/$(PREFIX)/share/fkmlandunter
 	cp -r data/fkmlu                         $(DESTDIR)/$(PREFIX)/share/fkmlandunter/data
 	cp    clients/sdl/example.fkmlandunterrc $(DESTDIR)/$(PREFIX)/share/fkmlandunter/data
+
+archive:
+	git archive --format=tar --prefix=fkmlandunter/ HEAD | gzip >fkmlandunter-latest.tar.gz
 
 clean:
 	$(RM) $(objs) $(targets)
