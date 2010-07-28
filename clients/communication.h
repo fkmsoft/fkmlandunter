@@ -8,7 +8,7 @@
 #ifndef COMMUNICATION_H
 #define COMMUNICATION_H
 
-#define _GNU_SOURCE
+#define _GNU_SOURCE 1
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
