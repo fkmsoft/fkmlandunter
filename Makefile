@@ -23,6 +23,8 @@ include $(patsubst %,%/module.mk,$(modules))
 all: $(targets)
 
 install: all
+	# binaries
+	mkdir -p $(PREFIX)/bin
 	# servers
 	install -s server/new/server $(PREFIX)/bin/$(base)_srv_new
 	install -s server/old/server $(PREFIX)/bin/$(base)_srv_old
@@ -33,6 +35,7 @@ install: all
 	# links
 	ln -s $(PREFIX)/bin/$(base)_srv_new $(PREFIX)/bin/$(base)_srv
 	ln -s $(PREFIX)/bin/$(base)_client_sdl $(PREFIX)/bin/$(base)
+	#
 	# data
 	mkdir -p $(PREFIX)/share/fkmlandunter
 	cp -r data/fkmlu $(PREFIX)/share/fkmlandunter/data
