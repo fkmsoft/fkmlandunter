@@ -82,7 +82,7 @@ void config_fromargv(int argc, char **argv, struct config_s *conf)
 {
     int opt;
 
-    while ((opt = getopt(argc, argv, "Hn:p:h:dr:")) != -1) {
+    while ((opt = getopt(argc, argv, "Hn:p:h:dr:f")) != -1) {
         switch (opt) {
         case 'n':
             conf->name = optarg;
@@ -105,6 +105,9 @@ void config_fromargv(int argc, char **argv, struct config_s *conf)
         case 'H':
             printf("Usage: %s [-d] [-n name] [-h host] [-p port] [-r 800x600]\n", argv[0]);
             exit(EXIT_SUCCESS);
+        case 'f':
+            /* this is handled in client.c */
+            break;
         default:
             printf("Usage: %s [-d] [-n name] [-h host] [-p port] [-r 800x600]\n", argv[0]);
             exit(EXIT_FAILURE);

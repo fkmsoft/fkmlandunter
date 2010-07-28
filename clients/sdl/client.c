@@ -53,10 +53,14 @@ int main(int argc, char **argv)
     conf.y_res = H;
     conf.debug = false;
 
-    config_fromfile(DEFRCFILE, &conf);
+    if (getopt(argc, argv, "f") == 'f')
+        config_fromfile(optarg, &conf);
+    else
+        config_fromfile(DEFRCFILE, &conf);
+
     config_fromargv(argc, argv, &conf);
 
-    screen = init_sdl(conf.x_res, conf.y_res);
+    screen = init_sdl(conf.x_res, conf.y_res, conf.datadir);
 
     pre_render(screen, conf.name);
     SDL_UpdateRect(screen, 0, 0, 0, 0);
