@@ -35,13 +35,16 @@ double hstretch, vstretch;
 
 const int pbox_x = 624, pbox_y = 394;
 
-SDL_Surface *init_sdl(int w, int h)
+SDL_Surface *init_sdl(int w, int h, char *datadir)
 {
     char buf[BUFLEN];
     SDL_Surface *screen, *temp;
     struct stat s_stat;
 
-    snprintf(buf, BUFLEN, "%s%d_%d", DATADIR, w, h);
+    if (!datadir)
+        datadir = DATADIR;
+
+    snprintf(buf, BUFLEN, "%s%d_%d", datadir, w, h);
     if (stat(buf, &s_stat) == -1 || !S_ISDIR(s_stat.st_mode)) {
        fprintf(stderr, "Sorry, resolution %dx%d is not supported, yet\n", w, h);
        exit(EXIT_FAILURE);
@@ -76,7 +79,7 @@ SDL_Surface *init_sdl(int w, int h)
     atexit(SDL_Quit);
 
     /* load macro */
-#define LOAD(a, b) { snprintf(buf, BUFLEN, "%s%d_%d/%s", DATADIR, w, h, a); \
+#define LOAD(a, b) { snprintf(buf, BUFLEN, "%s%d_%d/%s", datadir, w, h, a); \
     if ((temp = IMG_Load(buf))) { \
         SDL_SetAlpha(temp, SDL_SRCALPHA | SDL_RLEACCEL, SDL_ALPHA_TRANSPARENT); \
         b = SDL_DisplayFormatAlpha(temp); \
