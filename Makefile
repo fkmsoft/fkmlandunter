@@ -11,16 +11,20 @@ CFLAGS = -g -Wall -ansi
 
 # each module will add to this
 targets :=
+tests   :=
 objs    :=
 
 all:
 
 # include module descriptions
-modules := server clients testenv
+modules := server clients testenv check
 include $(patsubst %,%/module.mk,$(modules))
 
 # go
-all: $(targets)
+all: $(targets) $(tests)
+
+check: all
+	$(tests)
 
 install: all
 	# binaries

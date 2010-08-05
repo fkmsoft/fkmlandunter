@@ -2,7 +2,7 @@ dir := testenv
 targets += $(dir)/testenv $(dir)/server $(dir)/random \
 		   $(dir)/nserv $(dir)/sdl_randl
 
-testenvobjs = $(dir)/testenv.o
+testenvobjs := $(dir)/testenv.o
 objs += $(testenvobjs)
 
 all:
