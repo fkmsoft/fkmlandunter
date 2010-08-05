@@ -11,4 +11,5 @@ curslib := -lncurses
 all:
 
 $(dir)/client: $(clientdeps)
-	$(LINK.c) -o $@ $^ $(curslib)
+	@echo "  CCLD" $@
+	@$(LINK.c) -o $@ $^ $(curslib)

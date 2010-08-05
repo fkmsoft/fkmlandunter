@@ -23,10 +23,13 @@ objs += $(randallobjs) $(guitestobjs) $(clientobjs)
 all:
 
 $(dir)/randall: $(randalldeps)
-	$(LINK.c) $(sdl_flags) -o $@ $(randallobjs) $(sdl_cmd) $(sdl_net_cmd) $(sdl_gui_cmd)
+	@echo "  CCLD" $@
+	@$(LINK.c) $(sdl_flags) -o $@ $(randallobjs) $(sdl_cmd) $(sdl_net_cmd) $(sdl_gui_cmd)
 
 $(dir)/gui_test: $(guitestdeps)
-	$(LINK.c) $(sdl_flags) -o $@ $(guitestdeps) $(sdl_cmd) $(sdl_gui_cmd)
+	@echo "  CCLD" $@
+	@$(LINK.c) $(sdl_flags) -o $@ $(guitestdeps) $(sdl_cmd) $(sdl_gui_cmd)
 
 $(dir)/client: $(clientsdeps)
-	$(LINK.c) $(sdl_flags) -o $@ $(clientsdeps) $(sdl_cmd) $(sdl_net_cmd) $(sdl_gui_cmd)
+	@echo "  CCLD" $@
+	@$(LINK.c) $(sdl_flags) -o $@ $(clientsdeps) $(sdl_cmd) $(sdl_net_cmd) $(sdl_gui_cmd)

@@ -26,7 +26,7 @@ install: all
 	# binaries
 	mkdir -p $(DESTDIR)/$(PREFIX)/bin
 	# servers
-	install -s -m 755 server/new/server $(DESTDIR/$(PREFIX)/bin/$(base)_srv_new
+	install -s -m 755 server/new/server $(DESTDIR)/$(PREFIX)/bin/$(base)_srv_new
 	install -s -m 755 server/old/server $(DESTDIR)/$(PREFIX)/bin/$(base)_srv_old
 	# clients
 	install    -m 755 clients/pyqt/client.py $(DESTDIR)/$(PREFIX)/bin/$(base)_client_py
@@ -41,8 +41,13 @@ install: all
 	cp -r data/fkmlu $(DESTDIR)/$(PREFIX)/share/fkmlandunter/data
 
 clean:
-	$(RM) $(objs) $(targets)
+	@echo $(objs) $(targets) | fmt | sed 's/^/  RM  /'
+	@$(RM) $(objs) $(targets)
 
 # Be REALLY careful with this!!
 terror:
 	$(FIND) . -name \*.o | $(XARGS) $(RM)
+
+%.o: %.c
+	@echo "  CC  " $@
+	@$(COMPILE.c) $< -o $@

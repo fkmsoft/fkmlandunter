@@ -8,16 +8,21 @@ objs += $(testenvobjs)
 all:
 
 $(dir)/testenv: $(testenvobjs)
-	$(LINK.c) -o $@ $^
+	@echo "  CCLD" $@
+	@$(LINK.c) -o $@ $^
 
 $(dir)/server: server/old/server
-	if [ ! -L $@ ]; then ln -s ../$< $@; fi
+	@echo "  LN  " $@
+	@if [ ! -L $@ ]; then ln -s ../$< $@; fi
 
 $(dir)/nserv: server/new/server
-	if [ ! -L $@ ]; then ln -s ../$< $@; fi
+	@echo "  LN  " $@
+	@if [ ! -L $@ ]; then ln -s ../$< $@; fi
 
 $(dir)/random: clients/ai/random/random
-	if [ ! -L $@ ]; then ln -s ../$< $@; fi
+	@echo "  LN  " $@
+	@if [ ! -L $@ ]; then ln -s ../$< $@; fi
 
 $(dir)/sdl_randl: clients/sdl/randall
-	if [ ! -L $@ ]; then ln -s ../$< $@; fi
+	@echo "  LN  " $@
+	@if [ ! -L $@ ]; then ln -s ../$< $@; fi

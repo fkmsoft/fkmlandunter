@@ -9,4 +9,5 @@ objs += $(randomobjs)
 all:
 
 $(dir)/random: $(randomdeps)
-	$(LINK.c) -o $@ $(randomobjs)
+	@echo "  CCLD" $@
+	@$(LINK.c) -o $@ $(randomobjs)
