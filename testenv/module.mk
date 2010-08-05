@@ -12,17 +12,17 @@ $(dir)/testenv: $(testenvobjs)
 	@$(LINK.c) -o $@ $^
 
 $(dir)/server: server/old/server
-	@echo "  LN  " $@
+	@echo " SYMLN" $@
 	@if [ ! -L $@ ]; then ln -s ../$< $@; fi
 
 $(dir)/nserv: server/new/server
-	@echo "  LN  " $@
+	@echo " SYMLN" $@
 	@if [ ! -L $@ ]; then ln -s ../$< $@; fi
 
 $(dir)/random: clients/ai/random/random
-	@echo "  LN  " $@
+	@echo " SYMLN" $@
 	@if [ ! -L $@ ]; then ln -s ../$< $@; fi
 
 $(dir)/sdl_randl: clients/sdl/randall
-	@echo "  LN  " $@
+	@echo " SYMLN" $@
 	@if [ ! -L $@ ]; then ln -s ../$< $@; fi
