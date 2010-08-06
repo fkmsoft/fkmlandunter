@@ -1,0 +1,46 @@
+ __________________________
+|                          |
+| The fkmlutr lobby prtcl: |
+|__________________________|
+
+CLIENT <-> LOBBY:
+
+-> HELP( COMMAND)
+<- LIST OF ALL CMDS or DESCRIPTION OF A COMMAND
+
+-> LOGIN(( PLAYER) PASSWORD)		//login as a guest, with a nick or as a registered player
+<- ACK/FAIL (username registered / wrong user+pw)
+
+-> LIST
+<- IP PORT NAME OPEN/CLOSED PLAYER1...PLAYER5 PING
+<- (...)
+
+-> REGPLAYER PLAYER EMAIL		//send random pw to email
+<- ACK/FAIL (invalid playername or email)
+
+-> CHANGEPW PLAYER OLDPW NEWPW
+<- ACK/FAIL (no such user/ wrong user+pw)
+
+-> FORGOTPW PLAYER/EMAIL
+<- ACK/FAIL (no such user/pw)
+
+-> HIGHSCORE
+<- PLAYER WINS LOSES POINTS
+
+-> MSG MESSAGE
+<- MSGFROM PLAYER MESSAGE/ACK/FAIL
+
+-> TERMINATE MESSAGE
+<- MSGFROM PLAYER MESSAGE		//close connection
+
+
+SERVER <-> LOBBY:
+
+-> REGSERVER IP PORT NAME
+<- ACK/FAIL (invalid ip/port/name or port closed)
+
+<- LIST
+-> IP PORT NAME OPEN/CLOSED PLAYER1...PLAYER5
+
+-> SCORE WINNER LOSER1...LOSER4
+<- ACK/FAIL
