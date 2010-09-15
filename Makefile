@@ -45,7 +45,8 @@ archive:
 	git archive --format=tar --prefix=fkmlandunter/ HEAD | gzip >fkmlandunter-latest.tar.gz
 
 clean:
-	$(RM) $(objs) $(targets)
+	@# sort is just for removing duplicates, to shorten the command line
+	$(RM) $(sort $(objs)) $(targets)
 
 # Be REALLY careful with this!!
 terror:
