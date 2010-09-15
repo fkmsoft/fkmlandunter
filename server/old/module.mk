@@ -9,7 +9,9 @@ objs += $(serverobjs) $(echoobjs)
 all:
 
 $(dir)/server: $(serverobjs)
-	$(LINK.c) -o $@ $^
+	@echo "  CCLD" $@
+	@$(LINK.c) -o $@ $^
 
 $(dir)/echosrv: $(echoobjs)
-	$(LINK.c) -o $@ $^
+	@echo "  CCLD" $@
+	@$(LINK.c) -o $@ $^

@@ -11,16 +11,20 @@ CFLAGS = -g -Wall -ansi
 
 # each module will add to this
 targets :=
+tests   :=
 objs    :=
 
 all:
 
 # include module descriptions
-modules := server clients testenv
+modules := server clients testenv check
 include $(patsubst %,%/module.mk,$(modules))
 
 # go
-all: $(targets)
+all: $(targets) $(tests)
+
+check: all
+	$(tests)
 
 install: all
 	# binaries
@@ -46,8 +50,13 @@ archive:
 
 clean:
 	@# sort is just for removing duplicates, to shorten the command line
+	@echo $(objs) $(targets) | fmt | sed 's/^/  RM  /'
 	$(RM) $(sort $(objs)) $(targets)
 
 # Be REALLY careful with this!!
 terror:
 	$(FIND) . -name \*.o | $(XARGS) $(RM)
+
+%.o: %.c
+	@echo "  CC  " $@
+	@$(COMPILE.c) $< -o $@

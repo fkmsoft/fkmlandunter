@@ -5,6 +5,11 @@
 
 #include "fkmlist.h"
 
+struct fkmlist {
+    void *data;
+    fkmlist *next;
+};
+
 fkmlist *fkmlist_create()
 {
     return (fkmlist *) 0/*calloc(1, sizeof(fkmlist))*/;
@@ -29,17 +34,18 @@ fkmlist *fkmlist_append(fkmlist *l, void *data)
 
 void *fkmlist_get(fkmlist *l, int index)
 {
+    fkmlist *p;
+
     if (!l)
         return 0;
 
-    int i;
-    fkmlist *p = l;
+    for (p = l; index && p; index--)
+        p = p->next;
 
-    for (i = 0; i < index; i++, p = p->next)
-        if (i + 1 < index && !p->next)
-            return 0;
-
-    return p->data;
+    if (p)
+        return p->data;
+    else
+        return 0;
 }
 
 fkmlist *fkmlist_rm(fkmlist *l, int index, bool freedata)
@@ -80,6 +86,8 @@ void fkmlist_del(fkmlist *l, bool freedata)
         if (freedata)
             free(rm->data);
         l = rm->next;
+        rm->data = (void *)0xffffffff;
+        rm->next = (void *)0xffffffff;
         free(rm);
     }
 

@@ -11,4 +11,5 @@ objs += $(nserverobjs)
 all:
 
 $(dir)/server: $(nserverdeps)
-	$(LINK.c) -o $@ $(nserverobjs)
+	@echo "  CCLD" $@
+	@$(LINK.c) -o $@ $(nserverobjs)
