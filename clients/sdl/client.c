@@ -53,10 +53,15 @@ int main(int argc, char **argv)
     conf.y_res = H;
     conf.debug = false;
 
-    if (getopt(argc, argv, "f") == 'f')
-        config_fromfile(optarg, &conf);
-    else
-        config_fromfile(DEFRCFILE, &conf);
+    p = DEFRCFILE;
+
+    for (i = 0; i < argc; i++)
+        if (argv[i][0] == '-' && argv[i][1] == 'f' && argv[i][2] == 0) {
+            p = argv[i+1];
+            break;
+        }
+
+    config_fromfile(p, &conf);
 
     config_fromargv(argc, argv, &conf);
 

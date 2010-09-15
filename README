@@ -12,7 +12,8 @@ Contents:
 4.		The AI
 5.		The Test Environment
 6.		The SDL Stuff
-Appendix A	the Fkmlandunter Protocol
+7.		Regression Tests
+Appendix A	The Fkmlandunter Protocol
 Appendix B	Brief Game Description (German)
 
 
@@ -124,6 +125,13 @@ key-press, so you can see more of the game, use the -i (interactive) switch.
 We have also produced a real SDL client, that is already playable, although it
 has no support for ingame chat or any other advanced features like menus yet. It
 can also be found in clients/sdl/, just run `client -H' for help.
+
+
+7. Regression Tests:
+--------------------
+
+You need to have `libcheck' installed to build the self-tests that can be run
+with `make check'.
 
 
 Appendix A - The Fkmlandunter Protocol:
