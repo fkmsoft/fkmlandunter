@@ -25,8 +25,8 @@ void config_fromfile(char *filename, struct config_s *conf)
     }
 
     if (!f) {
-        fprintf(stderr, "Error opening config file `%s': %s\n",
-                filename, strerror(errno));
+        /* fprintf(stderr, "Error opening config file `%s': %s\n",
+                filename, strerror(errno)); */
         return;
     }
 
@@ -44,6 +44,11 @@ void config_fromfile(char *filename, struct config_s *conf)
             n = strlen(p);
             conf->datadir = malloc(n);
             strncpy(conf->datadir, p, n - 1);
+
+            if ( (p = subhome(conf->datadir)) ) {
+                free(conf->datadir);
+                conf->datadir = p;
+            }
 
             if (DEBUG_FILEPARSE)
                 printf("datadir: `%s'\n", conf->datadir);
@@ -73,6 +78,13 @@ void config_fromfile(char *filename, struct config_s *conf)
 
             if (DEBUG_FILEPARSE)
                 printf("port: %d\n", conf->port);
+        } else if HAVE("font", 4)
+            n = strlen(p);
+            conf->font = malloc(n);
+            strncpy(conf->font, p, n - 1);
+
+            if (DEBUG_FILEPARSE)
+                printf("font: `%s'\n", conf->font);
         }
 #undef HAVE
     }

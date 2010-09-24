@@ -23,3 +23,8 @@
    \ \_\   \ \_\ \_\ \_\ \_\ \_\/\____/\ \____/\ \_\   \ \__\
     \/_/    \/_/\/_/\/_/\/_/\/_/\/___/  \/___/  \/_/    \/__/
 (from http://www.network-science.de/ascii/)
+
+Known Bugs:
+-----------
+
+* sdl client will segfault when given nick is already taken

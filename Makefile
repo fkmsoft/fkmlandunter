@@ -50,7 +50,7 @@ archive:
 
 clean:
 	@# sort is just for removing duplicates, to shorten the command line
-	@echo $(objs) $(targets) | fmt | sed 's/^/  RM   /'
+	@echo $(sort $(objs)) $(targets) | fmt | sed 's/^/  RM   /'
 	@$(RM) $(sort $(objs)) $(targets)
 
 # Be REALLY careful with this!!

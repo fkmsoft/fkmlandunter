@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
     char buf[BUFL];
     int startbelts[5];
     if (gui) {
-        screen = init_sdl(w, h, 0);
+        screen = init_sdl(w, h, 0, 0);
 
         pre_render(screen, name);
 

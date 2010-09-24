@@ -65,7 +65,7 @@ int main(int argc, char **argv)
 
     config_fromargv(argc, argv, &conf);
 
-    screen = init_sdl(conf.x_res, conf.y_res, conf.datadir);
+    screen = init_sdl(conf.x_res, conf.y_res, conf.datadir, conf.font);
 
     pre_render(screen, conf.name);
     SDL_UpdateRect(screen, 0, 0, 0, 0);

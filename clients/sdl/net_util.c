@@ -51,7 +51,7 @@ char *sdl_receive_from(TCPsocket sock, bool debug)
     }
 
     if (debug && c == MAXBUF)
-        printf("Buffr full: %s\n", buffer);
+        printf("Buffer full: %s\n", buffer);
 
     return buffer;
 }

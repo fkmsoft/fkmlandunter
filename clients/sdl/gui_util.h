@@ -60,7 +60,7 @@
 
 extern const int pbox_x, pbox_y;
 
-SDL_Surface *init_sdl(int w, int h, char *datadir);
+SDL_Surface *init_sdl(int w, int h, char *datadir, char *fontfile);
 
 TTF_Font *getfont(void);
 

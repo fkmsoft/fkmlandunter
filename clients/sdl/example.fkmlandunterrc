@@ -5,6 +5,7 @@
 # use it.
 
 datadir     /usr/share/fkmlandunter/data/
+font	    TOONISH.ttf
 resolution  1280x960
 name        MyName
 host        127.0.0.1

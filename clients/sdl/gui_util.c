@@ -35,18 +35,26 @@ double hstretch, vstretch;
 
 const int pbox_x = 624, pbox_y = 394;
 
-SDL_Surface *init_sdl(int w, int h, char *datadir)
+SDL_Surface *init_sdl(int w, int h, char *datadir, char *fontfile)
 {
-    char buf[BUFLEN];
+    char buf[BUFLEN], *p;
     SDL_Surface *screen, *temp;
     struct stat s_stat;
 
     if (!datadir)
         datadir = DATADIR;
 
-    snprintf(buf, BUFLEN, "%s%d_%d", datadir, w, h);
+    if ( !fontfile ) {
+        fontfile = DEFFONT;
+    } else {
+        p = malloc(strlen(datadir) + strlen(fontfile) + 2);
+        sprintf(p, "%s/%s", datadir, fontfile);
+        fontfile = p;
+    }
+
+    snprintf(buf, BUFLEN, "%s/%d_%d", datadir, w, h);
     if (stat(buf, &s_stat) == -1 || !S_ISDIR(s_stat.st_mode)) {
-       fprintf(stderr, "Sorry, resolution %dx%d is not supported, yet\n", w, h);
+       fprintf(stderr, "Sorry, resolution %dx%d is not supported, yet\n(searched for %s)\n", w, h, buf);
        exit(EXIT_FAILURE);
     }
 
@@ -79,7 +87,7 @@ SDL_Surface *init_sdl(int w, int h, char *datadir)
     atexit(SDL_Quit);
 
     /* load macro */
-#define LOAD(a, b) { snprintf(buf, BUFLEN, "%s%d_%d/%s", datadir, w, h, a); \
+#define LOAD(a, b) { snprintf(buf, BUFLEN, "%s/%d_%d/%s", datadir, w, h, a); \
     if ((temp = IMG_Load(buf))) { \
         SDL_SetAlpha(temp, SDL_SRCALPHA | SDL_RLEACCEL, SDL_ALPHA_TRANSPARENT); \
         b = SDL_DisplayFormatAlpha(temp); \
@@ -103,8 +111,8 @@ SDL_Surface *init_sdl(int w, int h, char *datadir)
 #undef LOAD
 
     /* load font */
-#define LOAD(a, b) { if(!(a = TTF_OpenFont(DEFFONT, b * hstretch))) \
-    { fprintf(stderr, "Could not load file `%s': %s\n", DEFFONT, TTF_GetError()); exit(EXIT_FAILURE); } }
+#define LOAD(a, b) { if(!(a = TTF_OpenFont(fontfile, b * hstretch))) \
+    { fprintf(stderr, "Could not load file `%s': %s\n", fontfile, TTF_GetError()); exit(EXIT_FAILURE); } }
 
     LOAD(font, FONTSIZE)
     LOAD(font2, FONTSIZE2)

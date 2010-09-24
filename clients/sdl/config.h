@@ -15,6 +15,7 @@ struct config_s {
     char *datadir;
     char *name;
     char *host;
+    char *font;
     int   port;
     int   x_res;
     int   y_res;
@@ -30,6 +31,7 @@ void config_fromargv(int argc, char **argv, struct config_s *conf);
 
 # comment
 datadir     ~/code/landu/data
+font        TOONISH.TTF
 resolution  1280x960
 name        Richard
 host        127.0.0.1
