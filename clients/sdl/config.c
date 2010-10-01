@@ -93,8 +93,9 @@ void config_fromfile(char *filename, struct config_s *conf)
 void config_fromargv(int argc, char **argv, struct config_s *conf)
 {
     int opt;
+    char *p;
 
-    while ((opt = getopt(argc, argv, "Hn:p:h:dr:f")) != -1) {
+    while ((opt = getopt(argc, argv, "Hn:p:h:dr:fs:")) != -1) {
         switch (opt) {
         case 'n':
             conf->name = optarg;
@@ -119,6 +120,9 @@ void config_fromargv(int argc, char **argv, struct config_s *conf)
             exit(EXIT_SUCCESS);
         case 'f':
             /* this is handled in client.c */
+            break;
+        case 's':
+            conf->font = optarg;
             break;
         default:
             printf("Usage: %s [-d] [-n name] [-h host] [-p port] [-r 800x600]\n", argv[0]);

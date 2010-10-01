@@ -44,12 +44,29 @@ SDL_Surface *init_sdl(int w, int h, char *datadir, char *fontfile)
     if (!datadir)
         datadir = DATADIR;
 
+    if (stat(datadir, &s_stat) == -1 || !S_ISDIR(s_stat.st_mode)) {
+        fprintf(stderr, "Datadir invalid: `%s'\n", datadir);
+        exit(EXIT_FAILURE);
+    }
+
     if ( !fontfile ) {
         fontfile = DEFFONT;
     } else {
         p = malloc(strlen(datadir) + strlen(fontfile) + 2);
         sprintf(p, "%s/%s", datadir, fontfile);
         fontfile = p;
+        if (stat(fontfile, &s_stat) == -1) {
+            p = malloc(strlen(fontfile) + 5);
+            sprintf(p, "%s.ttf", fontfile);
+            fprintf(stderr, "Font file `%s' does not exist, trying `%s'\n",
+                    fontfile, p);
+            free(fontfile);
+            fontfile = p;
+            if (stat(fontfile, &s_stat) == -1) {
+                fprintf(stderr, "Font file `%s' does not exist, either, giving up.\n", fontfile);
+                exit(EXIT_FAILURE);
+            }
+        }
     }
 
     snprintf(buf, BUFLEN, "%s/%d_%d", datadir, w, h);
