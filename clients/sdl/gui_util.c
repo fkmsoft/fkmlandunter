@@ -79,7 +79,8 @@ SDL_Surface *init_sdl(int w, int h, char *datadir, char *fontfile)
         exit(EXIT_FAILURE);
     }
 
-    temp = IMG_Load(ICON);
+    snprintf(buf, BUFLEN, "%s/%s", datadir, ICON);
+    temp = IMG_Load(buf);
     SDL_SetColorKey(temp, SDL_SRCCOLORKEY, SDL_MapRGB(temp->format, 0, 255, 0));
     SDL_WM_SetIcon(temp, 0);
     /*

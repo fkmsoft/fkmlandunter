@@ -1,4 +1,7 @@
+#define _XOPEN_SOURCE 500
+
 #include <stdlib.h>
+#include <string.h>
 
 #include "gui_util.h"
 #include "text_util.h"
@@ -6,7 +9,7 @@
 #define W 800
 #define H 600
 #define NAME "Guilord"
-#define FONT "TOONISH.ttf"
+#define FONT "fraktur.ttf"
 
 int main(int argc, char **argv)
 {
@@ -14,23 +17,24 @@ int main(int argc, char **argv)
     double hs, vs;
     gamestr g;
     player players[5];
-    char names[5 * 9];
+    char names[5 * 9], *p;
     int belts[5];
     g.villain = players;
 
     SDL_Surface *screen;
     SDL_Event event;
     Tbox t;
+    Chatbox out;
 
-    char s[] = "hello_\0\0\0\0\0\0\0\0\0\0\0";
-
+    hs = vs = 1.0;
     if (argc == 3) {
         screen = init_sdl(atoi(argv[1]), atoi(argv[2]), 0, FONT);
         hs = atoi(argv[1]) / (float)W;
         vs = atoi(argv[2]) / (float)H;
+    } else if (argc == 2) {
+        screen = init_sdl(W, H, argv[1], FONT);
     } else {
         screen = init_sdl(W, H, 0, FONT);
-        hs = vs = 1.0;
     }
 
     for (i = 0; i < 5; i++) {
@@ -53,11 +57,16 @@ int main(int argc, char **argv)
     g.w_card[1] = 12;
 
     t = create_textbox(screen, getfont(), hs * 36, vs * 532);
+    out = create_chatbox(screen, getfont(), hs * 36, vs * 410, 10);
 
     g.count = 5;
 
     render(screen, &g, 0, belts);
-    textbox_set(t, s);
+    textbox_set(t, strdup(""));
+    chatbox_append(out, strdup("foobar"));
+    chatbox_append(out, strdup("baaz"));
+    chatbox_append(out, strdup("quux"));
+    chatbox_render(out);
     SDL_UpdateRect(screen, 0, 0, 0, 0);
 
     down = 0;
@@ -74,8 +83,34 @@ int main(int argc, char **argv)
         } while (belts[0]);
         belts[0] = 10;
 
-        if (down && event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_q) {
-            exit(0);
+        if (down && event.type == SDL_KEYUP) {
+            if ((c = getprintkey(event.key.keysym.sym, SDL_GetModState()))) {
+                /* append to message */
+                p = malloc(strlen(textbox_get(t)) + 2);
+                sprintf(p, "%s%c", textbox_get(t), c);
+
+                /* fprintf(stderr, "text is now %s\n", p); */
+
+                free(textbox_get(t));
+                textbox_set(t, p);
+            }
+
+            switch(event.key.keysym.sym) {
+            case SDLK_q:
+                exit(0);
+            case SDLK_PAGEUP:
+                chatbox_scrollup(out);
+                break;
+            case SDLK_PAGEDOWN:
+                chatbox_scrolldown(out);
+                break;
+            case SDLK_RETURN:
+                chatbox_append(out, textbox_get(t));
+                textbox_set(t, strdup(""));
+                break;
+            default:
+                break;
+            }
         } else if (event.type == SDL_MOUSEBUTTONUP) {
             w = g.player.weathercards;
 
@@ -91,8 +126,8 @@ int main(int argc, char **argv)
         if (i == 1) i = 2;
 
         render(screen, &g, 0, belts);
-        s[15 - i] = '0' + i;
-        textbox_set(t, s);
+        textbox_update(t);
+        chatbox_render(out);
         game_over(screen, &g, 0, 0, 0);
 
         SDL_UpdateRect(screen, 0, 0, 0, 0);
