@@ -4,6 +4,16 @@
 
 #define DEBUG_FILEPARSE 0
 
+static char *usage = "Usage: %s [-d] [-n name] [-h host] [-p port] [-r 800x600] [-s font]\n" \
+    "with:\n" \
+    "\t-d\t\tenable debug information\n" \
+    "\t-n name\t\tuse name to log into server\n" \
+    "\t-h host\t\tuse host (may be hostname or IP) as server\n" \
+    "\t-p port\t\tconnect to this port instead of the default\n" \
+    "\t-r resolution\tuse this resolution instead of 800x600\n" \
+    "\t-s font\t\tuse this font instead of the default (must be in ttf format)\n" \
+    "\t-H\t\tprint this help message\n";
+
 /* replace the first occurence of ~ with $HOME,
    return a reference to the result string, or NULL,
    if no replace happened */
@@ -93,7 +103,6 @@ void config_fromfile(char *filename, struct config_s *conf)
 void config_fromargv(int argc, char **argv, struct config_s *conf)
 {
     int opt;
-    char *p;
 
     while ((opt = getopt(argc, argv, "Hn:p:h:dr:fs:")) != -1) {
         switch (opt) {
@@ -116,7 +125,7 @@ void config_fromargv(int argc, char **argv, struct config_s *conf)
                 printf("have %dx%d\n", conf->x_res, conf->y_res);
             break;
         case 'H':
-            printf("Usage: %s [-d] [-n name] [-h host] [-p port] [-r 800x600]\n", argv[0]);
+            printf(usage, argv[0]);
             exit(EXIT_SUCCESS);
         case 'f':
             /* this is handled in client.c */
@@ -125,7 +134,7 @@ void config_fromargv(int argc, char **argv, struct config_s *conf)
             conf->font = optarg;
             break;
         default:
-            printf("Usage: %s [-d] [-n name] [-h host] [-p port] [-r 800x600]\n", argv[0]);
+            printf(usage, argv[0]);
             exit(EXIT_FAILURE);
         }
     }

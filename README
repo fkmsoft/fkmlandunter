@@ -126,6 +126,14 @@ We have also produced a real SDL client, that is already playable, although it
 has no support for ingame chat or any other advanced features like menus yet. It
 can also be found in clients/sdl/, just run `client -H' for help.
 
+The command line switches for changing resolution and font depend on the
+respective files being present in the data directory, just look in there for
+finding out more, it should be more or less self-explaining. The default
+location of the data directory is /usr/share/fkmlandunter/data/, but you can
+override this in the resource file called .fkmlandunterrc, that has to be placed
+in your home directory. An example resource file can also be found in the data
+directory, it is called example.fkmlandunterrc.
+
 
 7. Regression Tests:
 --------------------
