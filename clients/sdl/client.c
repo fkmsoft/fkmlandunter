@@ -5,14 +5,20 @@
  * (c) Fkmsoft, 2010
  */
 
+/* this is for strdup() */
+#define _XOPEN_SOURCE 500
+
 #include "net_util.h"
 #include "gui_util.h"
+#include "text_util.h"
 #include "config.h"
 
 #define DEFPORT (1337)
 #define DEFNAME ("SDL_Player")
 #define DEFHOST ("127.0.0.1")
 #define DEFRCFILE ("~/.fkmlandunterrc")
+
+#define DEBUG 0
 
 static const int W = 800;
 static const int H = 600;
@@ -24,27 +30,38 @@ struct net_s {
     bool *push;
 };
 
-static bool parse_input(char *input, gamestr *g, int *startbelts, int pos, SDL_Surface *s, bool needbelt);
+static bool parse_input(char *input, gamestr *g, int *startbelts, int pos, SDL_Surface *s, bool needbelt, Chatbox chat);
 static int network_thread(struct net_s *data);
+static void handle_keypress(SDLKey k, SDLMod m, Tbox in, Chatbox out, char *playername, TCPsocket sock);
+static void chat_append(Chatbox chat, char *name, char *msg);
 
 int main(int argc, char **argv)
 {
-    bool netpush = true;
-    bool play = true, needbelt = true;
-    char *input, *p, buf[BUFL];
-    int card, pos, i;
-    int startbelts[5], *deck;
-    int mdown = 0, kdown = 0;
+    bool  netpush = true,
+          play = true,
+          needbelt = true;
+    char *input,
+         *p,
+          buf[BUFL];
+    int   card,
+          pos,
+          i,
+          startbelts[5],
+          *deck,
+          mdown = 0,
+          kdown = 0;
 
-    gamestr *g;
+    gamestr        *g;
     struct config_s conf;
-    struct net_s netdata;
+    struct net_s    netdata;
 
-    SDL_Surface *screen;
-    SDL_Thread *net;
-    SDL_Event ev;
-    TCPsocket sock;
+    SDL_Surface     *screen;
+    SDL_Thread      *net;
+    SDL_Event        ev;
+    TCPsocket        sock;
     SDLNet_SocketSet set;
+    Tbox             chat_input;
+    Chatbox          chat;
 
     conf.name  = DEFNAME;
     conf.host  = DEFHOST;
@@ -65,9 +82,13 @@ int main(int argc, char **argv)
 
     config_fromargv(argc, argv, &conf);
 
-    screen = init_sdl(conf.x_res, conf.y_res, conf.datadir, conf.font);
+    screen     = init_sdl(conf.x_res, conf.y_res, conf.datadir, conf.font);
+    chat_input = create_textbox(screen, getfont(), 36, 532);
+    chat       = create_chatbox(screen, getfont(), 36, 410, 10);
 
     pre_render(screen, conf.name);
+    textbox_set(chat_input, strdup(""));
+    chatbox_render(chat);
     SDL_UpdateRect(screen, 0, 0, 0, 0);
 
     g = create_game();
@@ -99,15 +120,25 @@ int main(int argc, char **argv)
     play = false;
     pos = -1;
     while (!play) {
-        pre_render(screen, conf.name);
-        SDL_UpdateRect(screen, 0, 0, 0, 0);
+#define PREREND0R \
+pre_render(screen, conf.name); \
+textbox_update(chat_input); \
+chatbox_render(chat); \
+SDL_UpdateRect(screen, 0, 0, 0, 0)
 
         SDL_PollEvent(&ev);
-        if (ev.type == SDL_QUIT ||
-            (ev.type == SDL_KEYUP && ev.key.keysym.sym == SDLK_q)) {
+        card = SDL_GetModState();
+
+        if (ev.type == SDL_QUIT) {
             sdl_send_to(sock, "LOGOUT bye\n");
             SDLNet_TCP_Close(sock);
             exit(EXIT_SUCCESS);
+        } else if (kdown && ev.type == SDL_KEYUP) {
+            handle_keypress(ev.key.keysym.sym, card, chat_input, chat, conf.name, sock);
+            kdown = 0;
+            PREREND0R;
+        } else if (ev.type == SDL_KEYDOWN) {
+            kdown = 1;
         }
 
         if (SDLNet_CheckSockets(set, 200) && SDLNet_SocketReady(sock)) {
@@ -125,16 +156,21 @@ int main(int argc, char **argv)
             }
 
             if (play)
-                needbelt = parse_input(input, g, startbelts, pos, screen, needbelt);
+                needbelt = parse_input(input, g, startbelts, pos, screen, needbelt, chat);
             else
-                needbelt = parse_input(input, g, startbelts, pos, screen, needbelt);
+                needbelt = parse_input(input, g, startbelts, pos, screen, needbelt, chat);
 
             free(input);
         }
     }
 
-    render(screen, g, pos, startbelts);
-    SDL_UpdateRect(screen, 0, 0, 0, 0);
+#define REND0R \
+render(screen, g, pos, startbelts); \
+textbox_update(chat_input); \
+chatbox_render(chat); \
+SDL_UpdateRect(screen, 0, 0, 0, 0)
+
+    REND0R;
 
     if (pos < 0 || pos > 4) {
         fprintf(stderr, "Error: illegal pos %d\n", pos);
@@ -148,10 +184,11 @@ int main(int argc, char **argv)
     net = SDL_CreateThread((int (*)(void *))network_thread, &netdata);
 
     while (play) {
-        SDL_WaitEvent(&ev);
 
-        if (ev.type == SDL_QUIT ||
-            (kdown && ev.type == SDL_KEYUP && ev.key.keysym.sym == SDLK_q)) {
+        SDL_WaitEvent(&ev);
+        card = SDL_GetModState();
+
+        if (ev.type == SDL_QUIT) {
             sdl_send_to(sock, "LOGOUT bye\n");
             SDLNet_TCP_Close(sock);
             SDL_KillThread(net);
@@ -162,11 +199,9 @@ int main(int argc, char **argv)
             if (card != -1) {
                 sdl_send_to(sock, "PLAY %d\n", deck[card]);
                 deck[card] = 0;
-
-                render(screen, g, pos, startbelts);
-                SDL_UpdateRect(screen, 0, 0, 0, 0);
             }
             mdown = 0;
+            REND0R;
         } else if (ev.type == SDL_MOUSEBUTTONDOWN) {
             mdown = 1;
         } else if (ev.type == SDL_KEYDOWN) {
@@ -177,12 +212,14 @@ int main(int argc, char **argv)
             if (!strncmp(input, "TERMINATE", 9) || strstr(input, "\nTERMINATE"))
                 play = false;
 
-            needbelt = parse_input(input, g, startbelts, pos, screen, needbelt);
+            needbelt = parse_input(input, g, startbelts, pos, screen, needbelt, chat);
             free(input);
             netpush = true;
-
-            render(screen, g, pos, startbelts);
-            SDL_UpdateRect(screen, 0, 0, 0, 0);
+            REND0R;
+        } else if (ev.type == SDL_KEYUP) {
+            kdown = 0;
+            handle_keypress(ev.key.keysym.sym, card, chat_input, chat, conf.name, sock);
+            REND0R;
         }
     }
 
@@ -201,7 +238,7 @@ int main(int argc, char **argv)
     return EXIT_SUCCESS;
 }
 
-static bool parse_input(char *input, gamestr *g, int *startbelts, int pos, SDL_Surface *s, bool needbelt)
+static bool parse_input(char *input, gamestr *g, int *startbelts, int pos, SDL_Surface *s, bool needbelt, Chatbox chat)
 {
     char *p, b[BUFL];
     int i;
@@ -209,7 +246,8 @@ static bool parse_input(char *input, gamestr *g, int *startbelts, int pos, SDL_S
     for (p = input; p != (char *)1; p = strchr(p, '\n') + 1) {
         g->rings = g->points = false;
         strncpy(b, p, BUFL);
-        parse_cmd(g, b);
+        if (parse_cmd(g, b) == 1)
+            chat_append(chat, strchr(p, ' ') + 1, 0);
 
         if (needbelt && g->rings) {
             for (i = 0; i < g->count; i++)
@@ -244,6 +282,74 @@ static int network_thread(struct net_s *data)
         }
 
     return 0;
+}
+
+static void handle_keypress(SDLKey k, SDLMod m, Tbox in, Chatbox out, char *playername, TCPsocket sock)
+{
+    int i;
+    char *p;
+
+    if ((i = getprintkey(k, m))) {
+        /* append to message */
+        p = malloc(strlen(textbox_get(in)) + 2);
+        sprintf(p, "%s%c", textbox_get(in), i);
+
+        if (DEBUG)
+            fprintf(stderr, "text is now %s\n", p);
+
+        free(textbox_get(in));
+        if (DEBUG)
+            fprintf(stderr, "by handler routine: ");
+        textbox_set(in, p);
+    }
+
+    switch(k) {
+    case SDLK_q:
+        if (m & KMOD_CTRL) {
+            fprintf(stderr, "Quit by ^Q\n");
+            exit(0);
+        }
+        break;
+    case SDLK_PAGEUP:
+        chatbox_scrollup(out);
+        break;
+    case SDLK_PAGEDOWN:
+        chatbox_scrolldown(out);
+        break;
+    case SDLK_RETURN:
+        if (strcmp("", p = textbox_get(in))) {
+            if (DEBUG)
+                fprintf(stderr, "by handler routine: ");
+
+            chat_append(out, playername, p);
+            sdl_send_to(sock, "MSG %s\n", p);
+            free(p);
+            if (DEBUG)
+                fprintf(stderr, "by handler routine: ");
+            textbox_set(in, strdup(""));
+        }
+        break;
+    default:
+        break;
+    }
+}
+
+/* magic argument msg: if NULL, disassemble name */
+static void chat_append(Chatbox chat, char *name, char *msg)
+{
+    char *p, *q;
+
+    if (msg) {
+        p = malloc(strlen(msg) + strlen(name) + 4);
+        sprintf(p, "<%s> %s", name, msg);
+    } else {
+        p = malloc(strlen(name) + 3);
+        q = strchr(name, ' ');
+        *q = 0;
+        sprintf(p, "<%s> %s", name, q+1);
+    }
+
+    chatbox_append(chat, p);
 }
 
 /* vim: set sw=4 ts=4 et fdm=syntax: */

@@ -171,7 +171,7 @@ int parse_cmd(gamestr *g, char *s)
         g->msg_data[strlen(g->msg_data) - 1] = '\0';
         
         g->message = true;
-        return 0;
+        return 1;
     } else if (strncmp(s, "PLAYED ", 7) == 0) {
         strtok(s, " ");
         for (i = 0; i < g->count; i++)

@@ -154,17 +154,21 @@ static void draw_background(SDL_Surface *s, int x, int y)
 static void draw_hud(SDL_Surface *s, int x, int y)
 {
     SDL_Rect r;
+    /*
     SDL_Surface *txt;
+    */
 
     r.x = x + hstretch * 18;
     r.y = y + vstretch * 385;
     SDL_BlitSurface(hud, 0, s, &r);
 
+    /*
     txt = TTF_RenderText_Blended(font, "- chat disabled -", font_fg);
     r.x = x + 60 * hstretch;
     r.y = y + 410 * vstretch;
     SDL_BlitSurface(txt, 0, s, &r);
     SDL_FreeSurface(txt);
+    */
 }
 
 static void create_playerbox(SDL_Surface *s, char *name, int x, int y, char *avatar, int lifebelts, bool dead)

@@ -34,7 +34,7 @@ void sdl_send_to(TCPsocket sock, char *fmt, ...)
     va_start(args, fmt);
     c = vsnprintf(buf, MAXBUF, fmt, args);
     if ((d = SDLNet_TCP_Send(sock, buf, c)) != c) {
-        printf("Could only wrote %d of %d bytes\n", d, c);
+        fprintf(stderr, "Could only wrote %d of %d bytes\n", d, c);
     }
 
     va_end(args);

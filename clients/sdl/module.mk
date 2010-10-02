@@ -10,8 +10,8 @@ guitesths   := $(dir)/gui_util.h $(dir)/text_util.h
 guitestdeps := $(guitestobjs) $(guitesths)
 
 clientobjs  := $(dir)/client.o $(dir)/net_util.o $(dir)/gui_util.o $(dir)/../communication.o \
-		$(dir)/config.o
-clienths    := $(randallhs) $(dir)/config.h
+		$(dir)/config.o $(dir)/text_util.o
+clienths    := $(randallhs) $(dir)/config.h $(dir)/text_util.h
 clientsdeps := $(clientobjs) $(clienths)
 
 sdl_flags   := `sdl-config --cflags`

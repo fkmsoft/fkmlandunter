@@ -9,12 +9,11 @@
 #define W 800
 #define H 600
 #define NAME "Guilord"
-#define FONT "fraktur.ttf"
+#define FONT "TOONISH.ttf"
 
 int main(int argc, char **argv)
 {
     int i, c, *w, down;
-    double hs, vs;
     gamestr g;
     player players[5];
     char names[5 * 9], *p;
@@ -26,16 +25,12 @@ int main(int argc, char **argv)
     Tbox t;
     Chatbox out;
 
-    hs = vs = 1.0;
-    if (argc == 3) {
+    if (argc == 3)
         screen = init_sdl(atoi(argv[1]), atoi(argv[2]), 0, FONT);
-        hs = atoi(argv[1]) / (float)W;
-        vs = atoi(argv[2]) / (float)H;
-    } else if (argc == 2) {
+    else if (argc == 2)
         screen = init_sdl(W, H, argv[1], FONT);
-    } else {
+    else
         screen = init_sdl(W, H, 0, FONT);
-    }
 
     for (i = 0; i < 5; i++) {
         sprintf(&names[9 * i], "Player %1d", i + 1);
@@ -44,7 +39,7 @@ int main(int argc, char **argv)
         g.villain[i].points = i;
         g.villain[i].lifebelts = i;
         g.villain[i].played = i + 1;
-        g.villain[i].dead = i;
+        g.villain[i].dead = i == 4 ? 1 : 0;
         belts[i] = 6;
     }
 
@@ -56,8 +51,8 @@ int main(int argc, char **argv)
     g.w_card[0] = 5;
     g.w_card[1] = 12;
 
-    t = create_textbox(screen, getfont(), hs * 36, vs * 532);
-    out = create_chatbox(screen, getfont(), hs * 36, vs * 410, 10);
+    t = create_textbox(screen, getfont(), 36, 532);
+    out = create_chatbox(screen, getfont(), 36, 410, 10);
 
     g.count = 5;
 

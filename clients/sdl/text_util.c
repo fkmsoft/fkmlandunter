@@ -20,7 +20,7 @@ struct chatbox {
     Tbox  output;           /* text box used for printing */
 };
 
-static SDL_Color font_fg = {255, 0, 0, 255};
+static SDL_Color font_fg = {0, 0, 0, 255};
 
 Tbox create_textbox(SDL_Surface *s, TTF_Font *font, unsigned x, unsigned y)
 {
@@ -46,7 +46,8 @@ void textbox_set(Tbox t, char *s)
     txt = TTF_RenderText_Blended(t->font, s, font_fg);
     SDL_BlitSurface(txt, 0, t->screen, &r);
     if (TEXT_UTIL_DEBUG > 1)
-        fprintf(stderr, "Rendering textbox at %d/%d\n", r.x, r.y);
+        fprintf(stderr, "%p Rendering textbox at %d/%d: `%s'\n",
+            t->screen, r.x, r.y, s);
 }
 
 char *textbox_get(Tbox t)
@@ -62,6 +63,11 @@ void textbox_update(Tbox t)
 char getprintkey(SDLKey k, SDLMod m)
 {
     char c = 0;
+
+    if (m & KMOD_CTRL
+        || m & KMOD_ALT
+        || m & KMOD_META)
+        return 0;
 
     if (k > 31 && k < 127)
         c = k;
@@ -86,7 +92,7 @@ Chatbox create_chatbox(SDL_Surface *s, TTF_Font *font, unsigned x, unsigned y, i
     b->length = length;
     b->output = create_textbox(s, font, x, y);
 
-    b->fontsize = 10;
+    b->fontsize = 10 * vstretch;
 
     for (i = 0; i < MAXLINES; i++)
         b->lines[i] = 0;
@@ -131,17 +137,23 @@ void chatbox_render(Chatbox b)
 {
     int i, y, last;
 
+    if (TEXT_UTIL_DEBUG)
+        fprintf(stderr, "Rendering chatbox at %d/%d\n", b->output->x, b->output->y);
+
     if (b->last == -1) return;
 
     y = b->output->y;
-    font_fg.r = 0;
+    /* font_fg.r = 0; */
 
     if (b->fill < b->length) {
-        i = 0;
         last = b->last;
+        i = last - b->length + 1;
+        i = i < 0 ? 0 : i;
     } else if (b->first == -1) {
         i = (MAXLINES + b->last - b->length + 1) % MAXLINES;
         last = b->last;
+        if (TEXT_UTIL_DEBUG > 2)
+            fprintf(stderr, "base case, last is %d\n", last);
     } else {
         i = b->first;
         if (i < b->last) { /* last line does NOT wrap */
@@ -153,18 +165,26 @@ void chatbox_render(Chatbox b)
             if (last < i /* wraps */ && last > b->last)
                 last = b->last;
         }
+        if (TEXT_UTIL_DEBUG > 2)
+            fprintf(stderr, "ARSCH case, last is %d\n", last);
     }
 
     if (TEXT_UTIL_DEBUG)
-        fprintf(stderr, "rendering slots %d - %d\n", i, last);
+        fprintf(stderr, "rendering slots %d - %d (%d)\n", i, last, b->length);
     for (i = i < 0 ? 0 : i; i != last; i = (i + 1) % MAXLINES) {
         textbox_set(b->output, b->lines[i]);
         b->output->y += b->fontsize;
+        if (TEXT_UTIL_DEBUG)
+            fprintf(stderr, "line %d: %s\n", i, b->lines[i]);
     }
-    textbox_set(b->output, b->lines[i]);
+    if (b->lines[i]) {
+        textbox_set(b->output, b->lines[i]);
+        if (TEXT_UTIL_DEBUG)
+            fprintf(stderr, "line %d: %s\n", i, b->lines[i]);
+    }
 
     b->output->y = y;
-    font_fg.r = 255;
+    /* font_fg.r = 255; */
 }
 
 void chatbox_scrollup(Chatbox b)
