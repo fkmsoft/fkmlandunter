@@ -24,9 +24,10 @@
     \/_/    \/_/\/_/\/_/\/_/\/_/\/___/  \/___/  \/_/    \/__/
 (from http://www.network-science.de/ascii/)
 
+
 Known Bugs:
 -----------
 
 * sdl client will segfault when given nick is already taken
 
-* can not play cards in sdl client after receiving messages
+* can not play cards in sdl client after window resize

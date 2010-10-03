@@ -27,7 +27,7 @@ struct net_s {
     bool *push;
 };
 
-static bool parse_input(char *input, gamestr *g, int *startbelts, int pos, SDL_Surface *s, bool needbelt, Chatbox chat);
+static bool parse_input(char *input, gamestr *g, int *startbelts, int pos, bool needbelt, Chatbox chat);
 static int network_thread(struct net_s *data);
 static void chat_append(Chatbox chat, char *name, char *msg);
 
@@ -158,10 +158,7 @@ SDL_UpdateRect(screen, 0, 0, 0, 0)
                 play = true;
             }
 
-            if (play)
-                needbelt = parse_input(input, g, startbelts, pos, screen, needbelt, chat);
-            else
-                needbelt = parse_input(input, g, startbelts, pos, screen, needbelt, chat);
+            needbelt = parse_input(input, g, startbelts, pos, needbelt, chat);
 
             free(input);
         }
@@ -186,18 +183,27 @@ SDL_UpdateRect(screen, 0, 0, 0, 0)
     netdata.push = &netpush;
     net = SDL_CreateThread((int (*)(void *))network_thread, &netdata);
 
+    g->wlevel = true;
+
     while (play) {
 
         SDL_WaitEvent(&ev);
         card = SDL_GetModState();
 
         if (ev.type == SDL_QUIT) {
+            if (CLIENT_DEBUG)
+                fprintf(stderr, "Quit event\n");
+
+            SDL_KillThread(net);
             sdl_send_to(sock, "LOGOUT bye\n");
             SDLNet_TCP_Close(sock);
-            SDL_KillThread(net);
             exit(EXIT_SUCCESS);
-        } else if (mdown && ev.type == SDL_MOUSEBUTTONUP && !g->villain[pos].dead) {
+        } else if (mdown && ev.type == SDL_MOUSEBUTTONUP && !g->villain[pos].dead
+                     && g->wlevel) {
+            g->wlevel = false;
             card = card_select(ev.button.x, ev.button.y, deck);
+            if (CLIENT_DEBUG)
+                fprintf(stderr, "Click event, got card %d\n", card);
 
             if (card != -1) {
                 sdl_send_to(sock, "PLAY %d\n", deck[card]);
@@ -210,18 +216,26 @@ SDL_UpdateRect(screen, 0, 0, 0, 0)
         } else if (ev.type == SDL_KEYDOWN) {
             kdown = 1;
         } else if (ev.type == SDL_USEREVENT) {
+            if (CLIENT_DEBUG)
+                fprintf(stderr, "Net event\n");
             input = sdl_receive_from(sock, conf.debug);
 
             if (!strncmp(input, "TERMINATE", 9) || strstr(input, "\nTERMINATE"))
                 play = false;
 
-            needbelt = parse_input(input, g, startbelts, pos, screen, needbelt, chat);
+            needbelt = parse_input(input, g, startbelts, pos, needbelt, chat);
             free(input);
             netpush = true;
             REND0R;
         } else if (ev.type == SDL_KEYUP) {
+            if (CLIENT_DEBUG)
+                fprintf(stderr, "Key event\n");
+
             kdown = 0;
-            handle_keypress(ev.key.keysym.sym, card, chat_input, chat);
+            if ((p = handle_keypress(ev.key.keysym.sym, card, chat_input, chat))) {
+                chat_append(chat, conf.name, p);
+                sdl_send_to(sock, "MSG %s\n", p);
+            }
             REND0R;
         }
     }
@@ -241,7 +255,8 @@ SDL_UpdateRect(screen, 0, 0, 0, 0)
     return EXIT_SUCCESS;
 }
 
-static bool parse_input(char *input, gamestr *g, int *startbelts, int pos, SDL_Surface *s, bool needbelt, Chatbox chat)
+static bool parse_input(char *input, gamestr *g, int *startbelts, int pos,
+                        bool needbelt, Chatbox chat)
 {
     char *p, b[BUFL];
     int i;

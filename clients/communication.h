@@ -27,27 +27,31 @@
 
 
 typedef struct {
-    int points;
-    int water_level;
-    bool dead;
+    int   points;
+    int   water_level;
+    bool  dead;
     char *name;
-    int weathercards[12];
-    int lifebelts;
-    int tabnum;
-    int played;
+    int   weathercards[12];
+    int   lifebelts;
+    int   tabnum;
+    int   played;
 } player;
 
 typedef struct {
-    player player;
+    player  player;
     player *villain;
-    int count;
-    int w_card[2];
-    int round;
-    bool deck, rings, weather, wlevel, points;
-    bool message;
-    char *msg_from;
-    char *msg_data;
-    int tabnum;
+    int     count;
+    int     w_card[2];
+    int     round;
+    bool    deck,
+            rings,
+            weather,
+            wlevel,
+            points;
+    bool    message;
+    char   *msg_from;
+    char   *msg_data;
+    int     tabnum;
 } gamestr;
 
 /* GAMEPLAY */
