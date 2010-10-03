@@ -28,3 +28,5 @@ Known Bugs:
 -----------
 
 * sdl client will segfault when given nick is already taken
+
+* can not play cards in sdl client after receiving messages
