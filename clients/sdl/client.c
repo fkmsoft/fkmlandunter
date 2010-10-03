@@ -79,15 +79,14 @@ int main(int argc, char **argv)
     config_fromargv(argc, argv, &conf);
 
     screen     = init_sdl(conf.x_res, conf.y_res, conf.datadir, conf.font);
-    chat_input = create_textbox(screen, getfont(), 36, 532);
+    chat_input = create_textbox(screen, getfont(), 36, 532); /* FIXME hide these magic numbers somewhere */
     chat       = create_chatbox(screen, getfont(), 36, 410, 10);
-
-    pre_render(screen, conf.name);
 
     p = malloc(1); /* these two lines are `strdup("")' */
     *p = 0;
-    textbox_set(chat_input, p);
 
+    pre_render(screen, conf.name);
+    textbox_set(chat_input, p);
     chatbox_render(chat);
     SDL_UpdateRect(screen, 0, 0, 0, 0);
 
@@ -120,6 +119,7 @@ int main(int argc, char **argv)
     play = false;
     pos = -1;
     while (!play) {
+
 #define PREREND0R \
 pre_render(screen, conf.name); \
 textbox_update(chat_input); \
@@ -156,6 +156,11 @@ SDL_UpdateRect(screen, 0, 0, 0, 0)
                 strncpy(buf, p + 1, BUFL);
                 pos = parse_start(g, buf);
                 play = true;
+            } else if (strncmp(input, "TERMINATE", 9) == 0
+                        || strstr(input, "TERMINATE")) {
+                fprintf(stderr, "Server closed connection\n"
+                            "Maybe nickname `%s' is already taken\n", conf.name);
+                exit(EXIT_SUCCESS);
             }
 
             needbelt = parse_input(input, g, startbelts, pos, needbelt, chat);
@@ -235,6 +240,9 @@ SDL_UpdateRect(screen, 0, 0, 0, 0)
             if ((p = handle_keypress(ev.key.keysym.sym, card, chat_input, chat))) {
                 chat_append(chat, conf.name, p);
                 sdl_send_to(sock, "MSG %s\n", p);
+
+                /* FIXME repair this whole crap */
+                g->wlevel = true;
             }
             REND0R;
         }

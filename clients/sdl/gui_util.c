@@ -76,6 +76,7 @@ SDL_Surface *init_sdl(int w, int h, char *datadir, char *fontfile)
     }
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        fprintf(stderr, "Could not init SDL: %s\n", SDL_GetError());
         exit(EXIT_FAILURE);
     }
 

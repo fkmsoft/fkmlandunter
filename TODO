@@ -2,15 +2,14 @@
 | To-do list: |
  =============
 
-- SDL client, so that this game  looks nicer & is eventually played by someone
+- SDL client, so that this game looks nicer & is eventually played by someone
+  (Work in progress...)
 
-- design & development of an artificial intelligence
+- design & development of a real artificial intelligence player
 
 - concept & implementation of a new protocol
 
-- concept & implementation of a ``lobby'' where people can chat and open new games
-
-- fix ``INSTALL'' instructions (maybe add an install target in the Makefile)
+- concept & implementation of a `lobby' where people can chat and open new games
 
 - bug-fixing work on the ncurses client
 
@@ -28,6 +27,6 @@
 Known Bugs:
 -----------
 
-* sdl client will segfault when given nick is already taken
+* sdl client will exit when given nick is already taken
 
 * can not play cards in sdl client after window resize
