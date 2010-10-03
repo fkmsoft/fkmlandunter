@@ -26,7 +26,10 @@ char *handle_keypress(SDLKey k, SDLMod m, Tbox in, Chatbox out);
 Chatbox create_chatbox(SDL_Surface *s, TTF_Font *font, unsigned x, unsigned y, int length);
 void chatbox_append(Chatbox b, char *s);
 void chatbox_render(Chatbox b);
+
+/* these went static
 void chatbox_scrollup(Chatbox b);
 void chatbox_scrolldown(Chatbox b);
+*/
 
 #endif /* FKML_TEXT_UTIL_H */

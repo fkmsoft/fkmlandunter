@@ -5,9 +5,6 @@
  * (c) Fkmsoft, 2010
  */
 
-/* this is for strdup() */
-#define _XOPEN_SOURCE 500
-
 #include "net_util.h"
 #include "gui_util.h"
 #include "text_util.h"
@@ -18,7 +15,7 @@
 #define DEFHOST ("127.0.0.1")
 #define DEFRCFILE ("~/.fkmlandunterrc")
 
-#define DEBUG 0
+#define CLIENT_DEBUG 0
 
 static const int W = 800;
 static const int H = 600;
@@ -101,7 +98,7 @@ int main(int argc, char **argv)
 
     sock = SDLNet_TCP_Open(&addr);
     if (sock == NULL) {
-        printf("cannot connect to %s:%d\n", conf.host, conf.port);
+        fprintf(stderr, "cannot connect to %s:%d\n", conf.host, conf.port);
         exit(EXIT_FAILURE);
     }
 

@@ -5,7 +5,7 @@
 #define FONTSIZE3 (36)
 
 #define BUFLEN 1024
-#define GUI_DEBUG 0
+#define GUI_UTIL_DEBUG 0
 
 static void cleanup(void);
 
@@ -99,7 +99,7 @@ SDL_Surface *init_sdl(int w, int h, char *datadir, char *fontfile)
 
     vstretch = w / (float)800;
     hstretch = h / (float)600;
-    if (GUI_DEBUG)
+    if (GUI_UTIL_DEBUG)
         printf("Stretches are %f x %f\n", vstretch, hstretch);
 
     atexit(SDL_Quit);
@@ -243,7 +243,7 @@ static int set_lifebelts(SDL_Surface *s, int x, int y, int n, int max)
 	    SDL_BlitSurface(act_lifebelt, 0, s, &r);
     }
 
-    if (GUI_DEBUG)
+    if (GUI_UTIL_DEBUG)
         printf("Drawing %d/%d lifebelts done\n", n, max);
 
     return n;
