@@ -68,6 +68,7 @@ int main(int argc, char **argv)
     for (i = 9; i; i--) {
         do {
             SDL_WaitEvent(&event);
+            c = SDL_GetModState();
 
             if (event.type == SDL_QUIT)
                 exit(0);
@@ -79,6 +80,10 @@ int main(int argc, char **argv)
         belts[0] = 10;
 
         if (down && event.type == SDL_KEYUP) {
+            if ((p = handle_keypress(event.key.keysym.sym, c, t, out))) {
+                chatbox_append(out, p);
+            }
+#if 0
             if ((c = getprintkey(event.key.keysym.sym, SDL_GetModState()))) {
                 /* append to message */
                 p = malloc(strlen(textbox_get(t)) + 2);
@@ -106,6 +111,7 @@ int main(int argc, char **argv)
             default:
                 break;
             }
+#endif /* 0 */
         } else if (event.type == SDL_MOUSEBUTTONUP) {
             w = g.player.weathercards;
 

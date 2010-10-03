@@ -20,6 +20,9 @@ void textbox_update(Tbox t);
 /* returns the corresponding character, or '\0' if not printable */
 char getprintkey(SDLKey k, SDLMod m);
 
+/* returns 0 or pointer to message */
+char *handle_keypress(SDLKey k, SDLMod m, Tbox in, Chatbox out);
+
 Chatbox create_chatbox(SDL_Surface *s, TTF_Font *font, unsigned x, unsigned y, int length);
 void chatbox_append(Chatbox b, char *s);
 void chatbox_render(Chatbox b);

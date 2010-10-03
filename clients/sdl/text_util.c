@@ -1,6 +1,7 @@
 #include "text_util.h"
 
 #define TEXT_UTIL_DEBUG 0
+#define FONT_PIXELSIZE 10
 
 struct tbox {
     char *s;
@@ -83,6 +84,69 @@ char getprintkey(SDLKey k, SDLMod m)
     return c;
 }
 
+/* returns 0 or pointer to message */
+char *handle_keypress(SDLKey k, SDLMod m, Tbox in, Chatbox out)
+{
+    int i;
+    char *p, *q;
+
+    if ((i = getprintkey(k, m))) {
+        /* append to message */
+        p = malloc(strlen(textbox_get(in)) + 2);
+        sprintf(p, "%s%c", textbox_get(in), i);
+
+        if (TEXT_UTIL_DEBUG)
+            fprintf(stderr, "text is now %s\n", p);
+
+        free(textbox_get(in));
+        if (TEXT_UTIL_DEBUG)
+            fprintf(stderr, "by handler routine: ");
+        textbox_set(in, p);
+    }
+
+    switch(k) {
+    case SDLK_q:
+        if (m & KMOD_CTRL) {
+            fprintf(stderr, "Quit by ^Q\n");
+            exit(0);
+        }
+        break;
+    case SDLK_PAGEUP:
+        chatbox_scrollup(out);
+        break;
+    case SDLK_PAGEDOWN:
+        chatbox_scrolldown(out);
+        break;
+    case SDLK_RETURN:
+        if (strcmp("", p = textbox_get(in))) {
+            if (TEXT_UTIL_DEBUG)
+                fprintf(stderr, "by handler routine: ");
+
+            /*
+            chat_append(out, playername, p);
+
+            if (sock)
+                sdl_send_to(sock, "MSG %s\n", p);
+
+            free(p);
+            */
+            if (TEXT_UTIL_DEBUG)
+                fprintf(stderr, "by handler routine: ");
+
+            q = malloc(1); /* these two lines are `strdup("")' */
+            *q = 0;
+            textbox_set(in, q);
+
+            return p;
+        }
+        break;
+    default:
+        break;
+    }
+
+    return 0;
+}
+
 Chatbox create_chatbox(SDL_Surface *s, TTF_Font *font, unsigned x, unsigned y, int length)
 {
     int i;
@@ -92,7 +156,7 @@ Chatbox create_chatbox(SDL_Surface *s, TTF_Font *font, unsigned x, unsigned y, i
     b->length = length;
     b->output = create_textbox(s, font, x, y);
 
-    b->fontsize = 10 * vstretch;
+    b->fontsize = FONT_PIXELSIZE * vstretch;
 
     for (i = 0; i < MAXLINES; i++)
         b->lines[i] = 0;

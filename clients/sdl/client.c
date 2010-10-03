@@ -32,7 +32,6 @@ struct net_s {
 
 static bool parse_input(char *input, gamestr *g, int *startbelts, int pos, SDL_Surface *s, bool needbelt, Chatbox chat);
 static int network_thread(struct net_s *data);
-static void handle_keypress(SDLKey k, SDLMod m, Tbox in, Chatbox out, char *playername, TCPsocket sock);
 static void chat_append(Chatbox chat, char *name, char *msg);
 
 int main(int argc, char **argv)
@@ -87,7 +86,11 @@ int main(int argc, char **argv)
     chat       = create_chatbox(screen, getfont(), 36, 410, 10);
 
     pre_render(screen, conf.name);
-    textbox_set(chat_input, strdup(""));
+
+    p = malloc(1); /* these two lines are `strdup("")' */
+    *p = 0;
+    textbox_set(chat_input, p);
+
     chatbox_render(chat);
     SDL_UpdateRect(screen, 0, 0, 0, 0);
 
@@ -134,7 +137,10 @@ SDL_UpdateRect(screen, 0, 0, 0, 0)
             SDLNet_TCP_Close(sock);
             exit(EXIT_SUCCESS);
         } else if (kdown && ev.type == SDL_KEYUP) {
-            handle_keypress(ev.key.keysym.sym, card, chat_input, chat, conf.name, sock);
+            if ((p = handle_keypress(ev.key.keysym.sym, card, chat_input, chat))) {
+                chat_append(chat, conf.name, p);
+                sdl_send_to(sock, "MSG %s\n", p);
+            }
             kdown = 0;
             PREREND0R;
         } else if (ev.type == SDL_KEYDOWN) {
@@ -218,7 +224,7 @@ SDL_UpdateRect(screen, 0, 0, 0, 0)
             REND0R;
         } else if (ev.type == SDL_KEYUP) {
             kdown = 0;
-            handle_keypress(ev.key.keysym.sym, card, chat_input, chat, conf.name, sock);
+            handle_keypress(ev.key.keysym.sym, card, chat_input, chat);
             REND0R;
         }
     }
@@ -282,56 +288,6 @@ static int network_thread(struct net_s *data)
         }
 
     return 0;
-}
-
-static void handle_keypress(SDLKey k, SDLMod m, Tbox in, Chatbox out, char *playername, TCPsocket sock)
-{
-    int i;
-    char *p;
-
-    if ((i = getprintkey(k, m))) {
-        /* append to message */
-        p = malloc(strlen(textbox_get(in)) + 2);
-        sprintf(p, "%s%c", textbox_get(in), i);
-
-        if (DEBUG)
-            fprintf(stderr, "text is now %s\n", p);
-
-        free(textbox_get(in));
-        if (DEBUG)
-            fprintf(stderr, "by handler routine: ");
-        textbox_set(in, p);
-    }
-
-    switch(k) {
-    case SDLK_q:
-        if (m & KMOD_CTRL) {
-            fprintf(stderr, "Quit by ^Q\n");
-            exit(0);
-        }
-        break;
-    case SDLK_PAGEUP:
-        chatbox_scrollup(out);
-        break;
-    case SDLK_PAGEDOWN:
-        chatbox_scrolldown(out);
-        break;
-    case SDLK_RETURN:
-        if (strcmp("", p = textbox_get(in))) {
-            if (DEBUG)
-                fprintf(stderr, "by handler routine: ");
-
-            chat_append(out, playername, p);
-            sdl_send_to(sock, "MSG %s\n", p);
-            free(p);
-            if (DEBUG)
-                fprintf(stderr, "by handler routine: ");
-            textbox_set(in, strdup(""));
-        }
-        break;
-    default:
-        break;
-    }
 }
 
 /* magic argument msg: if NULL, disassemble name */
