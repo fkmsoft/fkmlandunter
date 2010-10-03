@@ -59,8 +59,7 @@ bool fkmlandunter_play(fkmserver *s, int playerlimit)
             water[j] = (buf[j] % 12) + 1;
         free(buf);
 
-        /* hand out decks after rotating them (using the original deckset as
-         * basis */
+        /* hand out decks after rotating them (using the original deck_set) */
         deck *df;
         df = deck_rotate(deck_set, i, pnum);
         pl = fkmserver_getc(s, 0);
@@ -98,9 +97,11 @@ bool fkmlandunter_play(fkmserver *s, int playerlimit)
             while (played < alive) {
                 p = fkmserver_poll(s);
                 if (p == 0) {
+					/* new client connecting */
                     send_refuse(s);
                     continue;
                 } else if (p < 0) {
+					/* a client disconnected */
                     p = -p;
                     rmplayer(s, --p);
                     /* FIXME */
@@ -119,6 +120,10 @@ bool fkmlandunter_play(fkmserver *s, int playerlimit)
 				} else if (w_card == -1) {
                     continue;
 				}
+
+				pl = fkmserver_getc(s, p);
+				if (pl->played)
+					continue;
 
                 /* remove used weathercard from deck */
                 rm_wcard(s, p, w_card);
