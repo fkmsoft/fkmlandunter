@@ -150,7 +150,7 @@ int parse_game_input(fkmserver *s, int p)
             if (pl->played) {
                 fkmserver_cidxsend(s, p, build_cmd(FAIL,
                             "you made your move"));
-            } if (pl->dead) {
+            } else if (pl->dead) {
                 fkmserver_cidxsend(s, p, build_cmd(FAIL,
                             "you drowned"));
             } else {

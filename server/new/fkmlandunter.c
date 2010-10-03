@@ -121,10 +121,6 @@ bool fkmlandunter_play(fkmserver *s, int playerlimit)
                     continue;
 				}
 
-				pl = fkmserver_getc(s, p);
-				if (pl->played)
-					continue;
-
                 /* remove used weathercard from deck */
                 rm_wcard(s, p, w_card);
                 played++;
