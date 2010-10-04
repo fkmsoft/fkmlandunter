@@ -16,7 +16,7 @@
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_ttf.h>
 
-#include "../communication.h"
+#include "../parse.h"
 
 #define DATADIR "../../data/fkmlu/"
 
