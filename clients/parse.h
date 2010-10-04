@@ -8,17 +8,10 @@
 #ifndef PARSE_H
 #define PARSE_H
 
-#define _GNU_SOURCE 1
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <stdarg.h>
-#include <sys/time.h>
-
-#include <poll.h>
 
 #define TABSIZE     (8)
 #define MAXNICK     (30)
