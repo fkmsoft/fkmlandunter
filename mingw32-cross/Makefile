@@ -33,8 +33,8 @@ dlls := libfreetype-6.dll libpng14.dll SDL.dll SDL_image.dll SDL_net.dll SDL_ttf
 all: $(targets)
 
 zip: all
-	echo $(foo)
 	$(MKDIR_P) $(ZIPDIR)
+	$(RM) -r $(ZIPDIR)/data
 	$(CP) -r ../data/fkmlu $(ZIPDIR)/data
 	$(CP) $(targets) $(ZIPDIR)
 	$(CP) $(addprefix $(DLLDIR)/,$(dlls)) $(ZIPDIR)

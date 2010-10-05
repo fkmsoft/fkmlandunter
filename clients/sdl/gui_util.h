@@ -52,11 +52,11 @@
 #define WCARD ("wasserkarte.png")
 #define PCARD_P ("punktekarte_p.png")
 
+/* icon */
+#define ICON ( "ring.png")
+
 /* standard font */
 #define DEFFONT (DATADIR "TOONISH.ttf")
-
-/* icon */
-#define ICON (DATADIR "ring.png")
 
 extern const int pbox_x, pbox_y;
 
