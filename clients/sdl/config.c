@@ -19,7 +19,7 @@ static char *usage = "Usage: %s [-d] [-n name] [-h host] [-p port] [-r 800x600] 
    if no replace happened */
 static char *subhome(char *s);
 
-void config_fromfile(char *filename, struct config_s *conf)
+int config_fromfile(char *filename, struct config_s *conf)
 {
     char buf[BUFL], *p;
     int n;
@@ -29,15 +29,23 @@ void config_fromfile(char *filename, struct config_s *conf)
 
     if (p) {
         f = fopen(p, "r");
+
+        if (DEBUG_FILEPARSE)
+            fprintf(stderr, "home dir substituted: `%s' -> `%s'\n",
+                    filename, p);
         free(p);
     } else {
         f = fopen(filename, "r");
+
+        if (DEBUG_FILEPARSE)
+            fprintf(stderr, "home dir not substituted: `%s'\n",
+                    filename);
     }
 
     if (!f) {
         /* fprintf(stderr, "Error opening config file `%s': %s\n",
                 filename, strerror(errno)); */
-        return;
+        return -1;
     }
 
     while (fgets(buf, BUFL, f)) {
@@ -54,6 +62,7 @@ void config_fromfile(char *filename, struct config_s *conf)
             n = strlen(p);
             conf->datadir = malloc(n);
             strncpy(conf->datadir, p, n - 1);
+            conf->datadir[n - 1] = 0; /* str__N__cpy does not null-terminate! */
 
             if ( (p = subhome(conf->datadir)) ) {
                 free(conf->datadir);
@@ -73,6 +82,7 @@ void config_fromfile(char *filename, struct config_s *conf)
             n = strlen(p);
             conf->name = malloc(n);
             strncpy(conf->name, p, n - 1);
+            conf->name[n - 1] = 0; /* str__N__cpy does not null-terminate! */
 
             if (DEBUG_FILEPARSE)
                 printf("name: `%s'\n", conf->name);
@@ -80,6 +90,7 @@ void config_fromfile(char *filename, struct config_s *conf)
             n = strlen(p);
             conf->host = malloc(n);
             strncpy(conf->host, p, n - 1);
+            conf->host[n - 1] = 0; /* str__N__cpy does not null-terminate! */
 
             if (DEBUG_FILEPARSE)
                 printf("host: `%s'\n", conf->host);
@@ -92,12 +103,15 @@ void config_fromfile(char *filename, struct config_s *conf)
             n = strlen(p);
             conf->font = malloc(n);
             strncpy(conf->font, p, n - 1);
+            conf->font[n - 1] = 0; /* str__N__cpy does not null-terminate! */
 
             if (DEBUG_FILEPARSE)
                 printf("font: `%s'\n", conf->font);
         }
 #undef HAVE
     }
+
+    return 0;
 }
 
 void config_fromargv(int argc, char **argv, struct config_s *conf)

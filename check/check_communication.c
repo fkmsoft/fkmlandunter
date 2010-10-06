@@ -35,7 +35,7 @@ START_TEST (test_communication_parse_lifebelts)
 {
     int i;
     gamestr g;
-    char s[100] = "RINGS 1 2 3 4 5\n";
+    char *s = strdup("RINGS 1 2 3 4 5\n");
 
     g.count = 5;
     fail_unless(g.count == 5, "player count not set");

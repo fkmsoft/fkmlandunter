@@ -24,7 +24,7 @@ struct config_s {
 
 #define BUFL (1024)
 
-void config_fromfile(char *filename, struct config_s *conf);
+int config_fromfile(char *filename, struct config_s *conf);
 void config_fromargv(int argc, char **argv, struct config_s *conf);
 
 /* example:
