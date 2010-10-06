@@ -1,4 +1,5 @@
 #include "checks.h"
+#include "../clients/communication.h"
 
 START_TEST (test_communication_parse_start)
 {

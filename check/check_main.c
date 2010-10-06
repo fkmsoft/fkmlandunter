@@ -9,6 +9,7 @@ int main(void)
     srunner_add_suite(sr, fkmlist_suite());
     srunner_add_suite(sr, communication_suite());
     srunner_add_suite(sr, sdl_config_suite());
+    srunner_add_suite(sr, nserv_util_suite());
 
     srunner_run_all(sr, CK_NORMAL);
     failed = srunner_ntests_failed(sr);

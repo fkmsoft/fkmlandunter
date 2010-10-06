@@ -1,4 +1,5 @@
 #include "checks.h"
+#include "../server/new/fkmlist.h"
 
 START_TEST (test_fkmlist_simple)
 {

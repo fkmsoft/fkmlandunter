@@ -10,12 +10,9 @@
 #include <check.h>
 #include <string.h>
 
-#include "../server/new/fkmlist.h"
-#include "../clients/communication.h"
-#include "../clients/sdl/config.h"
-
 Suite *fkmlist_suite (void);
 Suite *communication_suite (void);
 Suite *sdl_config_suite (void);
+Suite *nserv_util_suite (void);
 
 #endif /* _TESTS_CHECKS_H */

@@ -10,7 +10,12 @@
 /* returns int array with num numbers between 1 and num */
 int *shuffle(int num)
 {
-    int i, r, *arr = calloc(sizeof(int), num);
+    int i, r, *arr;
+
+	if (num < 1)
+		return 0;
+
+	arr = calloc(sizeof(int), num);
 
     srand(time(NULL));
 
@@ -27,9 +32,14 @@ int *shuffle(int num)
 /* creates an amount of num decks */
 deck *create_decks(int num)
 {
-    deck *deck_arr = malloc(sizeof(deck)*num);
-    int *cards = shuffle(60);
-    int i, j, c;
+    int i, j, c, *cards;
+    deck *deck_arr;
+
+	if (num < 1 || num > 5)
+		return 0;
+
+	deck_arr = malloc(sizeof(deck)*num);
+	cards = shuffle(60);
 
     for (i = 0; i < num; i++) {
 		deck_arr[i].lifebelts = 0;
@@ -48,10 +58,15 @@ deck *create_decks(int num)
 /* rotates an array of num decks by d steps */
 deck *deck_rotate(deck *decks, int d, int num)
 {
-    deck *rotated = malloc(sizeof(deck)*num);
+    deck *rotated;
     int i;
+
+	if (!decks || num < 1)
+		return 0;
+	
+	rotated = malloc(sizeof(deck)*num);
     for (i = 0; i < num; i++) {
-        rotated[i] = decks[(i + d)%num];
+        rotated[i] = decks[(num + i - d)%num];
     }
 
     return rotated;
@@ -62,6 +77,7 @@ player *create_player(int fd)
     player *p = calloc(1,sizeof(player));
 
     p->fd = fd;
+	p->dead = true;
 
     return p;
 }

@@ -1,4 +1,5 @@
 #include "checks.h"
+#include "../clients/sdl/config.h"
 
 START_TEST (test_config_file_invalid)
 {
