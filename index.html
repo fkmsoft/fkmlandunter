@@ -18,8 +18,47 @@
     
 		#container {
       		margin: auto;
-      		width: 750px;
+      		width: 50%;
       		background-color: #cccccc;
+		z-index: 1;
+		overflow: hidden;
+    		}
+
+		#rightColumn {
+		position: fixed;
+      		width: 20%;
+		height:93%;
+      		background-color: #cccccc;
+		top: 30px;
+		right: 2%;    		
+      		z-index: 2;
+		overflow: auto;
+    		}
+
+		#TwitterBox {
+		width:250px;
+		margin: auto;
+    		}
+
+
+		#Buttons2 {
+		margin: auto;
+    		}
+
+		#leftColumn {
+		position: fixed;
+      		width: 20%;
+		height:93%;
+      		background-color: #cccccc;
+		top: 30px;
+		left: 2%;    		
+      		z-index: 2;
+		overflow: hidden;
+    		}
+
+		#forkMe {
+		position: fixed;    		
+      		z-index: 3;
     		}
 
 		h1 { font-size: 3.8em; color: #333333; margin-bottom: 1px; margin-top: 5px; }
@@ -28,16 +67,16 @@
 		h1 a { text-decoration: none }
 		h2 { font-size: 1.5em; color: #333333; }
 		h2 .small { font-size: 0.5em; float: right; color:#8e8e8e}
-    		h3 { text-align: center; color: #333333; }
+    		h3 { margin-bottom:0px; text-align: center; color: #333333; }
 
     		a { color: #333333; }
 		a:link{ text-decoration:none; font-weight:bold; color:#000000; }
 
-		.description { font-size: 1.2em; margin: 30px; margin-top:0px; font-style: italic;}
-    		.contents { font-size: 1.1em; margin: 30px; margin-top:10px; margin-bottom:10px; font-style: bold;}
-    		.content { text-align:justify; font-size: 1.0em; margin: 30px;}
-    		.header { float: center; margin: 30px; margin-bottom:0px}
-    		.footer { text-align:center; margin:30; pxpadding-top:30px; font-style: italic; }
+		.description { font-size: 1.2em; margin: 5%; margin-top:0%; font-style: italic;}
+    		.contents { font-size: 1.1em; margin: 5%; margin-top:10px; margin-bottom:10px; font-style: bold;}
+    		.content { text-align:justify; font-size: 1.0em; margin: 5%;}
+    		.header { float: center; margin: 5%; margin-top:2%; margin-bottom:0px}
+    		.footer { text-align:center; margin:5%; pxpadding-top:30px; font-style: italic; }
 
 		pre { background: #000; color: #fff; padding: 15px;}
     		hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
@@ -45,37 +84,47 @@
 </head>
 
 
-		<!-- /////////////////////////////////////////////////////////////////////////////////////////// -->
+		<!-- /////////////////////////////////// || FORK ME || ///////////////////////////////////////// -->
 
 
 <body>
-	<a name="top" href="http://github.com/fkmsoft/fkmlandunter"><img style="position: absolute; top: 0; right: 		  0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me 		  on GitHub" /></a>
-
-	<div id="container">
 
 
-		<!-- /////////////////////////////////////////////////////////////////////////////////////////// -->
+
+	<div id = "forkMe">
+		<a name="top" href="http://github.com/fkmsoft/fkmlandunter"><img style="position: fixed; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+	</div>
 
 
-	<div class="header">
- 		<br>
-		<h1>
-		  <a href="http://github.com/fkmsoft/fkmlandunter">fkmlandunter</a>
-      		  <span class="small">by  <a href="http://github.com/fkmsoft"><img border="0" width="100" src="fkmsoft_logo.gif"></a></span>
-		  <span class="download"><a href="http://github.com/fkmsoft/fkmlandunter/zipball/master">
-		    <img border="0" width="64" src="http://github.com/images/modules/download/zip.png"></a>
-      		    <a href="http://github.com/fkmsoft/fkmlandunter/tarball/master">
-        	    <img border="0" width="64" src="http://github.com/images/modules/download/tar.png"></a></span>
-		</h1>
-    	</div>
+		<!-- ////////////////////////////////// || RIGHT COLUMN || ///////////////////////////////////// -->
 
 
-		<!-- /////////////////////////////////////////////////////////////////////////////////////////// --> 
+	<div id="rightColumn">
 
-	<div>
-		<script src="http://widgets.twimg.com/j/2/widget.js"></script>
-		<p align="center">
-		<script>
+		<div style="float: center; margin-top: 30px;">
+			<h3>Produced by</h3>
+			<hr noshade width="200" size="3">
+			<p align="center"><a href="http://github.com/fkmsoft"><img border="0" width="100" src="fkmsoft_logo.gif"></a></p>
+			<h3>Github</h3>
+			<hr noshade width="200" size="3">
+			<p align="center"><a href="http://github.com/fkmsoft/fkmlandunter/">Visit our Github-Page!</a></p>
+			<h3>Sourceforge</h3>
+			<hr noshade width="200" size="3">
+			<p align="center"><a href="http://sourceforge.net/projects/fkmlandunter/">Visit our Sourceforge-Page!</a></p>
+			<h3>Facebook</h3>
+			<hr noshade width="200" size="3">
+			<div style="width=90%; margin:auto;">
+			<p align="center" style="overflow:hidden;">		
+			<a href="http://www.facebook.com/pages/Fkmlandunter/122425094477662?ref=ts"><img src="http://www.facebook.com/badge.php?id=122425094477662&bid=734&key=53768173&format=png&z=250296349" width="235px" alt="Facebook-Picture"/></a>
+			</p>		
+			</div>
+			<h3>Twitter</h3>
+			<hr noshade width="200" size="3">
+			<div style="margin:auto; width:100% overflow: hidden;">
+			<div id="TwitterBox">
+			<script src="http://widgets.twimg.com/j/2/widget.js"></script>
+
+			<script>
 				new TWTR.Widget({
   				version: 2,
   				type: 'profile',
@@ -85,13 +134,13 @@
   				height: 300,
   				theme: {
     				shell: {
-      				background: '#333333',
-      				color: '#ffffff'
+      				background: '#cccccc',
+      				color: '#000000'
     				},
     				tweets: {
-      				background: '#000000',
-      				color: '#ffffff',
-      				links: '#6770a3'
+      				background: '#cccccc',
+      				color: '#000000',
+      				links: '#2e3c8c'
     				}
   				},
   				features: {
@@ -104,34 +153,80 @@
     				behavior: 'all'
   				}
 				}).render().setUser('fkmsoft').start();
-		</script>
-		</p>
+			</script>
+			</div>
+			</div>
+			</p>
+		</div>
+	</div>
+
+		<!-- //////////////////////////////////// || LEFT COLUMN || //////////////////////////////////// -->
+
+
+	<div id="leftColumn">
+
+		<div style="float: center; margin-top: 30px;">
+			<h3>Menu</h3>
+			<hr noshade width="200" size="3">
+			
+			<div class="contents">
+				<div id="Buttons2">
+				<p align=center><a href="#servers"><img src="images/servers_btn.png" border="0" alt="Button to servers-section"/></a>
+				<a href="#curses""><img src="images/curses_btn.png" border="0" alt="Button to curses-section"/></a>
+				<a href="#python"><img src="images/python_btn.png" border="0" alt="Button to python-section"/></a>
+				<a href="#ai"><img src="images/ai_btn.png" border="0" alt="Button to ai-section"/></a>
+				<a href="#enviroment"><img src="images/testenv_btn.png" border="0" alt="Button to testenv-section"/></a>
+				<a href="#sdl"><img src="images/sdl_btn.png" border="0" alt="Button to sdl-section"/></a>
+				<a href="#app_a"><img src="images/appA_btn.png" border="0" alt="Button to appA-section"/></a>
+				<a href="#app_b"><img src="images/appB_btn.png" border="0" alt="Button to appB-section"/></a>
+				<a href="#install"><img src="images/install_btn.png" border="0" alt="Button to install-section"/></a>
+				<a href="#license"><img src="images/license_btn.png" border="0" alt="Button to license-section"/></a>
+				<a href="#authors"><img src="images/authors_btn.png" border="0" alt="Button to authors-section"/></a>
+				<a href="#download"><img src="images/downloads_btn.png" border="0" alt="Button to download-section"/></a>
+</p>
+				</div>
+    			</div></p>
+			
+			<h3>Downloads</h3>
+			<hr noshade width="200" size="3">
+			<p align="center">
+		  	<span class="download"><a href="http://github.com/fkmsoft/fkmlandunter/zipball/master">
+		    	<img border="0" width="64" src="http://github.com/images/modules/download/zip.png"></a>
+      		    	<a href="http://github.com/fkmsoft/fkmlandunter/tarball/master">
+        	    	<img border="0" width="64" src="http://github.com/images/modules/download/tar.png"></a></span></p>
+			<hr noshade width="200" size="3">
+			<div style="margin-top:5%;"><p align="center"><img border="0" width="150" src="images/hut_logo.png"></a><br>toph-design</p></div>
+		</div>
+
 	</div>
 
 
-	<div class="contents" >
-		<p align="center"> 
-      		<a href="#servers" style="text-decoration:none; font-weight:bold; color:#000000;">Servers</a> | 
-		<a href="#curses" style="text-decoration:none; font-weight:bold; color:#000000;">Curses-Client</a> | 
-		<a href="#python" style="text-decoration:none; font-weight:bold; color:#000000;">Python-Client</a> | 
-		<a href="#ai" style="text-decoration:none; font-weight:bold; color:#000000;">AI</a> | 
-		<a href="#enviroment" style="text-decoration:none; font-weight:bold; color:#000000;">Enviroment</a> | 
-		<a href="#sdl" style="text-decoration:none; font-weight:bold; color:#000000;">SDL-Stuff</a> | 
-		<a href="#app_a" style="text-decoration:none; font-weight:bold; color:#000000;">Appendix A</a> | 
-		<a href="#app_b" style="text-decoration:none; font-weight:bold; color:#000000;">Appendix B</a> | 
-		<a href="#install" style="text-decoration:none; font-weight:bold; color:#000000;">Install</a> | 
-		<a href="#license" style="text-decoration:none; font-weight:bold; color:#000000;">License</a> | 
-		<a href="#authors" style="text-decoration:none; font-weight:bold; color:#000000;">Authors</a> | 
-		<a href="#download" style="text-decoration:none; font-weight:bold; color:#000000;">Download</a> 
-		</p>
-    	</div>
+		<!-- ///////////////////////////////////// || CONTAINER || ///////////////////////////////////// -->
+
+
+	<div id="container">
 
 
 		<!-- /////////////////////////////////////////////////////////////////////////////////////////// -->
 
+
+	<div class="header">
+ 		<br>
+		<h1>
+		  <a href="http://github.com/fkmsoft/fkmlandunter">fkmlandunter</a>
+		</h1>
+    	</div>
+
+
+		<!-- /////////////////////////////////////////////////////////////////////////////////////////// --> 
+
   	
     	<div class="description">
-		<img src="images/promo.png" alt="Screenshot of Fkmlandunter" />
+		<div style="background-color: #222222; height:252px; width=90%; margin:auto;">
+		<p align="center" style="overflow:hidden;">		
+		<img src="images/promo.png" alt="Screenshot of Fkmlandunter"/>
+		</p>		
+		</div>
 		<p align="justify">      		
 		Fkmlandunter is the implementation of a German card game called ``land unter''
       		as a computer game. As of now this whole thing is still under heavy development,
@@ -139,7 +234,7 @@
       		compile and can be run.
 		</p>
       		<p align="center">
-      		last updated: 2.10.2010 
+      		last updated: 06.10.2010 
       		</p>
       		<hr noshade width="600" size="3">
     	</div>
@@ -177,7 +272,11 @@
 		
 		<h2>1. The Servers:<span class="small"><a href="#top">back to top</a></span></h2>
 
+		<div style="background-color: #222222; height:150px; width=90%; margin:auto;">
+		<p align="center" style="overflow:hidden;">
 		<a href="http://github.com/fkmsoft/fkmlandunter/blob/master/server/new/fkmlandunter.c#L23"><img src="images/promo_server.png" alt="Screenshot of Fkmlandunter(Server)"/></a><br>
+		</p>
+		</div>
 
 		<p align="justify">
 		The servers can be found in server/old/ and server/new/ respectively. As the
@@ -203,7 +302,11 @@
 
 		<h2>2. The Curses Client:<span class="small"><a href="#top">back to top</a></span></h2>
 
+		<div style="background-color: #222222; height:150px; width=90%; margin:auto;">
+		<p align="center" style="overflow:hidden;">
 		<a href="images/screenshot_ncurses.png"><img src="images/promo_ncurses.png" alt="Screenshot of Fkmlandunter(Ncurses)"/></a><br>
+		</p>
+		</div>
 
 		<p align="justify">
 		The curses client resides in the clients/curses/ subdirectory and requires the
@@ -222,7 +325,11 @@
 
 		<h2>3. The Python Client:<span class="small"><a href="#top">back to top</a></span></h2>
 
+		<div style="background-color: #222222; height:150px; width=90%; margin:auto;">
+		<p align="center" style="overflow:hidden;">
 		<a href="images/screenshot_pyqt.png"><img src="images/promo_pyqt.png" alt="Screenshot of Fkmlandunter(Pyqt)"/></a><br>
+		</p>
+		</div>
 
 		<p align="justify">
 		The python client to be found in clients/pyqt does not require compiling, but
@@ -249,7 +356,11 @@
 
 		<h2>5. The Test Environment:<span class="small"><a href="#top">back to top</a></span></h2>
 
+		<div style="background-color: #222222; height:150px; width=90%; margin:auto;">
+		<p align="center" style="overflow:hidden;">
 		<img src="images/promo_testenv.png" alt="Screenshot of Fkmlandunter(testenv)" /><br>
+		</p>
+		</div>
 
 		<p align="justify">
 		The test environment in testenv/ was made for stress-testing and checking the
@@ -262,7 +373,11 @@
 
 		<h2>6. The SDL Stuff:<span class="small"><a href="#top">back to top</a></span></h2>
 
+		<div style="background-color: #222222; height:150px; width=90%; margin:auto;">
+		<p align="center" style="overflow:hidden;">
 		<a href="images/screenshot_sdl.png"><img src="images/promo_sdl.png" alt="Screenshot of Fkmlandunter(SDL)"/></a><br>
+		</p>
+		</div>
 
 		<p align="justify">
 		As of now you can find a general gui demo in clients/sdl/ called `gui_test'
