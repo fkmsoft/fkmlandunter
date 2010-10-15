@@ -1,6 +1,6 @@
-#include "sdl_util.h"
+#include "net_util.h"
 
-void init_sdl()
+void net_init_sdl()
 {
     if (SDL_Init(SDL_INIT_EVENTTHREAD) < 0)
         exit(EXIT_FAILURE);
@@ -25,7 +25,7 @@ IPaddress compute_address (char *host, Uint16 port)
     return addr;
 }
 
-void send_to(TCPsocket sock, char *fmt, ...)
+void sdl_send_to(TCPsocket sock, char *fmt, ...)
 {
     char buf[MAXBUF];
     va_list args;
@@ -34,20 +34,24 @@ void send_to(TCPsocket sock, char *fmt, ...)
     va_start(args, fmt);
     c = vsnprintf(buf, MAXBUF, fmt, args);
     if ((d = SDLNet_TCP_Send(sock, buf, c)) != c) {
-        printf("Could only wrote %d of %d bytes\n", d, c);
+        fprintf(stderr, "Could only wrote %d of %d bytes\n", d, c);
     }
 
     va_end(args);
 }
 
-char *receive_from(TCPsocket sock)
+char *sdl_receive_from(TCPsocket sock, bool debug)
 {
+    int c;
     char *buffer = calloc(MAXBUF, sizeof(char));
     
-    if (SDLNet_TCP_Recv(sock, buffer, MAXBUF) < 1) {
+    if ((c = SDLNet_TCP_Recv(sock, buffer, MAXBUF)) < 1) {
         printf("receive_from: %s\n", SDLNet_GetError());
         return NULL;
     }
+
+    if (debug && c == MAXBUF)
+        printf("Buffer full: %s\n", buffer);
 
     return buffer;
 }

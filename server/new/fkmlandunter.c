@@ -7,12 +7,10 @@
 
 #include "fkmlandunter.h"
 
-void set_alive(fkmserver *s, int playerlimit);
-void set_notplayed(fkmserver *s, int playerlimit);
-void set_wlevel(fkmserver *s, int p, int level);
-int get_wlevel(fkmserver *s, int p);
-void rm_wcard(fkmserver *s, int p, int card);
-int rm_lifebelt(fkmserver *s, int p);
+static void set_alive(fkmserver *s, int playerlimit);
+static void set_notplayed(fkmserver *s, int playerlimit);
+static void set_wlevel(fkmserver *s, int p, int level);
+static void rm_wcard(fkmserver *s, int p, int card);
 
 bool fkmlandunter_play(fkmserver *s, int playerlimit)
 {
@@ -61,8 +59,7 @@ bool fkmlandunter_play(fkmserver *s, int playerlimit)
             water[j] = (buf[j] % 12) + 1;
         free(buf);
 
-        /* hand out decks after rotating them (using the original deckset as
-         * basis */
+        /* hand out decks after rotating them (using the original deck_set) */
         deck *df;
         df = deck_rotate(deck_set, i, pnum);
         pl = fkmserver_getc(s, 0);
@@ -81,10 +78,10 @@ bool fkmlandunter_play(fkmserver *s, int playerlimit)
         for (j = 0; j < 12 && alive > 2; j++) {
             /* w_min & w_max are the current watercards */
             int w_min, w_max;
-            w_min = (water[j] < water[j+1] ?
-                  water[j] : water[j+1]);
-            w_max = (water[j] > water[j+1] ?
-                  water[j] : water[j+1]);
+            w_min = (water[j] < water[23-j] ?
+                  water[j] : water[23-j]);
+            w_max = (water[j] > water[23-j] ?
+                  water[j] : water[23-j]);
 
             /* This loop provides all players with information necessary to
              * make their move */
@@ -100,9 +97,11 @@ bool fkmlandunter_play(fkmserver *s, int playerlimit)
             while (played < alive) {
                 p = fkmserver_poll(s);
                 if (p == 0) {
+					/* new client connecting */
                     send_refuse(s);
                     continue;
                 } else if (p < 0) {
+					/* a client disconnected */
                     p = -p;
                     rmplayer(s, --p);
                     /* FIXME */
@@ -112,8 +111,15 @@ bool fkmlandunter_play(fkmserver *s, int playerlimit)
                 }
 
                 int w_card;
-                if ((w_card = parse_game_input(s, --p)) < 0)
+                w_card = parse_game_input(s, --p);
+				if (w_card == -2) {
+                    /* FIXME */
+                    send_op_message(s, "Some fucker left, game must be cancelled");
+                    disconnect_fuckers(s, true);
+                    return false;
+				} else if (w_card == -1) {
                     continue;
+				}
 
                 /* remove used weathercard from deck */
                 rm_wcard(s, p, w_card);
@@ -198,19 +204,20 @@ bool fkmlandunter_play(fkmserver *s, int playerlimit)
     return true;
 }
 
-void set_alive(fkmserver *s, int pnum)
+static void set_alive(fkmserver *s, int pnum)
 {
     int i;
     player *p;
     for (i = 0; i < pnum; i++) {
         p = fkmserver_getc(s, i);
         p->dead = false;
+		p->water_level = 0;
     }
 
     return;
 }
 
-void set_notplayed(fkmserver *s, int pnum)
+static void set_notplayed(fkmserver *s, int pnum)
 {
     int i;
     player *p;
@@ -222,7 +229,7 @@ void set_notplayed(fkmserver *s, int pnum)
     return;
 }
 
-void set_wlevel(fkmserver *s, int p, int level)
+static void set_wlevel(fkmserver *s, int p, int level)
 {
     player *pl = fkmserver_getc(s, p);
     pl->water_level = level;
@@ -230,13 +237,7 @@ void set_wlevel(fkmserver *s, int p, int level)
     return;
 }
 
-int get_wlevel(fkmserver *s, int p)
-{
-    player *pl = fkmserver_getc(s, p);
-    return pl->water_level;
-}
-
-void rm_wcard(fkmserver *s, int p, int card)
+static void rm_wcard(fkmserver *s, int p, int card)
 {
     int i = 0;
     player *pl = fkmserver_getc(s, p);

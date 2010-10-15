@@ -1,29 +1,62 @@
-MODULES := server clients testenv
-# find stuff
-# CFLAGS += $(patsubst %,-I,$(MODULES))
+# some binaries
+XARGS := xargs
+FIND  := find
+
+# for installation
+base := fkmlandunter
+PREFIX ?= /usr/local
+
+# global flags
 CFLAGS = -g -Wall -ansi
 
-# extra libs
-# LIBS :=
-
 # each module will add to this
-TARGETS :=
-OBJS :=
-SRC :=
+targets :=
+tests   :=
+objs    :=
 
 all:
 
 # include module descriptions
-include $(patsubst %,%/module.mk,$(MODULES))
-
-# determine obj files
-#OBJS := $(patsubst %.c,%.o, $(filter %.c,$(SRC)))
+modules := server clients testenv check
+include $(patsubst %,%/module.mk,$(modules))
 
 # go
-all: $(TARGETS)
+all: $(targets) $(tests)
 
-commit:
-	svn ci
+check: all
+	$(tests)
+
+install: all
+	# binaries
+	mkdir -p $(DESTDIR)/$(PREFIX)/bin
+	# servers
+	install -s -m 755 server/new/server $(DESTDIR)/$(PREFIX)/bin/$(base)_srv_new
+	install -s -m 755 server/old/server $(DESTDIR)/$(PREFIX)/bin/$(base)_srv_old
+	# clients
+	install    -m 755 clients/pyqt/client.py $(DESTDIR)/$(PREFIX)/bin/$(base)_client_py
+	install -s -m 755 clients/curses/client  $(DESTDIR)/$(PREFIX)/bin/$(base)_client_curses
+	install -s -m 755 clients/sdl/client     $(DESTDIR)/$(PREFIX)/bin/$(base)_client_sdl
+	# links
+	ln -s $(DESTDIR)/$(PREFIX)/bin/$(base)_srv_new    $(DESTDIR)/$(PREFIX)/bin/$(base)_srv
+	ln -s $(DESTDIR)/$(PREFIX)/bin/$(base)_client_sdl $(DESTDIR)/$(PREFIX)/bin/$(base)
+	#
+	# data
+	mkdir -p $(DESTDIR)/$(PREFIX)/share/fkmlandunter
+	cp -r data/fkmlu                         $(DESTDIR)/$(PREFIX)/share/fkmlandunter/data
+	cp    clients/sdl/example.fkmlandunterrc $(DESTDIR)/$(PREFIX)/share/fkmlandunter/data
+
+archive:
+	git archive --format=tar --prefix=fkmlandunter/ HEAD | gzip >fkmlandunter-latest.tar.gz
 
 clean:
-	$(RM) $(OBJS) $(TARGETS)
+	@# sort is just for removing duplicates, to shorten the command line
+	@echo $(sort $(objs)) $(targets) $(tests) | fmt | sed 's/^/  RM   /'
+	@$(RM) $(sort $(objs)) $(targets) $(tests)
+
+# Be REALLY careful with this!!
+terror:
+	$(FIND) . -name \*.o | $(XARGS) $(RM)
+
+%.o: %.c
+	@echo "  CC  " $@
+	@$(COMPILE.c) $< -o $@

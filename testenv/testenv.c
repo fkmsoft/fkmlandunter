@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
     bool debug = false, silent = false;
     char *server = "./server";
     char *silentstr = "", *debugstr = "", *passstr = "1";
-    while ((i = getopt(argc, argv, "s:p:dq")) != -1) {
+    while ((i = getopt(argc, argv, "s:p:dqh")) != -1) {
         k++;
         switch (i) {
             case 'p':
@@ -59,6 +59,9 @@ int main(int argc, char **argv) {
                 k++;
                 server = optarg;
                 break;
+            case 'h':
+                printf("Usage: %s [-q] [-d] [-p passes] [-s SERVER] [BOT1] [BOT2] [BOT3] ([BOT4] [BOT5])\n", *(argv));
+                exit(EXIT_SUCCESS);
             case '?':
             case ':':
                 printf("Usage: %s [-q] [-d] [-p passes] [-s SERVER] [BOT1] [BOT2] [BOT3] ([BOT4] [BOT5])\n", *(argv));
@@ -161,10 +164,10 @@ int main(int argc, char **argv) {
                 j++) {
             bool foo = false;
             int l;
+            wpid = wait(&status);
             if (j == 0)
                 printf("\nPass %04d summary:\n"
                         "------------------\n", i);
-            wpid = wait(&status);
             for (k = 0;
                     (i == passes - 1) ? k < botcount + 1 : k < botcount;
                     k++)
@@ -208,7 +211,7 @@ void kill_chldrn(void) {
 }
 
 void kill_children(int s) {
-    printf("killig children (sig %d)\n", s);
+    printf("killing children (sig %d)\n", s);
     killpg(getpgrp(), SIGKILL);
 }
 

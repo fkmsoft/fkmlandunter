@@ -1,9 +1,13 @@
-DIR := clients/ai/random
-TARGETS += $(DIR)/random
-RANDOMOBJS := $(DIR)/random.o $(DIR)/../../curses/communication.o
-RANDOMHS := $(DIR)/../../curses/communication.h
-RANDOMDEPS := $(RANDOMOBJS) $(RANDOMHS)
-OBJS += $(RANDOMOBJS)
+dir := clients/ai/random
 
-$(DIR)/random: $(RANDOMDEPS)
-	$(CC) $(CFLAGS) -o $@ $(RANDOMOBJS)
+targets += $(dir)/random
+randomobjs := $(dir)/random.o $(dir)/../../communication.o
+randomhs := $(dir)/../../communication.h
+randomdeps := $(randomobjs) $(randomhs)
+objs += $(randomobjs)
+
+all:
+
+$(dir)/random: $(randomdeps)
+	@echo "  CCLD" $@
+	@$(LINK.c) -o $@ $(randomobjs)

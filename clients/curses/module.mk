@@ -1,10 +1,15 @@
-DIR := clients/curses
-TARGETS += $(DIR)/client
-CLIENTOBJS := $(DIR)/fkml_client.o $(DIR)/interface.o $(DIR)/communication.o
-CLIENTHS := $(DIR)/fkml_client.h $(DIR)/interface.h $(DIR)/communication.h
-CLIENTDEPS := $(CLIENTOBJS) $(CLIENTHS)
-OBJS += $(CLIENTOBJS)
-LIBS += -lncurses
+dir := clients/curses
 
-$(DIR)/client: $(CLIENTDEPS)
-	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
+targets += $(dir)/client
+clientobjs := $(dir)/fkml_client.o $(dir)/interface.o $(dir)/../communication.o
+clienths := $(dir)/fkml_client.h $(dir)/interface.h $(dir)/../communication.h
+clientdeps := $(clientobjs) $(clienths)
+
+objs += $(clientobjs)
+curslib := -lncurses
+
+all:
+
+$(dir)/client: $(clientdeps)
+	@echo "  CCLD" $@
+	@$(LINK.c) -o $@ $^ $(curslib)

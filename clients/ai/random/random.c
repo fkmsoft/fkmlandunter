@@ -17,7 +17,7 @@
 #include <getopt.h>
 /* #include <unistd.h> */
 
-#include "../../curses/communication.h"
+#include "../../communication.h"
 
 int main(int argc, char **argv) {
     bool debug = false, silent = false;
@@ -79,39 +79,50 @@ int main(int argc, char **argv) {
     if (!silent)
         printf("%s has pos %d\n", name, pos);
 
-    bool play = true;
+    bool play = true, drowned = false;
+    char *in;
     while (play) {
         if ((input = receive_from(fp)) == 0) {
             if (!silent || debug)
                 printf("%s: Error on receive_from!\n", name);
             play = false;
-            points = 113;
-            puts("FUCK");
             continue;
         }
         if (debug)
-            printf("%s: %s", name, input);
+            printf("%s: %d %s", name, play, input);
 
-        if (strstr(input, "TERMINATE"))
-            play = false;
-        else if (strncmp(input, "DECK ", 5) == 0) {
-            int card = 0;
-            p = input + 5;
-            while (!card && *p)
-                card = atoi(p++);
-            if (card) {
+        int card;
+        for (in = input; in != (char *)1; in = strchr(in, '\n') + 1) {
+            if (strncmp(in, "TERMINATE", 9) == 0) {
+                play = false;
+            } else if (strncmp(in, "DECK ", 5) == 0) {
+                card = 0;
+                p = in + 5;
+                while (!card && *p)
+                    card = atoi(p++);
+
+                if (!silent && !card)
+                    printf("%s not find card in deck\n", name);
+            } else if (strncmp(in, "RINGS ", 6) == 0) {
+                p = strchr(in, ' ');
+                for (i = -1; i < pos; i++)
+                    drowned = (atoi(p = strchr(p, ' ') + 1) == -1);
+
+                if (!silent && drowned) {
+                    printf("%s drown\n", name);
+                } else if (!drowned) {
+                    if (!silent)
+                        printf("%s has play %d\n", name, card);
+                    send_to(fp, "PLAY %d\n", card);
+                }
+            } else if (strncmp(in, "POINTS ", 7) == 0) {
+                p = strchr(in, ' ');
+                for (i = -1; i < pos; i++)
+                    points = atoi(p = strchr(p, ' ') + 1);
+
                 if (!silent)
-                    printf("%s has play %d\n", name, card);
-                send_to(fp, "PLAY %d\n", card);
-            } else if (!silent)
-                printf("%s not find card in deck\n", name);
-        } else if (strncmp(input, "POINTS ", 7) == 0) {
-            strtok(input, " ");
-            /*strtok(0, " ");*/
-            for (i = -1; i < pos; i++)
-                points = atoi(strtok(NULL, " "));
-            if (!silent)
-                printf("%s has points %d\n", name, points);
+                    printf("%s has points %d\n", name, points);
+            }
         }
 
         free (input);

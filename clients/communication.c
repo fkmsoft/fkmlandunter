@@ -35,6 +35,7 @@ gamestr *create_game()
     game->player.points = 0;
     game->player.water_level = 0;
     game->player.dead = false;
+    game->player.played = 0;
     game->player.name = malloc(MAXNICK * sizeof(char));
     for (i = 0; i < 12; i++)
         game->player.weathercards[i] = 0;
@@ -43,38 +44,72 @@ gamestr *create_game()
     /* creating villain(s) - later in parse_start */
     game->villain = NULL;
 
+    /* we don't know yet how may tabs we'll need */
+    game->tabnum = 0;
+
     return game;
 }
 
 /* initialise gamestr->villains from string s */
-void parse_start(gamestr *game, char *s)
+int parse_start(gamestr *game, char *s)
 {
-    int i, j;
+    int i, j, maxt, pos;
+    char *p;
+    player *v;
 
     sscanf(s, "START %d", &game->count);
 
     /* creating villains */
-    player *v = malloc(sizeof(player) * game->count);
+    v = malloc(sizeof(player) * game->count);
     for (i = 0; i < game->count; i++) {
         v[i].points = 0;
         v[i].water_level = 0;
         v[i].dead = false;
+        v[i].played = 0;
         v[i].name = NULL;
         for (j = 0; j < 12; j++)
             v[i].weathercards[j] = 0;
         v[i].lifebelts = 0;
+        v[i].tabnum = 0;
     }
 
     /* skipping first two items */
     strtok(s, " ");
     strtok(NULL, " ");
     
-    for (i = 0; i < game->count; i++)
-        v[i].name = strtok(NULL, " ");
-    /* freeing last char from newline */
-    v[game->count-1].name[strlen(v[game->count-1].name) - 1] = '\0';
+    pos = -1;
+    maxt = 0;
+    for (i = 0; i < game->count; i++) {
+        p = strtok(NULL, " ");
+
+        /* freeing last name from newline */
+        if (i == game->count-1) {
+            *strchr(p, '\n') = '\0';
+        }
+
+        v[i].name = malloc(strlen(p) + 1);
+        strcpy(v[i].name, p);
+
+        if (strcmp(v[i].name, game->player.name) == 0)
+            pos = i;
+
+        v[i].tabnum = strlen(v[i].name) / TABSIZE;
+
+        if (v[i].tabnum > maxt)
+            maxt = v[i].tabnum;
+    }
+
+    for (i = 0; i < game->count; i++) {
+        if (v[i].tabnum == maxt)
+            v[i].tabnum = 1;
+        else
+            v[i].tabnum = 1 + maxt - v[i].tabnum;
+    }
+    game->tabnum = 1 + maxt;
 
     game->villain = v;
+
+    return pos;
 }
 
 /* parse server command */
@@ -99,8 +134,14 @@ int parse_cmd(gamestr *g, char *s)
         return 0;
     } else if (strncmp(s, "RINGS ", 6) == 0) {
         strtok(s, " ");
-        for (i = 0; i < g->count; i++) 
+        for (i = 0; i < g->count; i++) {
             g->villain[i].lifebelts = atoi(strtok(NULL, " "));
+
+            if (g->villain[i].lifebelts == -1)
+                g->villain[i].dead = true;
+            else
+                g->villain[i].dead = false;
+        }
         g->rings = true;
         return 0;
     } else if (strncmp(s, "WEATHER ", 8) == 0) {
@@ -130,7 +171,11 @@ int parse_cmd(gamestr *g, char *s)
         g->msg_data[strlen(g->msg_data) - 1] = '\0';
         
         g->message = true;
-        return 0;
+        return 1;
+    } else if (strncmp(s, "PLAYED ", 7) == 0) {
+        strtok(s, " ");
+        for (i = 0; i < g->count; i++)
+            g->villain[i].played = atoi(strtok(NULL, " "));
     }
     return (-1);
 }

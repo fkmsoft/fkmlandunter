@@ -1,23 +1,28 @@
-DIR := testenv
-TARGETS += $(DIR)/testenv $(DIR)/server $(DIR)/random \
-		   $(DIR)/nserv $(DIR)/sdl_randl
-TESTENVOBJS = $(DIR)/testenv.o
-OBJS += $(TESTENVOBJS) $(RETOBJS)
+dir := testenv
+targets += $(dir)/testenv $(dir)/server $(dir)/random \
+		   $(dir)/nserv $(dir)/sdl_randl
 
-$(DIR)/testenv: $(TESTENVOBJS)
-	$(CC) $(CFLAGS) -o $@ $^
+testenvobjs := $(dir)/testenv.o
+objs += $(testenvobjs)
 
-$(DIR)/server: server/old/server
-	rm -f $@
-	ln -s ../$< $(DIR)
+all:
 
-$(DIR)/nserv: server/new/server
-	rm -f $@
-	ln -s ../$< $@
+$(dir)/testenv: $(testenvobjs)
+	@echo "  CCLD" $@
+	@$(LINK.c) -o $@ $^
 
-$(DIR)/random: clients/ai/random/random
-	rm -f $@
-	ln -s ../$< $(DIR)
-$(DIR)/sdl_randl: clients/sdl/randall
-	rm -f $@
-	ln -s ../$< $@
+$(dir)/server: server/old/server
+	@echo " SYMLN" $@
+	@if [ ! -L $@ ]; then ln -s ../$< $@; fi
+
+$(dir)/nserv: server/new/server
+	@echo " SYMLN" $@
+	@if [ ! -L $@ ]; then ln -s ../$< $@; fi
+
+$(dir)/random: clients/ai/random/random
+	@echo " SYMLN" $@
+	@if [ ! -L $@ ]; then ln -s ../$< $@; fi
+
+$(dir)/sdl_randl: clients/sdl/randall
+	@echo " SYMLN" $@
+	@if [ ! -L $@ ]; then ln -s ../$< $@; fi

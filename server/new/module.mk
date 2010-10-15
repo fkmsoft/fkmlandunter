@@ -1,10 +1,15 @@
-DIR := server/new
-TARGETS += $(DIR)/server
-NSERVEROBJS := $(DIR)/fkmserver.o $(DIR)/server.o $(DIR)/communication.o \
-	$(DIR)/fkmlist.o $(DIR)/fkmlandunter.o $(DIR)/fkmlandunter_util.o
-NSERVERHS := $(DIR)/fkmserver.h $(DIR)/fkmlist.h $(DIR)/communication.h \
-	$(DIR)/fkmlandunter_util.h $(DIR)/fkmlandunter.h
-OBJS += $(NSERVEROBJS) $(ECHOOBJS)
+dir := server/new
+targets += $(dir)/server
 
-$(DIR)/server: $(NSERVEROBJS) $(NSERVERHS)
-	$(CC) $(CFLAGS) -o $@ $(NSERVEROBJS)
+nserverobjs := $(dir)/fkmserver.o $(dir)/server.o $(dir)/communication.o \
+	$(dir)/fkmlist.o $(dir)/fkmlandunter.o $(dir)/fkmlandunter_util.o
+nserverhs := $(dir)/fkmserver.h $(dir)/fkmlist.h $(dir)/communication.h \
+	$(dir)/fkmlandunter_util.h $(dir)/fkmlandunter.h
+nserverdeps := $(nserverobjs) $(nserverhs)
+objs += $(nserverobjs)
+
+all:
+
+$(dir)/server: $(nserverdeps)
+	@echo "  CCLD" $@
+	@$(LINK.c) -o $@ $(nserverobjs)

@@ -1,6 +1,8 @@
 /* fkml_client.c - the real one...fkml_client */
 #include "fkml_client.h"
 
+#define DEBUG 0
+
 int main(int argc, char *argv[])
 {
     int sock_num;
@@ -76,8 +78,9 @@ int main(int argc, char *argv[])
                 error_exit(sock_num, "Polling failed");
             if (status == sock_num) {
                 input = receive_from(fpsock);
-                write_win(GAME_BOX, "Input from socket:%s\n", input);
-                if (parse_cmd(game, input) < 0)
+                if (DEBUG)
+                    write_win(GAME_BOX, "Input from socket:%s\n", input);
+                if (parse_cmd(game, input) < 0 && DEBUG)
                     write_win(GAME_BOX, "server cmd not valid:%s\n", input);
                 if (game->message)
                     print_message(game);
@@ -90,7 +93,8 @@ int main(int argc, char *argv[])
             }
         }
         print_deck(game);
-        print_rings(game);
+        /* print_rings(game); */
+        print_all(game);
         print_weathercards(game);
 
         /* play */
@@ -117,9 +121,9 @@ int main(int argc, char *argv[])
                 error_exit(sock_num, "Polling failed");
             if (status == sock_num) {
                 input = receive_from(fpsock);
-                if (parse_cmd(game, input) < 0)
+                if (parse_cmd(game, input) < 0 && DEBUG)
                     write_win(GAME_BOX, "server cmd not valid:%s\n", input);
-                if (game->message)
+                else if (game->message)
                     print_message(game);
             } else {
                 input = read_chat();
@@ -129,11 +133,12 @@ int main(int argc, char *argv[])
                 }
             }
         }
-        print_wlevel(game);
+        /* print_wlevel(game); */
+        /* print_all(game); */
 
         /* points? */
         input = receive_from(fpsock);
-        if (parse_cmd(game, input) < 0)
+        if (parse_cmd(game, input) < 0 && DEBUG)
             write_win(GAME_BOX, "server cmd not valid:%s\n", input);
         if (game->points)
             print_points(game);
@@ -216,6 +221,31 @@ void error_exit(int sock, char *msg)
     destroy_windows();
     fprintf(stderr, "%s: %s\n", msg, strerror(errno));
     exit(EXIT_FAILURE);
+}
+
+void print_all(gamestr *game)
+{
+    int i, j;
+    player *p;
+
+    write_win(GAME_BOX, "Name");
+
+    for (i = 0; i < game->tabnum; i++)
+        write_win(GAME_BOX, "\t");
+
+    write_win(GAME_BOX, "Water\tBelts\tScore\n");
+    for (i = 0; i < game->count; i++) {
+        p = &game->villain[i];
+        write_win(GAME_BOX, "%s", p->name);
+
+        for (j = 0; j < p->tabnum; j++)
+            write_win(GAME_BOX, "\t");
+
+        write_win(GAME_BOX, "%d\t%d\t%d\n",
+                  p->water_level, p->lifebelts, p->points);
+    }
+
+    game->wlevel = game->points = game->rings = false;
 }
 
 /* vim: set sw=4 ts=4 et fdm=syntax: */

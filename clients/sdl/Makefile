@@ -1,2 +1,4 @@
+include module.mk
+
 all:
-	$(MAKE) -C ../.. clients/sdl/resolve clients/sdl/randall
+	$(MAKE) -C ../.. $(targets)

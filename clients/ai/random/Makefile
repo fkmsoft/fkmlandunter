@@ -1,2 +1,4 @@
+include module.mk
+
 all:
-	$(MAKE) -C ../../.. clients/ai/random/random
+	$(MAKE) -C ../../.. $(targets)

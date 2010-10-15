@@ -130,7 +130,7 @@ void send_points(fkmserver *s)
     return;
 }
 
-/* returns played weather card or -1 if other command */
+/* returns played weather card or -2 on disconnect, -1 if other command */
 int parse_game_input(fkmserver *s, int p)
 {
     bool indeck = false;
@@ -150,7 +150,7 @@ int parse_game_input(fkmserver *s, int p)
             if (pl->played) {
                 fkmserver_cidxsend(s, p, build_cmd(FAIL,
                             "you made your move"));
-            } if (pl->dead) {
+            } else if (pl->dead) {
                 fkmserver_cidxsend(s, p, build_cmd(FAIL,
                             "you drowned"));
             } else {
@@ -187,7 +187,7 @@ int parse_game_input(fkmserver *s, int p)
                     p, pl->name);
             send_leave(s, p);
             rmplayer(s, p);
-            break;
+			return -2;
         case MSG:
             if (!cmddata || *(++cmddata) == 0)
                 fkmserver_cidxsend(s, p, build_cmd(FAIL, "Message expected"));
@@ -203,15 +203,16 @@ int parse_game_input(fkmserver *s, int p)
 
 int parse_pre_game_input(fkmserver *s, int p)
 {
-    player *pl = fkmserver_getc(s, p);
+    int i;
+    player *p2, *pl = fkmserver_getc(s, p);
     char *in = fkmserver_cidxrecv(s, p);
 
     trim(in, "\r\n");
     if (strchr(in, '%')) {
-        if (pl->name)
+        if (pl->name) {
             fkmserver_cidxsend(s, p, build_cmd(FAIL,
                         "invalid character \'%%\' in input"));
-        else {
+        } else {
             fkmserver_cidxsend(s, p, build_cmd(TERMINATE,
                         "invalid character \'%%\' in input"));
             fkmserver_rmidxc(s, p);
@@ -235,7 +236,6 @@ int parse_pre_game_input(fkmserver *s, int p)
                         p, pl->name);
                 send_leave(s, p);
                 rmplayer(s, p);
-                return -1;
             case PLAY:
                 fkmserver_cidxsend(s, p, build_cmd(FAIL, "game hasn't started"));
                 break;
@@ -257,14 +257,25 @@ int parse_pre_game_input(fkmserver *s, int p)
             fkmserver_cidxsend(s, p, build_cmd(TERMINATE,
                         "spaces are not allowed in nicknames"));
             fkmserver_rmidxc(s, p);
-        } else { /* everything OK, let him in */
+        } else {
+            /* check whether this name is already taken */
+            for (i = 0; i < s->connections; i++) {
+				p2 = fkmserver_getc(s, i);
+				if (p2->name && strcmp(p2->name, data) == 0) {
+					fkmserver_cidxsend(s, p, build_cmd(TERMINATE,
+							  "nickname taken: `%s'", p2->name));
+					fkmserver_rmidxc(s, p);
+					return 0;
+			    }
+            }
+
+			/* everything OK, let him in */
             pl->name = malloc(strlen(data));
             strcpy(pl->name, data);
             fkmserver_cidxsend(s, p, build_cmd(ACK, 0));
             send_join(s, p);
             return 1;
         }
-        return -1;
     }
 
     return 0;
@@ -360,15 +371,15 @@ void disconnect_fuckers(fkmserver *s, bool all)
     if (all) {
         for (i = 0; i < pnum; i++) {
             fkmserver_cidxsend(s, i, build_cmd(TERMINATE, "game ended"));
-            /* always take the first, because the ones before
-             * are already gone */
             p = fkmserver_getc(s, i);
             if (p->name)
                 free(p->name);
         }
         for (i = 0; i < pnum; i++)
+            /* always take the first, because the ones before
+             * are already gone */
             fkmserver_rmidxc(s, 0);
-    } else
+    } else {
         for (i = 0; i < pnum; i++) {
             p = fkmserver_getc(s, i);
             if (!p->name) {
@@ -376,6 +387,7 @@ void disconnect_fuckers(fkmserver *s, bool all)
                 i--; pnum--;
             }
         }
+	}
 
     return;
 }

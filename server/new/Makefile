@@ -1,2 +1,4 @@
+include module.mk
+
 all:
-	$(MAKE) -C ../.. server/new/server
+	$(MAKE) -C ../.. $(targets)

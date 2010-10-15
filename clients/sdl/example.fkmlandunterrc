@@ -1,0 +1,12 @@
+# This is an example fkmlandunter resource file, showing the usage of all
+# possible options.
+#
+# Just copy it to ~/.fkmlandunterrc and edit it to your liking if you whish to
+# use it.
+
+datadir     /usr/share/fkmlandunter/data/
+font	    TOONISH.ttf
+resolution  1280x960
+name        Nickname
+host        127.0.0.1
+port        1337

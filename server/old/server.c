@@ -25,7 +25,7 @@ int main(int argc, char **argv)
 {
     bool debug = false;
     int i, j, p, pnum = MAX_PLAYERS, games = 1;
-    while ((i = getopt(argc, argv, "l:dg:")) != -1) {
+    while ((i = getopt(argc, argv, "l:dg:h")) != -1) {
         switch (i) {
             case 'l':
                 pnum = atoi(optarg);
@@ -36,6 +36,9 @@ int main(int argc, char **argv)
 			case 'g':
 				games = atoi(optarg);
 				break;
+            case 'h':
+                printf("usage: %s [-l playerlimit] [-g number_of_games]\n", argv[0]);
+                exit(EXIT_SUCCESS);
             default:
                 exit(EXIT_FAILURE);
         }
@@ -124,18 +127,22 @@ int main(int argc, char **argv)
         int alive = s->connected;
         for (p = 0; p < s->connected; p++) {
             s->players[p].dead = false;
+
             /* and tell them about the new round */
             /* show_startmsg(s, p); DONt */
+
+            /* and reset their waterlevel */
+            s->players[p].water_level = 0;
         }
 
         /* This loop lasts one move */    
         for (j = 0; j < 12 && alive > 2; j++) {
             /* w_min & w_max are the current watercards */
             int w_min, w_max;
-            w_min = (s->water[j] < s->water[j+1] ?
-                  s->water[j] : s->water[j+1]);
-            w_max = (s->water[j] > s->water[j+1] ?
-                  s->water[j] : s->water[j+1]);
+            w_min = (s->water[j] < s->water[23-j] ?
+                  s->water[j] : s->water[23-j]);
+            w_max = (s->water[j] > s->water[23-j] ?
+                  s->water[j] : s->water[23-j]);
 
             /* This loop provides all players with information necessary to
              * make their move */

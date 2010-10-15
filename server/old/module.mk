@@ -1,12 +1,17 @@
-DIR := server/old
-TARGETS += $(DIR)/server $(DIR)/echosrv
-SERVEROBJS := $(DIR)/ncom.o $(DIR)/server.o $(DIR)/server_util.o \
-	$(DIR)/fkml_server.o
-ECHOOBJS := $(DIR)/echosrv.o $(DIR)/fkml_server.o $(DIR)/ncom.o
-OBJS += $(SERVEROBJS) $(ECHOOBJS)
+dir := server/old
 
-$(DIR)/server: $(SERVEROBJS)
-	$(CC) $(CFLAGS) -o $@ $^
+targets += $(dir)/server $(dir)/echosrv
+serverobjs := $(dir)/ncom.o $(dir)/server.o $(dir)/server_util.o \
+	$(dir)/fkml_server.o
+echoobjs := $(dir)/echosrv.o $(dir)/fkml_server.o $(dir)/ncom.o
+objs += $(serverobjs) $(echoobjs)
 
-$(DIR)/echosrv: $(ECHOOBJS)
-	$(CC) $(CFLAGS) -o $@ $^
+all:
+
+$(dir)/server: $(serverobjs)
+	@echo "  CCLD" $@
+	@$(LINK.c) -o $@ $^
+
+$(dir)/echosrv: $(echoobjs)
+	@echo "  CCLD" $@
+	@$(LINK.c) -o $@ $^

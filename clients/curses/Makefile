@@ -1,2 +1,4 @@
+include module.mk
+
 all:
-	$(MAKE) -C ../.. clients/curses/client
+	$(MAKE) -C ../.. $(targets)
