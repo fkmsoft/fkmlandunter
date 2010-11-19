@@ -26,11 +26,14 @@
 
 /* the data structure of any fkmserver */
 typedef struct {
+
     /* socket holds a file descriptor to the socket the fkmserver is listening
      * on */
     int socket;
+
     /* connections holds the number of clients connected to the fkmserver */
     int connections;
+
     /* clients holds the list of clients connected to the fkmserver.
      * A client can be any kind of data structure (struct) that has a field
      * named 'fd' (this is where the file descriptor of the client socket will
@@ -76,6 +79,10 @@ char *fkmserver_cidxrecv(fkmserver *s, int index);
  * read, a negative index of a client that disconnected or 0 when a new client
  * attempts to connect to the server. */
 int fkmserver_poll(fkmserver *s);
+
+/* save file descriptors of the server socket and all
+ * connected clients in buf */
+void fkmserver_exportfds(fkmserver *s, int *buf);
 
 #endif /* _FKMSERVER_H_ */
 

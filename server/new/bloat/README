@@ -1,0 +1,11 @@
+bloat server:
+-------------
+
+supports connections from localhost (or maybe others) at telnet port 23.
+It understands the following commands:
+
+water		displays waterlevel for each player
+card		displays current card for each player
+points		- teh same -
+player 3	displays state of player 3
+exit,logout	disconnects
