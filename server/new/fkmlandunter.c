@@ -7,6 +7,10 @@
 
 #include "fkmlandunter.h"
 
+#if BLOAT
+#	include "bloat/control.h"
+#endif
+
 static void set_alive(fkmserver *s, int playerlimit);
 static void set_notplayed(fkmserver *s, int playerlimit);
 static void set_wlevel(fkmserver *s, int p, int level);
@@ -22,13 +26,21 @@ bool fkmlandunter_play(fkmserver *s, int playerlimit)
         return false;
     }
 
+#if BLOAT
+	conserver *con = conserver_init(s, "Testing Bloatware\n");
+#endif
+
     int i, j, p;
     player *pl;
     int water[24];
 
     /* connect enough players */
     for (i = 0; i < playerlimit;) {
+#if BLOAT
+		p = conserver_poll(con);
+#else
         p = fkmserver_poll(s);
+#endif
         if (p == 0) /* new client connect */
             fkmserver_addnetc(s, (void *)create_player);
         else if (p > 0) {
@@ -95,7 +107,11 @@ bool fkmlandunter_play(fkmserver *s, int playerlimit)
             int max = 0, sec = 0, sec_p = -1, max_p = -1;
             int played = 0;
             while (played < alive) {
-                p = fkmserver_poll(s);
+#if BLOAT
+				p = conserver_poll(con);
+#else
+       		 	p = fkmserver_poll(s);
+#endif
                 if (p == 0) {
 					/* new client connecting */
                     send_refuse(s);

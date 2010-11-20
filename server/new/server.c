@@ -67,6 +67,12 @@ int main(int argc, char **argv)
 
     fkmserver_stop(s);
 
+#if BLOAT
+    puts("Thanks for using bloat-control!");
+#else
+    puts("NO Bloat used.");
+#endif
+
     exit(EXIT_SUCCESS);
 }
 

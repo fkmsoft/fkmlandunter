@@ -63,7 +63,8 @@ bool fkmserver_addpipec(fkmserver *s, char *path);
 /* get a pointer to the client at position index in the clientlist */
 void *fkmserver_getc(fkmserver *s, int index);
 
-/* remove the client identified by fd from the list of clients. */
+/* remove the client identified by fd from the list of clients and close their
+ * connection */
 bool fkmserver_rmc(fkmserver *s, int fd);
 bool fkmserver_rmidxc(fkmserver *s, int index);
 
@@ -80,8 +81,7 @@ char *fkmserver_cidxrecv(fkmserver *s, int index);
  * attempts to connect to the server. */
 int fkmserver_poll(fkmserver *s);
 
-/* save file descriptors of the server socket and all
- * connected clients in buf */
+/* save file descriptors of all connected clients in buf */
 void fkmserver_exportfds(fkmserver *s, int *buf);
 
 #endif /* _FKMSERVER_H_ */

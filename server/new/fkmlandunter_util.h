@@ -26,6 +26,9 @@ deck *deck_rotate(deck *decks, int d, int num);
 /* create an clean player with fd set to fd */
 player *create_player(int fd);
 
+/* remove evil chars from the end of str */
+void trim(char *str, char *evil);
+
 #endif /* FKMLANDUNTER_UTIL_H */
 
 /* vim: set sw=4 ts=4 fdm=syntax: */

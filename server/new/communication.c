@@ -23,7 +23,6 @@ static char *client_command[] = { "LOGIN", "START", "PLAY", "MSG", "LOGOUT" };
 
 static enum CLIENT_COMMAND get_client_cmd(char *s);
 static char *build_cmd(enum SERVER_COMMAND cmd, char *msg, ...);
-static void trim(char *str, char *evil);
 
 void send_startmsgs(fkmserver *s)
 {
@@ -416,14 +415,6 @@ static char *build_cmd(enum SERVER_COMMAND cmd, char *msg, ...)
     msgbuf[count] = 0;
 
     return msgbuf;
-}
-
-static void trim(char *str, char *evil)
-{
-    char *ep;
-    for (ep = str + strlen(str); ep > str && strchr(evil, *(ep-1)); ep--)
-        ;
-    *ep = 0;
 }
 
 /* vim: set sw=4 ts=4 fdm=syntax: */

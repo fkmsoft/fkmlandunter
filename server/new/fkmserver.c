@@ -229,6 +229,20 @@ int fkmserver_poll(fkmserver *s)
     return ret;
 }
 
+void fkmserver_exportfds(fkmserver *s, int *buf)
+{
+    int i;
+    void *c;
+
+    if (!s)
+        return;
+
+    for (i = 0; i < s->connections; i++) {
+        c = fkmlist_get(s->clients, i);
+        buf[i] = s->getfd(c);
+    }
+}
+
 static int rcvtill(char *buf, int fd, char delim)
 {
     int count = 0;

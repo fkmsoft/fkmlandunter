@@ -82,4 +82,12 @@ player *create_player(int fd)
     return p;
 }
 
+void trim(char *str, char *evil)
+{
+    char *ep;
+    for (ep = str + strlen(str); ep > str && strchr(evil, *(ep-1)); ep--)
+        ;
+    *ep = 0;
+}
+
 /* vim: set sw=4 ts=4 fdm=syntax: */

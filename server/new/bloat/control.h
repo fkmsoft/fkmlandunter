@@ -8,9 +8,16 @@
 #ifndef CONTROL_H
 #define CONTROL_H
 
-#include "../fkmserver.h"
+/* for POLLRDHUP and isblank() */
+#define _GNU_SOURCE
 
-#define CTL_PORT 23
+#include <ctype.h>
+#include <alloca.h>
+
+#include "../fkmserver.h"
+#include "../fkmlandunter_util.h"
+
+#define CTL_PORT 23000
 
 typedef struct conserver conserver;
 typedef char *(*cmd_cb)(char **argv);

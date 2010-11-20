@@ -19,6 +19,7 @@
 
 #include "fkmserver.h"
 #include "fkmlandunter.h"
+#include "fkmlandunter_util.h"
 
 #define MSGDELIM ('\n')
 
