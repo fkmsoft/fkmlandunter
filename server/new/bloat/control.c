@@ -259,9 +259,11 @@ static int parse_command(conserver *c, int idx)
             }
         }
 
-        p = alloca((64 + strlen(argv[0])) * sizeof(char));
-        sprintf(p, "Unknown command: %s\n", argv[0]);
-        fkmserver_cidxsend(c->control, idx, p);
+        if (*argv) {
+            p = alloca((64 + strlen(argv[0])) * sizeof(char));
+            sprintf(p, "Unknown command: %s\n", argv[0]);
+            fkmserver_cidxsend(c->control, idx, p);
+        }
         fkmserver_cidxsend(c->control, idx, c->prompt);
     }
 

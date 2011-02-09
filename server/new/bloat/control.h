@@ -20,7 +20,7 @@
 #define CTL_PORT 23000
 
 typedef struct conserver conserver;
-typedef char *(*cmd_cb)(char **argv);
+typedef char *(*cmd_cb)(conserver *c, char **argv);
 
 /* open a control socket for s */
 conserver *conserver_init(fkmserver *s, char *motd);
