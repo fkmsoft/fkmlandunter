@@ -8,6 +8,8 @@
 #ifndef COMMAND_H
 #define COMMAND_H
 
+#include "control.h"
+
 char *echo(conserver *c, char **argv);
 
 #endif /* COMMAND_H */

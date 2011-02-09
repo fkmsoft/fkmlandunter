@@ -253,7 +253,7 @@ static int parse_command(conserver *c, int idx)
 
                 /* execute & print result */
 
-                p = cmd->cb(argv);
+                p = cmd->cb(c, argv);
                 fkmserver_cidxsend(c->control, idx, p);
                 free(p);
             }
