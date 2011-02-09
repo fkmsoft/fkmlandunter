@@ -28,6 +28,7 @@ bool fkmlandunter_play(fkmserver *s, int playerlimit)
 
 #if BLOAT
 	conserver *con = conserver_init(s, "Testing Bloatware\n");
+    conserver_reg_user(con, "denis", "kopf");
 #endif
 
     int i, j, p;

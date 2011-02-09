@@ -218,6 +218,7 @@ static int parse_command(conserver *c, int idx)
         if (clnt->name != arsch && !strcmp(usr->pass, s)) {
             fkmserver_cidxsend(c->control, idx, c->motd);
             fkmserver_cidxsend(c->control, idx, c->prompt);
+            clnt->in = true;
         } else {
             fkmserver_cidxsend(c->control, idx, "Wrong password!\n");
             fkmserver_rmidxc(c->control, idx);

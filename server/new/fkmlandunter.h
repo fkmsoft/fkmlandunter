@@ -11,7 +11,6 @@
 #include <stdbool.h>
 
 #include "fkmserver.h"
-#include "communication.h"
 
 typedef struct { /* deck */
     int weathercards[12];
@@ -28,6 +27,7 @@ typedef struct { /* player */
     int fd;
 } player;
 
+#include "communication.h"
 #include "fkmlandunter_util.h"
 
 bool fkmlandunter_play(fkmserver *s, int playerlimit);
