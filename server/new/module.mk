@@ -8,7 +8,7 @@ nserverobjs := $(dir)/fkmserver.o $(dir)/server.o $(dir)/communication.o \
 nserverhs := $(dir)/fkmserver.h $(dir)/fkmlist.h $(dir)/communication.h \
 	$(dir)/fkmlandunter_util.h $(dir)/fkmlandunter.h
 
-include $(dir)/bloat/module.mk
+include $(SRCDIR)/$(dir)/bloat/module.mk
 dir := server/new
 
 nserverdeps := $(nserverobjs) $(nserverhs)

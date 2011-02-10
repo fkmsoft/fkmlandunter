@@ -1,4 +1,4 @@
 dir := clients
-include $(dir)/curses/module.mk \
-  $(dir)/ai/module.mk		\
-  $(dir)/sdl/module.mk
+include $(SRCDIR)/$(dir)/curses/module.mk \
+  $(SRCDIR)/$(dir)/ai/module.mk		\
+  $(SRCDIR)/$(dir)/sdl/module.mk

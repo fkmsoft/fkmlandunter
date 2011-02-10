@@ -7,7 +7,9 @@ base := fkmlandunter
 PREFIX ?= /usr/local
 
 # global flags
-CFLAGS = -g -Wall -ansi
+CFLAGS  = -g -Wall -ansi
+SRCDIR := .
+VPATH  := $(SRCDIR)
 
 # each module will add to this
 targets :=
@@ -18,7 +20,7 @@ all:
 
 # include module descriptions
 modules := server clients testenv check
-include $(patsubst %,%/module.mk,$(modules))
+include $(patsubst %,$(SRCDIR)/%/module.mk,$(modules))
 
 # go
 all: $(targets) $(tests)
@@ -58,5 +60,6 @@ terror:
 	$(FIND) . -name \*.o | $(XARGS) $(RM)
 
 %.o: %.c
+	@if [ ! -d `dirname $@` ]; then mkdir -p `dirname $@`; fi
 	@echo "  CC  " $@
 	@$(COMPILE.c) $< -o $@

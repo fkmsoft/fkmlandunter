@@ -1,3 +1,3 @@
 dir := server
-include $(dir)/new/module.mk \
-  $(dir)/old/module.mk
+include $(SRCDIR)/$(dir)/new/module.mk \
+  $(SRCDIR)/$(dir)/old/module.mk

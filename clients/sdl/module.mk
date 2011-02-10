@@ -12,7 +12,7 @@ guitestdeps := $(guitestobjs) $(guitesths)
 clientobjs  := $(dir)/client.o $(dir)/net_util.o $(dir)/gui_util.o $(dir)/../parse.o \
 		$(dir)/config.o $(dir)/text_util.o
 clienths    := $(randallhs) $(dir)/config.h $(dir)/text_util.h
-clientsdeps := $(clientobjs) $(clienths)
+clientdeps := $(clientobjs) $(clienths)
 
 sdl_flags   := `sdl-config --cflags`
 sdl_cmd     := `sdl-config --libs`
@@ -28,8 +28,8 @@ $(dir)/randall: $(randalldeps)
 
 $(dir)/gui_test: $(guitestdeps)
 	@echo "  CCLD" $@
-	@$(LINK.c) $(sdl_flags) -o $@ $(guitestdeps) $(sdl_cmd) $(sdl_gui_cmd)
+	@$(LINK.c) $(sdl_flags) -o $@ $(guitestobjs) $(sdl_cmd) $(sdl_gui_cmd)
 
-$(dir)/client: $(clientsdeps)
+$(dir)/client: $(clientdeps)
 	@echo "  CCLD" $@
-	@$(LINK.c) $(sdl_flags) -o $@ $(clientsdeps) $(sdl_cmd) $(sdl_net_cmd) $(sdl_gui_cmd)
+	@$(LINK.c) $(sdl_flags) -o $@ $(clientobjs) $(sdl_cmd) $(sdl_net_cmd) $(sdl_gui_cmd)

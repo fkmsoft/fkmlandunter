@@ -1,2 +1,2 @@
 dir := clients/ai
-include $(dir)/random/module.mk
+include $(SRCDIR)/$(dir)/random/module.mk
