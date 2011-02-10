@@ -10,7 +10,10 @@
 
 #include "control.h"
 
-char *echo(conserver *c, char **argv);
+conserver *setup(fkmserver *s, char *motd);
+
+char *echo(fkmserver *slv, int argc, char **argv);
 
 #endif /* COMMAND_H */
 
+/* vim: set sw=4 ts=4 et fdm=syntax: */

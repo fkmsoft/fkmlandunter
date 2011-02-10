@@ -9,6 +9,7 @@
 
 #if BLOAT
 #	include "bloat/control.h"
+#	include "bloat/cmd.h"
 #endif
 
 static void set_alive(fkmserver *s, int playerlimit);
@@ -27,8 +28,7 @@ bool fkmlandunter_play(fkmserver *s, int playerlimit)
     }
 
 #if BLOAT
-	conserver *con = conserver_init(s, "Testing Bloatware\n");
-    conserver_reg_user(con, "denis", "kopf");
+    conserver *con = setup(s, "Testing Bloatware\n");
 #endif
 
     int i, j, p;

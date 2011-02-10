@@ -25,6 +25,9 @@ struct conserver {
 
     /* the prompt */
     char *prompt;
+
+    /* the command used for logging out */
+    char *logout_cmd;
 };
 
 struct command {
@@ -73,6 +76,8 @@ conserver *conserver_init(fkmserver *s, char *motd)
 
     c->motd   = motd;
     c->prompt = "> ";
+
+    c->logout_cmd = "exit";
 
     return c;
 }
@@ -177,7 +182,7 @@ static void *con_client(int fd)
 static int parse_command(conserver *c, int idx)
 {
     char *s, *p, *q, **argv;
-    int i;
+    int i, k;
 
     struct user *usr;
     struct client *clnt;
@@ -239,32 +244,45 @@ static int parse_command(conserver *c, int idx)
                 p++;
 
             if (p != q) {
-                *p = 0;
+                if (*p) {
+                    *p++ = 0;
+                }
+
                 argv[i++] = q;
             }
         }
 
+        /*argv[i++] = strdup("end");*/
         p = argv[i] = 0;
+        k = i;
 
         /* search for command */
 
-        for (i = 0; !p && (cmd = fkmlist_get(c->cmds, i++)); ) {
-            if (!strcmp(argv[0], cmd->name)) {
+        if (!strcmp(argv[0], c->logout_cmd)) {
+            fkmserver_rmidxc(c->control, idx);
+        } else {
+            for (i = 0; !p && (cmd = fkmlist_get(c->cmds, i++)); ) {
+                if (!strcmp(argv[0], cmd->name)) {
 
-                /* execute & print result */
-
-                p = cmd->cb(c, argv);
-                fkmserver_cidxsend(c->control, idx, p);
-                free(p);
+                    /* execute & print result */
+                    p = cmd->cb(c->slave, k, argv);
+                    if (p) {
+                        fkmserver_cidxsend(c->control, idx, p);
+                        free(p);
+                    } else {
+                        p = (char *)1;
+                    }
+                    break;
+                }
             }
-        }
 
-        if (*argv) {
-            p = alloca((64 + strlen(argv[0])) * sizeof(char));
-            sprintf(p, "Unknown command: %s\n", argv[0]);
-            fkmserver_cidxsend(c->control, idx, p);
+            if (*argv && !p) {
+                p = alloca((64 + strlen(argv[0])) * sizeof(char));
+                sprintf(p, "Unknown command: %s\n", argv[0]);
+                fkmserver_cidxsend(c->control, idx, p);
+            }
+            fkmserver_cidxsend(c->control, idx, c->prompt);
         }
-        fkmserver_cidxsend(c->control, idx, c->prompt);
     }
 
     /* free(s); */
