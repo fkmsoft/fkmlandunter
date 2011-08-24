@@ -3,6 +3,10 @@
 -compile(export_all).
 
 -define(PORT,1337).
+-define(CARDCOUNT,60).
+-define(DECKSIZE,12).
+-define(MINPLAYERS,3).
+-define(MAXPLAYERS,5).
 
 start() ->
     openConnection(?PORT).
@@ -147,22 +151,23 @@ sendStr(Str,Pid,Dict) ->
 startGame(_,_,_) ->
     io:put_chars("game started\n").
 
-genDecks(N) when N > 2, N < 6 ->
-    Cs=lists:seq(1,60),
+genDecks(N) when N >= ?MINPLAYERS, N =< ?MAXPLAYERS ->
+    Cs=lists:seq(1,?CARDCOUNT),
     T=erlang:list_to_tuple(Cs),
-    Deck=erlang:tuple_to_list(shuffle(T,120)),
+    Deck=erlang:tuple_to_list(shuffle(T,2*?CARDCOUNT)),
     genDecks([],N,Deck).
 
 genDecks(Acc,0,_) ->
     Acc;
 genDecks(Acc,N,Deck) ->
-    genDecks([string:substr(Deck,1,12)|Acc],N-1,string:substr(Deck,13)).
+    genDecks([string:substr(Deck,1,?DECKSIZE)|Acc],N-1,
+	     string:substr(Deck,1+?DECKSIZE)).
 
 shuffle(T,0) ->
     T;
 shuffle(T,K) when is_tuple(T), is_integer(K), K > 0 ->
-    A=random:uniform(59),
-    B=random:uniform(59),
+    A=random:uniform(?CARDCOUNT-1),
+    B=random:uniform(?CARDCOUNT-1),
     Ae=element(A,T),
     Be=element(B,T),
     Ta=setelement(A,T,Be),
