@@ -10,24 +10,31 @@ start() ->
 openConnection(Port) ->
     {ok,LSock}=gen_tcp:listen(Port, [list, {packet, 0}, {active, false}]),
     startAccepting(LSock,self()),
-    waitForPlayers(0,0,LSock,[]).
+    waitForPlayers(0,0,LSock,[],dict:new()).
 
-waitForPlayers(2,_,L,Ps) ->
-    startGame(L,Ps);
-waitForPlayers(LoggedIn,Connected,L,PPids) ->
+waitForPlayers(3,_,L,Ps,D) ->
+    startGame(L,Ps,D);
+waitForPlayers(LoggedIn,Connected,L,PPids,D) ->
     io:format("waiting ~w ~w~n",[LoggedIn,Connected]),
     receive
 	{connect,PPid} ->
-	    waitForPlayers(LoggedIn,Connected+1,L,[PPid|PPids]);
-	{login} ->
-	    waitForPlayers(LoggedIn+1,Connected,L,PPids);
+	    waitForPlayers(LoggedIn,Connected+1,L,[PPid|PPids],D);
+	{login,PPid,Name} ->
+	    PDict=dict:store(name,Name,dict:new()),
+	    sendJoinMessage(PPid,D,Name),
+	    waitForPlayers(LoggedIn+1,Connected,L,PPids,dict:store(PPid,PDict,D));
 	{disconnect,PPid} ->
-	    waitForPlayers(LoggedIn,Connected-1,L,lists:subtract(PPids,[PPid]));
-	{logout,PPid} ->
-	    waitForPlayers(LoggedIn-1,Connected-1,L,lists:subtract(PPids,[PPid]));
+	    waitForPlayers(LoggedIn,Connected-1,L,lists:subtract(PPids,[PPid]),D);
+	{logout,PPid,Reason} ->
+	    sendLeaveMessage(PPid,D,Reason),
+	    waitForPlayers(LoggedIn-1,Connected-1,L,
+			   lists:subtract(PPids,[PPid]),dict:erase(PPid,D));
+	{message,PPid,Msg} ->
+	    sendMessage(Msg,PPid,D),
+	    waitForPlayers(LoggedIn,Connected,L,PPids,D);
 	Other ->
 	    io:format("strange message ~p~n",[Other]),
-	    waitForPlayers(LoggedIn,Connected,L,PPids)
+	    waitForPlayers(LoggedIn,Connected,L,PPids,D)
     end.
 
 startAccepting(Sock,Ctl) ->
@@ -56,47 +63,86 @@ needLogin(Sock,Ctl) ->
 	    case lists:prefix("LOGIN ",Data) of
 		true ->
 		    ["LOGIN",Name]=string:tokens(Data," \r\n"),
-		    gen_tcp:send(Sock,"ACK\r\n"),
-		    Ctl ! {login},
-		    inLobby(Sock,Ctl,Name);
+		    ok=gen_tcp:send(Sock,"ACK\r\n"),
+		    Ctl ! {login,self(),Name},
+		    inLobby(Sock,Ctl);
 		false ->
 		    ok=gen_tcp:close(Sock),
-		    Ctl ! {logout,self()}
+		    Ctl ! {disconnect,self()}
 	    end;
 	{tcp_closed} ->
 	    Ctl ! {disconnect,self()}
     end.
 
-inLobby(Sock,Ctl,Name) ->
-    io:format("~s now waiting in Lobby~n",[Name]),
+inLobby(Sock,Ctl) ->
     inet:setopts(Sock,[{active,once}]),
     receive
 	{tcp,Sock,Data} ->
-	    lobbyCmd(Sock,lists:subtract(Data,"\r\n"),Ctl,Name);
+	    lobbyCmd(Sock,lists:subtract(Data,"\r\n"),Ctl);
 	{tcp_closed} ->
 	    ok=gen_tcp:close(Sock),
-	    Ctl ! {logout,self()}
+	    Ctl ! {logout,self(),"lost connection"};
+	{message,Str} ->
+	    ok=gen_tcp:send(Sock,Str),
+	    inLobby(Sock,Ctl)
     end.
 
-lobbyCmd(Sock,[],Ctl,Name) ->
-    inLobby(Sock,Ctl,Name);
-lobbyCmd(Sock,Str,Ctl,Name) ->
+lobbyCmd(Sock,[],Ctl) ->
+    inLobby(Sock,Ctl);
+lobbyCmd(Sock,Str,Ctl) ->
     Toks=string:tokens(Str," "),
     case hd(Toks) of
 	"MSG" ->
-	    Ctl ! {message,Name,Toks},
-	    inLobby(Sock,Ctl,Name);
+	    Ctl ! {message,self(),afterN(Str,5)},
+	    inLobby(Sock,Ctl);
 	"LOGOUT" ->
 	    gen_tcp:send(Sock,"TERMINATE logged out\r\n"),
-	    Ctl ! {logout,self()};
+	    Ctl ! {logout,self(),afterN(Str,8)};
 	"START" ->
-	    Ctl ! {start_req,Name,self()},
-	    inLobby(Sock,Ctl,Name);
+	    Ctl ! {start_req,self()},
+	    inLobby(Sock,Ctl);
 	Other ->
 	    io:format("inv cmd ~p/~w~n",[Other,Toks]),
 	    gen_tcp:send(Sock,"FAIL invalid command\r\n"),
-	    inLobby(Sock,Ctl,Name)
+	    inLobby(Sock,Ctl)
     end.
 
-startGame(_,_) ->
+afterN(_Str,I) when I < 0 ->
+	[];
+afterN(Str,I) when I >= 0 ->
+	L=length(Str),
+	if
+	    I =< L ->
+		string:substr(Str,I);
+	    I > L ->
+		[]
+	end.
+
+sendMessage(Msg,Sender,Dict) ->
+    Name=dict:fetch(name,dict:fetch(Sender,Dict)),
+    Str=io_lib:format("MSGFROM ~s ~s\r\n",[Name,Msg]),
+    io:format("sending ~p to all~n",[Str]),
+    sendStr(Str,Sender,Dict).
+
+sendLeaveMessage(Pid,Dict,Reason) ->
+    Name=dict:fetch(name,dict:fetch(Pid,Dict)),
+    Str=io_lib:format("LEAVE ~s ~s\r\n",[Name,Reason]),
+    sendStr(Str,Pid,Dict).
+
+sendJoinMessage(Pid,Dict,Name) ->
+    Str=io_lib:format("JOIN ~s\r\n",[Name]),
+    sendStr(Str,Pid,Dict).
+
+sendStr(Str,Pid,Dict) ->
+    Send=fun(PPid,_PDict,_Acc) ->
+		 if
+		     PPid == Pid ->
+			 io:put_chars("not sending msg back to sender\n");
+		     PPid /= Pid ->
+			 PPid ! {message,Str}
+		 end
+	 end,
+    dict:fold(Send,void,Dict).
+
+startGame(_,_,_) ->
     io:put_chars("game started\n").
