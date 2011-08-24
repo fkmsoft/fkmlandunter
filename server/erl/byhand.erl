@@ -146,3 +146,25 @@ sendStr(Str,Pid,Dict) ->
 
 startGame(_,_,_) ->
     io:put_chars("game started\n").
+
+genDecks(N) when N > 2, N < 6 ->
+    Cs=lists:seq(1,60),
+    T=erlang:list_to_tuple(Cs),
+    Deck=erlang:tuple_to_list(shuffle(T,120)),
+    genDecks([],N,Deck).
+
+genDecks(Acc,0,_) ->
+    Acc;
+genDecks(Acc,N,Deck) ->
+    genDecks([string:substr(Deck,1,12)|Acc],N-1,string:substr(Deck,13)).
+
+shuffle(T,0) ->
+    T;
+shuffle(T,K) when is_tuple(T), is_integer(K), K > 0 ->
+    A=random:uniform(59),
+    B=random:uniform(59),
+    Ae=element(A,T),
+    Be=element(B,T),
+    Ta=setelement(A,T,Be),
+    Tb=setelement(B,Ta,Ae),
+    shuffle(Tb,K-1).
