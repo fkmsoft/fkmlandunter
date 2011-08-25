@@ -13,10 +13,11 @@ start() ->
 
 openConnection(Port) ->
     {ok,LSock}=gen_tcp:listen(Port, [list, {packet, 0}, {active, false}]),
-    startAccepting(LSock,self()),
-    waitForPlayers(0,0,LSock,[],dict:new()).
+    ASock=startAccepting(LSock,self()),
+    waitForPlayers(0,0,{LSock,ASock},[],dict:new()).
 
-waitForPlayers(3,_,L,Ps,D) ->
+waitForPlayers(3,_,{L,A},Ps,D) ->
+    A ! stop,
     startGame(L,Ps,D);
 waitForPlayers(LoggedIn,Connected,L,PPids,D) ->
     io:format("waiting ~w ~w~n",[LoggedIn,Connected]),
@@ -47,11 +48,17 @@ startAccepting(Sock,Ctl) ->
     Pid.
 
 acceptPlayers(Sock,Ctl) ->
-    io:put_chars("accepting another player\n"),
-    {ok,PSock}=gen_tcp:accept(Sock),
-    Ctl ! {connect,self()},
-    startAccepting(Sock,Ctl),
-    needLogin(PSock,Ctl).
+    receive
+	stop ->
+	    io:put_chars("terminating acceptor\n")
+    after
+	0 ->
+	    io:put_chars("accepting another player\n"),
+	    {ok,PSock}=gen_tcp:accept(Sock),
+	    Pid=playerProc(PSock,Ctl),
+	    Ctl ! {connect,Pid},
+	    acceptPlayers(Sock,Ctl)
+    end.
 
 playerProc(PSock,MSock) ->
     Pid=spawn_link(?MODULE,needLogin,[PSock,MSock]),
@@ -75,7 +82,10 @@ needLogin(Sock,Ctl) ->
 		    Ctl ! {disconnect,self()}
 	    end;
 	{tcp_closed} ->
-	    Ctl ! {disconnect,self()}
+	    Ctl ! {disconnect,self()};
+	{start,M} ->
+	    io:format("got start message ~p, exiting~n",[M]),
+	    ok=gen_tcp:close(Sock)
     end.
 
 inLobby(Sock,Ctl) ->
@@ -88,7 +98,10 @@ inLobby(Sock,Ctl) ->
 	    Ctl ! {logout,self(),"lost connection"};
 	{message,Str} ->
 	    ok=gen_tcp:send(Sock,Str),
-	    inLobby(Sock,Ctl)
+	    inLobby(Sock,Ctl);
+	{start,Str} ->
+	    ok=gen_tcp:send(Sock,Str),
+	    inGame(Sock,Ctl)
     end.
 
 lobbyCmd(Sock,[],Ctl) ->
@@ -148,8 +161,33 @@ sendStr(Str,Pid,Dict) ->
 	 end,
     dict:fold(Send,void,Dict).
 
-startGame(_,_,_) ->
-    io:put_chars("game started\n").
+startGame(LSock,Ps,D) ->
+    N=broadcastStart(Ps,D),
+    io:put_chars("game started\n"),
+    Decks=genDecks(N),
+    playRound(N,Decks,LSock,touchPlayers(D)).
+
+playRound(0,_De,_L,_Di) ->
+    io:put_chars("game ended\n");
+playRound(N,De,L,Di) ->
+    CurrentDecks=De,%rotate(De),
+    D1=replaceDecks(CurrentDecks,Di),
+    io:format("playing ~w more rounds~n",[N]),
+    playRound(N-1,De,L,playTurns(D1,?DECKSIZE)).
+
+broadcastStart(Ps,D) ->
+    Namer=fun(_K,V,A) ->
+		  [[$ |dict:fetch(name,V)]|A]
+	  end,
+    Names=dict:fold(Namer,[],D),
+    Str=io_lib:format("START ~w~s\r\n",[N=length(Names),Names]),
+    broadcast(start,Str,Ps),
+    N.
+
+broadcast(Type,Str,Ps) ->
+    lists:foreach(fun(P) ->
+			  P ! {Type,Str}
+		  end,Ps).
 
 genDecks(N) when N >= ?MINPLAYERS, N =< ?MAXPLAYERS ->
     Cs=lists:seq(1,?CARDCOUNT),
@@ -173,3 +211,47 @@ shuffle(T,K) when is_tuple(T), is_integer(K), K > 0 ->
     Ta=setelement(A,T,Be),
     Tb=setelement(B,Ta,Ae),
     shuffle(Tb,K-1).
+
+rotate([D|Ds]) ->
+    lists:append(Ds,[D]).
+
+replaceDecks(Decks,D) ->
+    % FIXME: this is wrong, because evaluation order is undefined
+    Replacer=fun(P,PD,{A,RD}) ->
+		     B=dict:store(deck,hd(A),PD),
+		     {tl(A),dict:store(P,B,RD)}
+	     end,
+    {[],R}=dict:fold(Replacer,{Decks,dict:new()},D),
+    R.
+
+touchPlayers(D) ->
+    Toucher=fun(_PPid,PDict) ->
+		    dict:store(deck,[],PDict)
+	    end,
+    dict:map(Toucher,D).
+
+playTurns(D,0) ->
+    D;
+playTurns(D,N) ->
+    io:format("playing ~w more turns~n",[N]),
+    sendDecks(D),
+    playTurns(D,N-1).
+
+sendDecks(D) ->
+    Printer=fun(N) ->
+		    io_lib:format(" ~w",[N])
+	    end,
+    Sender=fun(P,PD,void) ->
+		   Deck=dict:fetch(deck,PD),
+		   Strs=lists:map(Printer,Deck),
+		   P ! {message,io_lib:format("DECK~s\r\n",[Strs])},
+		   void
+	   end,
+    dict:fold(Sender,void,D).
+
+inGame(S,Ctl) ->
+    receive
+	{message,M} ->
+	    ok=gen_tcp:send(S,M),
+	    inGame(S,Ctl)
+    end.
