@@ -5,6 +5,7 @@ To build the Fkmlandunter package, edit the Makefile to your liking (especially
 changing the value PREFIX and/or DESTDIR) and make sure you have the following
 installed on your system:
 
+check
 python
 pyqt4 (plus development files)
 ncurses (plus development headers)
