@@ -14,11 +14,13 @@ clientobjs  := $(dir)/client.o $(dir)/net_util.o $(dir)/gui_util.o $(dir)/../par
 clienths    := $(randallhs) $(dir)/config.h $(dir)/text_util.h
 clientdeps := $(clientobjs) $(clienths)
 
-sdl_flags   := `sdl-config --cflags`
-sdl_cmd     := `sdl-config --libs`
-sdl_net_cmd := -lSDL_net
-sdl_gui_cmd := -lSDL_image -lSDL_ttf
+sdl_flags   := `sdl2-config --cflags`
+sdl_cmd     := `sdl2-config --libs`
+sdl_net_cmd := -lSDL2_net
+sdl_gui_cmd := -lSDL2_image -lSDL2_ttf
 objs += $(randallobjs) $(guitestobjs) $(clientobjs)
+
+CFLAGS += -std=c99
 
 all:
 

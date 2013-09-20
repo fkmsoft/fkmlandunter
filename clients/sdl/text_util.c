@@ -5,7 +5,7 @@
 
 struct tbox {
     char *s;
-    SDL_Surface *screen;
+    SDL_Renderer *screen;
     TTF_Font *font;
     unsigned x;
     unsigned y;
@@ -27,7 +27,7 @@ static void chatbox_scrolldown(Chatbox b);
 
 static SDL_Color font_fg = {0, 0, 0, 255};
 
-Tbox create_textbox(SDL_Surface *s, TTF_Font *font, unsigned x, unsigned y)
+Tbox create_textbox(SDL_Renderer *s, TTF_Font *font, unsigned x, unsigned y)
 {
     Tbox t = malloc(sizeof(struct tbox));
     t->s = 0;
@@ -43,13 +43,15 @@ void textbox_set(Tbox t, char *s)
 {
     SDL_Rect r;
     SDL_Surface *txt;
+    SDL_Texture *text;
 
     t->s = s;
     r.x = t->x;
     r.y = t->y;
 
     txt = TTF_RenderText_Blended(t->font, s, font_fg);
-    SDL_BlitSurface(txt, 0, t->screen, &r);
+    text = SDL_CreateTextureFromSurface(t->screen, txt);
+    SDL_RenderCopy(t->screen, text, 0, &r);
     if (TEXT_UTIL_DEBUG > 1)
         fprintf(stderr, "%p Rendering textbox at %d/%d: `%s'\n",
             t->screen, r.x, r.y, s);
@@ -65,7 +67,7 @@ void textbox_update(Tbox t)
     textbox_set(t, t->s);
 }
 
-char getprintkey(SDLKey k, SDLMod m)
+char getprintkey(SDL_Keycode k, SDL_Keymod m)
 {
     char c = 0;
 
@@ -74,7 +76,7 @@ char getprintkey(SDLKey k, SDLMod m)
 
     if (m & KMOD_CTRL
         || m & KMOD_ALT
-        || m & KMOD_META)
+        || m & KMOD_GUI)
         return 0;
 
     if (k > 31 && k < 127)
@@ -92,7 +94,7 @@ char getprintkey(SDLKey k, SDLMod m)
 }
 
 /* returns 0 or pointer to message */
-char *handle_keypress(SDLKey k, SDLMod m, Tbox in, Chatbox out)
+char *handle_keypress(SDL_Keycode k, SDL_Keymod m, Tbox in, Chatbox out)
 {
     int i;
     char *p, *q;
@@ -158,7 +160,7 @@ char *handle_keypress(SDLKey k, SDLMod m, Tbox in, Chatbox out)
     return 0;
 }
 
-Chatbox create_chatbox(SDL_Surface *s, TTF_Font *font, unsigned x, unsigned y, int length)
+Chatbox create_chatbox(SDL_Renderer *s, TTF_Font *font, unsigned x, unsigned y, int length)
 {
     int i;
 

@@ -12,9 +12,9 @@
 #include <sys/stat.h>
 #include <stdbool.h>
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
-#include <SDL/SDL_ttf.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 #include "../parse.h"
 
@@ -60,15 +60,15 @@
 
 extern const int pbox_x, pbox_y;
 
-SDL_Surface *init_sdl(int w, int h, char *datadir, char *fontfile);
+SDL_Renderer *init_sdl(int w, int h, char *datadir, char *fontfile);
 
 TTF_Font *getfont(void);
 
-void pre_render(SDL_Surface *s, char *name);
-void render(SDL_Surface *s, gamestr *g, int pos, int *startbelts);
+void pre_render(SDL_Renderer *s, char *name);
+void render(SDL_Renderer *s, gamestr *g, int pos, int *startbelts);
 
 int card_select(int x, int y, int *deck);
-void game_over(SDL_Surface *s, gamestr *g, int pos, int x, int y);
+void game_over(SDL_Renderer *s, gamestr *g, int pos, int x, int y);
 
 #endif /* FKML_GUI_UTIL_H */
 

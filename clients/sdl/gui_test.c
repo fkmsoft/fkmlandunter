@@ -20,7 +20,7 @@ int main(int argc, char **argv)
     int belts[5];
     g.villain = players;
 
-    SDL_Surface *screen;
+    SDL_Renderer *screen;
     SDL_Event event;
     Tbox t;
     Chatbox out;
@@ -62,7 +62,7 @@ int main(int argc, char **argv)
     chatbox_append(out, strdup("baaz"));
     chatbox_append(out, strdup("quux"));
     chatbox_render(out);
-    SDL_UpdateRect(screen, 0, 0, 0, 0);
+    SDL_RenderPresent(screen);
 
     down = 0;
     for (i = 9; i; i--) {
@@ -131,7 +131,7 @@ int main(int argc, char **argv)
         chatbox_render(out);
         game_over(screen, &g, 0, 0, 0);
 
-        SDL_UpdateRect(screen, 0, 0, 0, 0);
+        SDL_RenderPresent(screen);
     }
 
     return 0;

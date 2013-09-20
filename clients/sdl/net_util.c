@@ -2,7 +2,7 @@
 
 void net_init_sdl()
 {
-    if (SDL_Init(SDL_INIT_EVENTTHREAD) < 0)
+    if (SDL_Init(SDL_INIT_EVENTS) < 0)
         exit(EXIT_FAILURE);
 
     atexit(SDL_Quit);

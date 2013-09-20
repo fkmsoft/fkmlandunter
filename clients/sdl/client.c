@@ -51,7 +51,7 @@ int main(int argc, char **argv)
     struct config_s conf;
     struct net_s    netdata;
 
-    SDL_Surface     *screen;
+    SDL_Renderer    *screen;
     SDL_Thread      *net;
     SDL_Event        ev;
     TCPsocket        sock;
@@ -88,7 +88,7 @@ int main(int argc, char **argv)
     pre_render(screen, conf.name);
     textbox_set(chat_input, p);
     chatbox_render(chat);
-    SDL_UpdateRect(screen, 0, 0, 0, 0);
+    SDL_RenderPresent(screen);
 
     g = create_game();
     g->player.name = conf.name;
@@ -124,7 +124,7 @@ int main(int argc, char **argv)
 pre_render(screen, conf.name); \
 textbox_update(chat_input); \
 chatbox_render(chat); \
-SDL_UpdateRect(screen, 0, 0, 0, 0)
+SDL_RenderPresent(screen);
 
         SDL_PollEvent(&ev);
         card = SDL_GetModState();
@@ -173,7 +173,7 @@ SDL_UpdateRect(screen, 0, 0, 0, 0)
 render(screen, g, pos, startbelts); \
 textbox_update(chat_input); \
 chatbox_render(chat); \
-SDL_UpdateRect(screen, 0, 0, 0, 0)
+SDL_RenderPresent(screen);
 
     REND0R;
 
@@ -186,7 +186,7 @@ SDL_UpdateRect(screen, 0, 0, 0, 0)
     netdata.set = set;
     netdata.play = &play;
     netdata.push = &netpush;
-    net = SDL_CreateThread((int (*)(void *))network_thread, &netdata);
+    net = SDL_CreateThread((int (*)(void *))network_thread, "fkml-net", &netdata);
 
     g->wlevel = true;
 
@@ -199,7 +199,7 @@ SDL_UpdateRect(screen, 0, 0, 0, 0)
             if (CLIENT_DEBUG)
                 fprintf(stderr, "Quit event\n");
 
-            SDL_KillThread(net);
+            /*SDL_KillThread(net);*/
             sdl_send_to(sock, "LOGOUT bye\n");
             SDLNet_TCP_Close(sock);
             exit(EXIT_SUCCESS);
@@ -251,7 +251,7 @@ SDL_UpdateRect(screen, 0, 0, 0, 0)
     SDL_WaitThread(net, 0);
     
     game_over(screen, g, pos, 0, 0);
-    SDL_UpdateRect(screen, 0, 0, 0, 0);
+    SDL_RenderPresent(screen);
 
     do {
         SDL_WaitEvent(&ev);

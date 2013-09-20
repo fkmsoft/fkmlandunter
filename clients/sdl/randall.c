@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
         name = GUINAME;
 
     /* initialize sdl & sdl_net */
-    SDL_Surface *screen;
+    SDL_Renderer *screen;
     gamestr *g;
     char buf[BUFL];
     int startbelts[5];
@@ -110,7 +110,7 @@ int main(int argc, char **argv) {
         parse_start(g, buf);
 
         render(screen, g, pos, startbelts);
-        SDL_UpdateRect(screen, 0, 0, 0, 0);
+        SDL_RenderPresent(screen);
     }
 
     SDL_Event ev;
@@ -151,7 +151,7 @@ int main(int argc, char **argv) {
             }
 
             render(screen, g, pos, startbelts);
-            SDL_UpdateRect(screen, 0, 0, 0, 0);
+            SDL_RenderPresent(screen);
         }
 
         for (in = input; in != (char *)1; in = strchr(in, '\n') + 1) {
