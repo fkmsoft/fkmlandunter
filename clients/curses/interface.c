@@ -127,9 +127,8 @@ void clear_input(win_struct *w_struct)
 /* scrolls if necessary (last line written) */
 void scroll_win(win_struct *w_struct)
 {
-    int y, x, ymax, xmax;
+    int ymax, xmax;
     getmaxyx(w_struct->output, ymax, xmax);
-    getyx(w_struct->output, y, x);
 
     if (w_struct->lines >= ymax - 2) {
         /* delete last line (box bottom) */

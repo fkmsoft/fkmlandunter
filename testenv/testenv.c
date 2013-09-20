@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
                 printf("Usage: %s [-q] [-d] [-p passes] [-s SERVER] [BOT1] [BOT2] [BOT3] ([BOT4] [BOT5])\n", *(argv));
                 exit(EXIT_FAILURE);
             default:
-                puts("foo");
+                puts("never reached");
         }
     }
 
@@ -103,13 +103,14 @@ int main(int argc, char **argv) {
     /* setgpid(0, 0); */
 
     /* start forking */
-    printf("Starting %d passes of tests with %d bots\n", passes, botcount);
+    if (!silent)
+        printf("Starting %d passes of tests with %d bots\n", passes, botcount);
 
     char botnumstr[2] = "3";
     /* starting server */
     switch (pid[botcount] = fork()) {
         case -1:
-            printf("Fehler in fork()\n");
+            printf("Error in fork()\n");
             exit(EXIT_FAILURE);
             break;
         case 0:
@@ -119,7 +120,7 @@ int main(int argc, char **argv) {
                 botnumstr[0] = '0' + botcount;
             if (execl(server, "server", "-l", botnumstr,
                        "-g", passstr, debugstr, 0L) < 0)
-                printf("Error bei \"execl %s\": %s\n",
+                printf("Error in \"execl %s\": %s\n",
                         server, strerror(errno));
             _exit(EXIT_FAILURE);
             break;
@@ -138,7 +139,7 @@ int main(int argc, char **argv) {
         for (j = 0; j < botcount; j++) {
             switch (pid[j] = fork()) {
                 case -1:
-                    printf("Fehler in fork()\n");
+                    printf("Error in fork()\n");
                     exit(EXIT_FAILURE);
                     break;
                 case 0:
@@ -162,21 +163,22 @@ int main(int argc, char **argv) {
         for (j = 0;
                 (i == passes - 1) ? j < botcount + 1 : j < botcount;
                 j++) {
-            bool foo = false;
+            bool found = false;
             int l;
             wpid = wait(&status);
-            if (j == 0)
+            if (j == 0 && !silent)
                 printf("\nPass %04d summary:\n"
                         "------------------\n", i);
             for (k = 0;
                     (i == passes - 1) ? k < botcount + 1 : k < botcount;
                     k++)
                 if (wpid == pid[k] && k < botcount) {
-                    printf("%d (bot #%d)", wpid, k);
+                    if (!silent)
+                        printf("%d (bot #%d)", wpid, k);
                     l = k;
-                    foo = true;
+                    found = true;
                 }
-            if (!foo) {
+            if (!found && !silent) {
                 if (wpid == pid[botcount])
                     printf("%d (server)", wpid);
                 else
@@ -185,13 +187,14 @@ int main(int argc, char **argv) {
 
             if (WIFEXITED(status)) {
                 k = WEXITSTATUS(status);
-                if (foo) {
+                if (found) {
                     if (k > 200)
                         k -= 0x100;
                     botpts[l] += k;
                 }
-                printf(" returned %d\n", k);
-            } else if (WIFSIGNALED(status))
+                if (!silent)
+                    printf(" returned %d\n", k);
+            } else if (WIFSIGNALED(status) && !silent)
                 printf(" killed by signal %d\n", WTERMSIG(status));
         }
     }

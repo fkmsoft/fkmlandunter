@@ -209,7 +209,7 @@ static int parse_command(conserver *c, int idx)
         fkmserver_cidxsend(c->control, idx, "Password: ");
 
         if (!clnt->name)
-            clnt->name = arsch;
+            clnt->name = strdup(arsch);
 
     } else if (!clnt->in) {
 
