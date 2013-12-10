@@ -158,8 +158,11 @@ static void draw_background(SDL_Renderer *s, int x, int y)
 {
     SDL_Rect r;
 
+    SDL_RenderClear(s);
     r.x = x;
     r.y = y;
+    r.w = hstretch * 800;
+    r.h = vstretch * 600;
     SDL_RenderCopy(s, table, 0, &r);
 }
 
@@ -173,6 +176,8 @@ static void draw_hud(SDL_Renderer *s, int x, int y)
 
     r.x = x + hstretch * 18;
     r.y = y + vstretch * 385;
+    r.w = hstretch * 750;
+    r.h = vstretch * 185;
     SDL_RenderCopy(s, hud, 0, &r);
 
     /*
@@ -180,6 +185,8 @@ static void draw_hud(SDL_Renderer *s, int x, int y)
     text = SDL_CreateTextureFromSurface(s, txt);
     r.x = x + 60 * hstretch;
     r.y = y + 410 * vstretch;
+    r.w = txt->w;
+    r.h = txt->h;
     text = SDL_CreateTextureFromSurface(s, txt);
     SDL_RenderCopy(s, txt, 0, &r);
     SDL_FreeSurface(txt);
@@ -196,11 +203,15 @@ static void create_playerbox(SDL_Renderer *s, char *name, int x, int y, char *av
     /* draw border */
     r.x = x;
     r.y = y;
+    r.w = hstretch * 130;
+    r.h = vstretch * 160;
 
     SDL_RenderCopy(s, act_border, 0, &r);
 
     r.x += hstretch * 5;
     r.y += vstretch * 5;
+    r.w = hstretch * 70;
+    r.h = vstretch * 80;
     if (dead) {
         SDL_RenderCopy(s, drownava, 0, &r);
     } else if (!avatar) {
@@ -214,6 +225,8 @@ static void create_playerbox(SDL_Renderer *s, char *name, int x, int y, char *av
     text = SDL_CreateTextureFromSurface(s, txt);
     r.x += hstretch * 76;
     r.y += vstretch * 35;
+    r.w = txt->w;
+    r.h = txt->h;
     SDL_RenderCopy(s, text, 0, &r);
     SDL_FreeSurface(txt);
 
@@ -221,12 +234,14 @@ static void create_playerbox(SDL_Renderer *s, char *name, int x, int y, char *av
     text = SDL_CreateTextureFromSurface(s, txt);
     /* r.x += hstretch * 1; */
     r.y += vstretch * 50;
+    r.w = txt->w;
     SDL_RenderCopy(s, text, 0, &r);
     SDL_FreeSurface(txt);
     
     txt = TTF_RenderText_Blended(font, name, font_fg);
     text = SDL_CreateTextureFromSurface(s, txt);
     r.x -= hstretch * 70;
+    r.w = txt->w;
     SDL_RenderCopy(s, text, 0, &r);
     SDL_FreeSurface(txt);
     
@@ -248,6 +263,8 @@ static int set_lifebelts(SDL_Renderer *s, int x, int y, int n, int max)
     /* draw lifebelts */
     r.x = x + hstretch * 5;
     r.y = y + vstretch * 106;
+    r.w = hstretch * 24;
+    r.h = vstretch * 24;
     for (i = j = 0; i < max; j = ++i) {
 #define BELTSIZE 24
         if (i == 5) {
@@ -274,6 +291,8 @@ static int add_lifebelt(SDL_Renderer *s, int x, int y, int n)
 
     r.x = x + hstretch * 5;
     r.y = y + vstretch * 105;
+    r.w = hstretch * 24;
+    r.h = vstretch * 24;
 
     r.x += hstretch * (n % 5) * BELTSIZE;
 
@@ -297,6 +316,8 @@ static int set_wlevel(SDL_Renderer *s, int x, int y, int n)
 
     r.x = x + hstretch * 94;
     r.y = y + vstretch * 17;
+    r.w = txt->w;
+    r.h = txt->h;
     text = SDL_CreateTextureFromSurface(s, txt);
     SDL_RenderCopy(s, text, 0, &r);
     SDL_FreeSurface(txt);
@@ -316,6 +337,8 @@ static int set_points(SDL_Renderer *s, int x, int y, int n)
 
     r.x = x + hstretch * 94;
     r.y = y + vstretch * 67;
+    r.w = txt->w;
+    r.h = txt->h;
     text = SDL_CreateTextureFromSurface(s, txt);
     SDL_RenderCopy(s, text, 0, &r);
     SDL_FreeSurface(txt);
@@ -334,6 +357,8 @@ static int add_pcard(SDL_Renderer *s, int x, int y, int n, int val)
     r.y = y + vstretch * 430;
 
     r.x += hstretch * n * 25;
+    r.w = hstretch * 98;
+    r.h = vstretch * 120;
 
     SDL_RenderCopy(s, pcard, 0, &r);
 
@@ -343,6 +368,8 @@ static int add_pcard(SDL_Renderer *s, int x, int y, int n, int val)
 
     r.x += hstretch * 7;
     r.y += vstretch * 7;
+    r.w = txt->w;
+    r.h = txt->h;
     SDL_RenderCopy(s, text, 0, &r);
 
     r.y += vstretch * 95;
@@ -369,6 +396,8 @@ static int add_wcard(SDL_Renderer *s, int x, int y, int n, int val)
     r.y = y + vstretch * 230;
 
     r.x += hstretch * n * 100;
+    r.w = hstretch * 98;
+    r.h = vstretch * 120;
 
     SDL_RenderCopy(s, wcard, 0, &r);
 
@@ -378,6 +407,8 @@ static int add_wcard(SDL_Renderer *s, int x, int y, int n, int val)
 
     r.x += hstretch * 40;
     r.y += vstretch * 40;
+    r.w = txt->w;
+    r.h = txt->h;
     SDL_RenderCopy(s, text, 0, &r);
     SDL_FreeSurface(txt);
 
@@ -396,6 +427,8 @@ static int add_pcard_played(SDL_Renderer *s, int x, int y, int n, int val)
 
     r.x = x;
     r.y = y;
+    r.w = hstretch * 49;
+    r.h = vstretch * 60;
 
     switch(n) {
     case -1: /* the player */
@@ -429,6 +462,8 @@ static int add_pcard_played(SDL_Renderer *s, int x, int y, int n, int val)
 
     r.x += hstretch * 2;
     r.y += vstretch * 2;
+    r.w = txt->w;
+    r.h = txt->h;
     SDL_RenderCopy(s, text, 0, &r);
 
     r.y += vstretch * 48;
@@ -446,6 +481,8 @@ static int add_pcard_played(SDL_Renderer *s, int x, int y, int n, int val)
     text = SDL_CreateTextureFromSurface(s, txt);
     r.y += vstretch * 20;
     r.x -= hstretch * 18;
+    r.w = txt->w;
+    r.h = txt->h;
     SDL_RenderCopy(s, text, 0, &r);
     SDL_FreeSurface(txt);
 
@@ -570,6 +607,8 @@ void game_over(SDL_Renderer *s, gamestr *g, int pos, int x, int y)
     text = SDL_CreateTextureFromSurface(s, txt);
     r.x = x + 100 * hstretch;
     r.y = y + 300 * vstretch;
+    r.w = txt->w;
+    r.h = txt->h;
     SDL_RenderCopy(s, text, 0, &r);
     SDL_FreeSurface(txt);
 }
